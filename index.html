@@ -32,7 +32,7 @@
     .top-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
     @media (max-width:700px){.top-metrics{grid-template-columns:1fr}}
     .bigcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px;min-height:140px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 10px rgba(0,0,0,.02)}
-    .bigcard-title{font-size:13px;color:var(--muted);margin-bottom:10px;display:flex;gap:6px;align-items:center}
+    .bigcard-title{font-size:clamp(16px, 2.4vw, 20px);color:var(--fg);margin-bottom:10px;display:flex;gap:6px;align-items:center;font-weight:800}
     .big-number{font-size:clamp(48px,8vw,80px);font-weight:900;line-height:1;display:inline-block}
     .big1{color:var(--big1)} .big2{color:var(--big2)}
     .bigcard-foot{font-size:13px;color:var(--muted);margin-top:6px}
@@ -41,8 +41,31 @@
     .toolbar{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;margin-bottom:10px}
     @media (max-width:700px){.toolbar{grid-template-columns:1fr}}
     label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block}
-    select,button{width:100%;appearance:none;border:1px solid var(--line);background:#fff;color:var(--fg);padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:600}
-    select:focus,button:hover{outline:none;border-color:#cfe3f7}
+
+    /* Campo com “cara de botão” + setinha */
+    .field{}
+    .tap-hint{
+      display:inline-block;margin-left:8px;padding:2px 8px;
+      font-size:11px;font-weight:800;color:#0b5ea1;background:#E6F3FF;border-radius:999px
+    }
+    @media (min-width:701px){ .tap-hint{display:none} }
+
+    .select-wrap{position:relative}
+    .select-wrap::after{
+      content:"▾"; position:absolute; right:12px; top:50%; transform:translateY(-50%);
+      pointer-events:none; color:var(--brand-blue); opacity:.9; font-size:18px;
+    }
+    select,button{
+      width:100%; appearance:none; border:1.6px solid var(--line); background:#fff; color:var(--fg);
+      padding:12px 40px 12px 12px; border-radius:12px; cursor:pointer; font-weight:600;
+      transition:border-color .15s, box-shadow .15s, transform .05s;
+    }
+    .select-wrap:focus-within select{
+      border-color:var(--brand-blue);
+      box-shadow:0 0 0 3px rgba(15,139,214,.15);
+    }
+    select:active{ transform:scale(.995) }
+    button:hover{border-color:#cfe3f7}
 
     .chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 2px 14px}
     .chip{background:var(--chip);border:1px solid var(--line);color:var(--muted);padding:6px 10px;border-radius:999px;font-size:13px}
@@ -52,7 +75,7 @@
     .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
     @media (max-width:700px){.grid{grid-template-columns:1fr}}
     .card{border:1px solid var(--line);background:#fff;border-radius:16px;padding:16px}
-    .label{font-size:14px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .label{font-size:14px;color:var(--fg);margin-bottom:8px;display:flex;align-items:center;gap:8px;font-weight:800}
     .value{font-size:clamp(32px,6vw,54px);font-weight:900;line-height:1;color:#15a0d6;letter-spacing:.4px;background:linear-gradient(0deg,#fff 0 40%, var(--yellow) 40% 100%);display:inline-block;padding:4px 8px;border-radius:10px}
     .sub{font-size:13px;color:var(--muted);margin-top:8px}
 
@@ -66,49 +89,6 @@
     footer img{height:46px;width:auto;display:block;margin:0 auto 8px}
 
     .error{color:#d64545;font-size:14px;display:none;margin-top:8px}
-        /* === Overrides de títulos das caixas === */
-/* Títulos em negrito e cor escura */
-    .label,
-    .bigcard-title{
-      font-weight: 800;         /* negrito */
-      color: var(--fg);         /* troca do cinza para o texto principal */
-    }
-    
-    /* Aumenta só os títulos das duas caixas principais (topo) */
-    .bigcard-title{
-      font-size: clamp(16px, 2.4vw, 20px);
-    }
-
-        /* Títulos em negrito e cor escura */
-    .label,
-    .bigcard-title{
-      font-weight: 800;
-      color: var(--fg);
-    }
-    
-    /* Títulos das duas caixas principais (topo) um pouco maiores */
-    .bigcard-title{
-      font-size: clamp(16px, 2.4vw, 20px);
-    }
-    
-    /* Aviso com e-mail */
-    .notice{
-      margin: 8px 0 16px;
-      border: 1px solid var(--line);
-      background: var(--chip);
-      border-left: 6px solid var(--brand-blue);
-      border-radius: 12px;
-      padding: 12px 14px;
-      color: var(--fg);
-      font-size: 14px;
-    }
-    .notice a{
-      color: var(--big1);
-      font-weight: 800;
-      text-decoration: none;
-    }
-    .notice a:hover{ text-decoration: underline; }
-
   </style>
 </head>
 <body>
@@ -117,12 +97,10 @@
     <section class="hero">
       <div class="hero-top">
         <div class="hero-brand">
-          <!-- >>> AQUI troquei para o nome correto do arquivo: japeri-logo.png <<< -->
           <img src="japeri-logo.png" alt="Prefeitura de Japeri">
           <div class="hero-title-text">Saúde Bucal • Painel de Acompanhamento</div>
         </div>
       </div>
-      <!-- Logo Brasil Sorridente centralizada -->
       <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente — Saúde Bucal no SUS" class="hero-logo">
     </section>
 
@@ -135,11 +113,6 @@
           <div id="geralAcumFila" class="big-number big1">—</div>
           <div class="bigcard-foot">Soma de todos os postos em todos os meses registrados.</div>
         </div>
-          <div class="notice">
-        📩 Quer saber sua posição exata na fila?
-        Fale com nossa equipe pelo e-mail
-        <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a>.
-          </div>
         <div class="bigcard">
           <div class="bigcard-title">📅 Agendados — Total</div>
           <div id="agTotal" class="big-number big2">—</div>
@@ -149,13 +122,17 @@
 
       <!-- 2) FILTROS -->
       <div class="toolbar">
-        <div>
-          <label for="postoSelect">Posto</label>
-          <select id="postoSelect"></select>
+        <div class="field">
+          <label for="postoSelect">Posto <span class="tap-hint">toque para escolher</span></label>
+          <div class="select-wrap">
+            <select id="postoSelect"></select>
+          </div>
         </div>
-        <div>
-          <label for="mesSelect">Mês</label>
-          <select id="mesSelect"></select>
+        <div class="field">
+          <label for="mesSelect">Mês <span class="tap-hint">toque para escolher</span></label>
+          <div class="select-wrap">
+            <select id="mesSelect"></select>
+          </div>
         </div>
         <div style="align-self:end;display:flex;gap:8px">
           <button id="refreshBtn">Recarregar</button>
@@ -192,7 +169,6 @@
 
     <!-- RODAPÉ COM LOGO -->
     <footer>
-      <!-- >>> E aqui também corrigi para japeri-logo.png <<< -->
       <img src="japeri-logo.png" alt="Prefeitura de Japeri">
       Painel interno de acompanhamento da Saúde Bucal — Prefeitura de Japeri
     </footer>
