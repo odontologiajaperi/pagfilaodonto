@@ -67,13 +67,16 @@
 
     .error{color:#d64545;font-size:14px;display:none;margin-top:8px}
         /* === Overrides de títulos das caixas === */
-    .label{
-      font-weight: 800;            /* negrito em TODAS as caixas menores */
+/* Títulos em negrito e cor escura */
+    .label,
+    .bigcard-title{
+      font-weight: 800;         /* negrito */
+      color: var(--fg);         /* troca do cinza para o texto principal */
     }
     
+    /* Aumenta só os títulos das duas caixas principais (topo) */
     .bigcard-title{
-      font-weight: 800;            /* negrito nas duas caixas principais */
-      font-size: clamp(15px, 2.2vw, 18px);  /* aumenta um pouco o tamanho */
+      font-size: clamp(16px, 2.4vw, 20px);
     }
 
   </style>
