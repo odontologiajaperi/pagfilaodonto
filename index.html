@@ -2,89 +2,131 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <title>Fila de Pacientes</title>
+  <title>Fila de Pacientes — Painel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark light">
+  <meta name="color-scheme" content="dark light" />
   <style>
     :root{
       --bg:#0b1220; --panel:#0f172a; --card:#111827; --line:#1f2937;
-      --fg:#e5e7eb; --muted:#9aa4b2; --brand:#60a5fa; --ok:#10b981;
+      --fg:#e5e7eb; --muted:#9aa4b2; --brand:#60a5fa; --ok:#10b981; --warn:#f59e0b;
     }
     *{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
     body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Inter,Arial}
-    .wrap{max-width:900px;margin:0 auto;padding:24px}
+    .wrap{max-width:980px;margin:0 auto;padding:24px}
     header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}
-    h1{font-size:clamp(20px,3.5vw,28px);margin:0;font-weight:700;letter-spacing:.2px}
+    h1{font-size:clamp(20px,3.5vw,28px);margin:0;font-weight:800;letter-spacing:.2px}
     .panel{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid var(--line); border-radius:20px; padding:20px}
+    .toolbar{display:grid;grid-template-columns:1fr 1fr auto; gap:12px; margin-bottom:16px}
+    @media (max-width:640px){ .toolbar{grid-template-columns:1fr} }
+    label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block}
+    select,button{width:100%;appearance:none;border:1px solid var(--line);background:#0c1323;color:var(--fg);padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:600}
+    select:hover,button:hover{border-color:#324155}
     .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
     @media (max-width:640px){ .grid{grid-template-columns:1fr} }
     .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
     .label{font-size:14px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:8px}
-    .value{font-size:clamp(40px,8vw,72px);font-weight:800;line-height:1}
+    .value{font-size:clamp(44px,8vw,72px);font-weight:900;line-height:1}
     .value.ok{color:var(--ok)}
     .value.brand{color:var(--brand)}
-    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:var(--muted);font-size:14px}
-    button{appearance:none;border:1px solid var(--line);background:#0c1323;color:var(--fg);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600}
-    button:hover{border-color:#324155}
-    .muted{color:var(--muted)}
+    .sub{font-size:14px;color:var(--muted);margin-top:10px}
+    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;color:var(--muted);font-size:14px;gap:10px;flex-wrap:wrap}
+    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:#0c1323}
     .err{color:#ef4444}
+    .hint{font-size:13px;color:var(--muted)}
+    .small{font-size:13px}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <h1>📊 Painel — Fila de Pacientes</h1>
-      <div>
-        <button id="refreshBtn" title="Recarregar agora">Recarregar</button>
-      </div>
+      <div class="hint">Selecione o <b>Posto</b> e o <b>Mês</b> para ver os totais.</div>
     </header>
 
     <div class="panel">
+      <!-- Filtros -->
+      <div class="toolbar">
+        <div>
+          <label for="postoSelect">Posto</label>
+          <select id="postoSelect"></select>
+        </div>
+        <div>
+          <label for="mesSelect">Mês</label>
+          <select id="mesSelect"></select>
+        </div>
+        <div style="align-self:end;display:flex;gap:8px">
+          <button id="refreshBtn" title="Recarregar agora">Recarregar</button>
+        </div>
+      </div>
+
+      <!-- Contexto selecionado -->
+      <div class="footer" style="margin-top:0;margin-bottom:10px">
+        <div class="pill" id="pillPosto">Posto: —</div>
+        <div class="pill" id="pillMes">Mês: —</div>
+        <div class="pill" id="pillStamp">Atualizado: —</div>
+      </div>
+
+      <!-- Cards -->
       <div class="grid">
         <div class="card">
-          <div class="label">🕒 Em espera (fila)</div>
+          <div class="label">🕒 Fila de espera (total do mês)</div>
           <div id="fila" class="value brand">—</div>
+          <div id="filaObs" class="sub"></div>
         </div>
         <div class="card">
-          <div class="label">📅 Agendados</div>
+          <div class="label">📅 Agendados (total do mês)</div>
           <div id="agendados" class="value ok">—</div>
+          <div id="agObs" class="sub"></div>
         </div>
       </div>
+
+      <!-- Mensagens -->
+      <div id="error" class="sub err" style="margin-top:14px; display:none;"></div>
       <div class="footer">
-        <div id="stamp" class="muted">Carregando…</div>
-        <div class="muted">Atualiza sozinho a cada 60s</div>
+        <div class="small">Auto-atualiza a cada 60s.</div>
+        <div class="small">Dica: para inserir dados de um mês novo, adicione a chave <code>YYYY-MM</code> no <code>data.json</code>.</div>
       </div>
-      <div id="error" class="muted err" style="margin-top:10px; display:none;"></div>
     </div>
   </div>
 
   <script>
-    const elFila = document.getElementById('fila');
-    const elAg = document.getElementById('agendados');
-    const elStamp = document.getElementById('stamp');
-    const elErr = document.getElementById('error');
-    const btn = document.getElementById('refreshBtn');
+    // -------- Helpers UI --------
+    const $ = sel => document.querySelector(sel);
+    const elFila = $('#fila');
+    const elAg = $('#agendados');
+    const elFilaObs = $('#filaObs');
+    const elAgObs = $('#agObs');
+    const elErr = $('#error');
+    const elPosto = $('#postoSelect');
+    const elMes = $('#mesSelect');
+    const elPillPosto = $('#pillPosto');
+    const elPillMes = $('#pillMes');
+    const elPillStamp = $('#pillStamp');
+    const btn = $('#refreshBtn');
 
-    function formatStamp(iso){
+    let DATA = null;
+
+    const ptMes = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+    const fmtStamp = iso => {
       try{
         const d = new Date(iso);
         const two = n => String(n).padStart(2,'0');
-        const dia = two(d.getDate());
-        const mes = two(d.getMonth()+1);
-        const ano = d.getFullYear();
-        const hh = two(d.getHours()), mm = two(d.getMinutes());
-        return `${dia}/${mes}/${ano} ${hh}:${mm}`;
+        return `${two(d.getDate())}/${two(d.getMonth()+1)}/${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}`;
       }catch{ return '—'; }
-    }
+    };
+    const labelMes = ym => {
+      if(!/^\d{4}-\d{2}$/.test(ym)) return ym;
+      const [y,m] = ym.split('-').map(Number);
+      return `${ptMes[(m-1)%12]}/${y}`;
+    };
 
     function animateCounter(el, to){
       const from = Number(el.textContent.replace(/\D/g,'')) || 0;
       const target = Number(to) || 0;
       const diff = target - from;
-      const steps = 20;
-      const dur = 400;
-      let i = 0;
+      const steps = 16;
       if (diff === 0){ el.textContent = String(target); return; }
+      let i = 0;
       const tick = () => {
         i++;
         const val = Math.round(from + diff*(i/steps));
@@ -94,23 +136,131 @@
       requestAnimationFrame(tick);
     }
 
-    async function loadData(){
+    function getPostos(){
+      return Object.keys(DATA.postos || {}).sort((a,b)=>a.localeCompare(b,'pt'));
+    }
+    function getMeses(){
+      // União de todos os meses existentes em todos os postos
+      const set = new Set();
+      for(const p of Object.values(DATA.postos||{})){
+        for(const k of Object.keys(p)) set.add(k);
+      }
+      // Ordena desc (YYYY-MM ordena lexicalmente ok)
+      return Array.from(set).sort().reverse();
+    }
+    function sumAllForMonth(ym){
+      let fila=0, ag=0;
+      for(const p of Object.values(DATA.postos||{})){
+        if(p[ym]){
+          fila += Number(p[ym].fila||0);
+          ag   += Number(p[ym].agendados||0);
+        }
+      }
+      return {fila, agendados: ag};
+    }
+
+    function populateFilters(){
+      // Postos
+      elPosto.innerHTML = '';
+      const optAll = document.createElement('option');
+      optAll.value = '__ALL__';
+      optAll.textContent = 'Todos os postos';
+      elPosto.appendChild(optAll);
+      for(const p of getPostos()){
+        const o = document.createElement('option');
+        o.value = p; o.textContent = p;
+        elPosto.appendChild(o);
+      }
+      // Meses
+      elMes.innerHTML='';
+      for(const ym of getMeses()){
+        const o = document.createElement('option');
+        o.value = ym; o.textContent = labelMes(ym);
+        elMes.appendChild(o);
+      }
+      // Defaults: se houver hash, usa. Senão, mês mais recente e "Todos"
+      const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+      const postoHash = hash.get('posto');
+      const mesHash = hash.get('mes');
+      if(postoHash && (postoHash==='__ALL__' || getPostos().includes(postoHash))) elPosto.value = postoHash;
+      else elPosto.value = '__ALL__';
+
+      if(mesHash && getMeses().includes(mesHash)) elMes.value = mesHash;
+      else elMes.value = getMeses()[0] || '';
+      updatePills();
+    }
+
+    function updatePills(){
+      elPillPosto.textContent = 'Posto: ' + (elPosto.value==='__ALL__' ? 'Todos' : elPosto.value);
+      elPillMes.textContent = 'Mês: ' + labelMes(elMes.value || '—');
+      elPillStamp.textContent = 'Atualizado: ' + fmtStamp(DATA.atualizado_em || new Date().toISOString());
+      // Atualiza hash para compartilhar link do filtro atual
+      const params = new URLSearchParams();
+      params.set('posto', elPosto.value);
+      params.set('mes', elMes.value);
+      history.replaceState(null,'', '#'+params.toString());
+    }
+
+    function render(){
       elErr.style.display='none';
+      const posto = elPosto.value;
+      const ym = elMes.value;
+      let fila = 0, ag = 0;
+      let obsFila = '', obsAg = '';
+
+      if(!ym){
+        elErr.textContent = 'Nenhum mês encontrado no data.json.';
+        elErr.style.display='block';
+        elFila.textContent = '0';
+        elAg.textContent = '0';
+        return;
+      }
+
+      if(posto === '__ALL__'){
+        const tot = sumAllForMonth(ym);
+        fila = tot.fila; ag = tot.agendados;
+        // Observações
+        obsFila = 'Soma de todos os postos no mês selecionado.';
+        obsAg   = 'Soma de todos os postos no mês selecionado.';
+      }else{
+        const reg = (DATA.postos?.[posto] || {})[ym];
+        if(!reg){
+          fila = 0; ag = 0;
+          obsFila = 'Sem dados para este mês no posto selecionado.';
+          obsAg   = 'Sem dados para este mês no posto selecionado.';
+        }else{
+          fila = Number(reg.fila||0);
+          ag   = Number(reg.agendados||0);
+          obsFila = 'Totais do posto no mês selecionado.';
+          obsAg   = 'Totais do posto no mês selecionado.';
+        }
+      }
+
+      animateCounter(elFila, fila);
+      animateCounter(elAg, ag);
+      elFilaObs.textContent = obsFila;
+      elAgObs.textContent = obsAg;
+    }
+
+    async function loadData(){
       try{
-        // Adiciona um cache-buster para evitar cache agressivo do Pages/CDN
         const res = await fetch(`data.json?cb=${Date.now()}`);
         if(!res.ok) throw new Error('Erro ao buscar data.json');
-        const data = await res.json();
-        animateCounter(elFila, data.fila ?? 0);
-        animateCounter(elAg, data.agendados ?? 0);
-        elStamp.textContent = `Atualizado em ${formatStamp(data.atualizado_em || new Date().toISOString())}`;
+        DATA = await res.json();
+        populateFilters();
+        render();
       }catch(e){
-        elErr.textContent = 'Não foi possível carregar os dados. Tente recarregar.';
+        elErr.textContent = 'Não foi possível carregar os dados. Verifique se o data.json está no mesmo diretório.';
         elErr.style.display='block';
       }
     }
 
-    btn.addEventListener('click', loadData);
+    // Eventos
+    elPosto?.addEventListener('change', ()=>{ updatePills(); render(); });
+    elMes?.addEventListener('change',   ()=>{ updatePills(); render(); });
+    btn?.addEventListener('click', loadData);
+
+    // Boot
     loadData();
     setInterval(loadData, 60000); // 60s
   </script>
