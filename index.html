@@ -4,50 +4,139 @@
   <meta charset="utf-8" />
   <title>Painel — Fila de Pacientes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark light" />
+  <meta name="color-scheme" content="light">
+  <!-- Fonte amigável -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Inter:wght@500;600;800&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg:#0b1220; --panel:#0f172a; --card:#111827; --line:#1f2937;
-      --fg:#e5e7eb; --muted:#9aa4b2; --brand:#60a5fa; --ok:#10b981;
+      /* Paleta inspirada no seu layout */
+      --bg:#EAF5FF;           /* azul bem claro do fundo */
+      --panel:#FFFFFF;        /* painéis brancos */
+      --line:#DDEAF7;         /* borda suave */
+      --fg:#1B304A;           /* texto principal */
+      --muted:#6B87A4;        /* texto secundário */
+      --brand-blue:#3BB3FF;   /* “eu” */
+      --brand-green:#6CDC64;  /* “sou” */
+      --yellow:#FFF070;       /* faixa “SAÚDE BUCAL” */
+      --chip:#F3FAFF;         /* pílulas info */
+      --accent:#0F8BD6;       /* detalhes */
     }
     *{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-    body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Inter,Arial}
-    .wrap{max-width:980px;margin:0 auto;padding:24px}
-    header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}
-    h1{font-size:clamp(20px,3.5vw,28px);margin:0;font-weight:800;letter-spacing:.2px}
-    .panel{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid var(--line); border-radius:20px; padding:20px}
-    .toolbar{display:grid;grid-template-columns:1fr 1fr auto; gap:12px; margin-bottom:16px}
-    @media (max-width:640px){ .toolbar{grid-template-columns:1fr} }
-    label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block}
-    select,button{width:100%;appearance:none;border:1px solid var(--line);background:#0c1323;color:var(--fg);padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:600}
-    select:hover,button:hover{border-color:#324155}
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-    @media (max-width:640px){ .grid{grid-template-columns:1fr} }
-    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
-    .label{font-size:14px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:8px}
-    .value{font-size:clamp(44px,8vw,72px);font-weight:900;line-height:1}
-    .value.brand{color:var(--brand)}
-    .sub{font-size:14px;color:var(--muted);margin-top:10px}
-    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;color:var(--muted);font-size:14px;gap:10px;flex-wrap:wrap}
-    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:#0c1323}
-    .hint{font-size:13px;color:var(--muted)}
-    .small{font-size:13px}
-    .sectionTitle{margin:18px 2px 8px;font-size:15px;color:var(--muted);font-weight:700;letter-spacing:.3px}
-    .list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
-    @media (max-width:640px){ .list{grid-template-columns:1fr} }
-    .row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#0c1323}
-    .row b{font-weight:700}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial}
+    .wrap{max-width:1060px;margin:0 auto;padding:20px}
+
+    /* HERO */
+    .hero{
+      position:relative;
+      border:1px solid var(--line);
+      border-radius:24px;
+      background:linear-gradient(180deg, #F7FBFF 0%, #F0F8FF 100%);
+      padding:28px 20px 24px;
+      overflow:hidden;
+    }
+    .hero::after{
+      /* um “doodle” suave com circles */
+      content:"";
+      position:absolute; inset:-20px -10px auto auto; width:360px; height:360px; opacity:.08;
+      background:
+        radial-gradient(circle at 20% 30%, #2aa7ea 10px, transparent 11px),
+        radial-gradient(circle at 60% 20%, #6ddc5c 8px, transparent 9px),
+        radial-gradient(circle at 75% 55%, #2aa7ea 7px, transparent 8px),
+        radial-gradient(circle at 40% 70%, #6ddc5c 12px, transparent 13px);
+      filter: blur(2px);
+      pointer-events:none;
+    }
+    .hero-top{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px; font-weight:700; color:var(--accent);
+    }
+    .brand .logo{
+      width:38px; height:38px; border-radius:10px; background:#D7F2FF; border:1px solid var(--line);
+      display:grid; place-items:center; font-size:18px;
+    }
+    .hero-title{
+      margin:8px 0 0; line-height:1.05; font-family:"Baloo 2", system-ui, sans-serif;
+      display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap;
+    }
+    .hero-title .eu{ color:var(--brand-blue); font-size: clamp(36px,6.2vw,64px); font-weight:800; transform: rotate(-2deg); }
+    .hero-title .sou{ color:var(--brand-green); font-size: clamp(36px,6.2vw,64px); font-weight:800; transform: rotate(2deg); }
+    .hero-title .a{ color:var(--muted); font-size: clamp(18px,2.8vw,28px); margin-left:2px; transform: translateY(-4px); }
+    .hero-bar{
+      display:inline-block; margin-top:8px; padding:8px 14px;
+      background:var(--yellow); border-radius:10px;
+      box-shadow:0 4px 0 rgba(0,0,0,.04);
+      transform: rotate(-1deg);
+    }
+    .hero-bar span{
+      display:inline-block; font-weight:900; letter-spacing:.6px;
+      color:#15a0d6; font-size: clamp(18px,3.6vw,28px);
+    }
+
+    /* PAINEL */
+    .panel{
+      margin-top:16px; border:1px solid var(--line); background:var(--panel); border-radius:20px; padding:16px;
+    }
+    .toolbar{display:grid; grid-template-columns:1fr 1fr auto; gap:12px; margin-bottom:10px}
+    @media (max-width:700px){ .toolbar{grid-template-columns:1fr} }
+    label{font-size:12px; color:var(--muted); margin-bottom:6px; display:block}
+    select,button{
+      width:100%; appearance:none; border:1px solid var(--line); background:#fff;
+      color:var(--fg); padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:600
+    }
+    select:focus,button:hover{outline:none; border-color:#cfe3f7}
+    .chips{display:flex; flex-wrap:wrap; gap:8px; margin:4px 2px 14px}
+    .chip{background:var(--chip); border:1px solid var(--line); color:var(--muted); padding:6px 10px; border-radius:999px; font-size:13px}
+
+    .sectionTitle{margin:14px 2px 10px; font-size:14px; color:var(--muted); font-weight:800; letter-spacing:.3px}
+    .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px}
+    @media (max-width:700px){ .grid{grid-template-columns:1fr} }
+
+    .card{border:1px solid var(--line); background:#fff; border-radius:16px; padding:16px}
+    .label{font-size:14px; color:var(--muted); margin-bottom:8px; display:flex; align-items:center; gap:8px}
+    .value{
+      font-size: clamp(40px,7.2vw,68px); font-weight:900; line-height:1;
+      color:#15a0d6; letter-spacing:.4px;
+      background:linear-gradient(0deg,#fff 0 40%, var(--yellow) 40% 100%);
+      display:inline-block; padding:4px 8px; border-radius:10px;
+    }
+    .sub{font-size:13px; color:var(--muted); margin-top:8px}
+
+    .list{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:8px}
+    @media (max-width:700px){ .list{grid-template-columns:1fr} }
+    .row{display:flex; justify-content:space-between; align-items:center; border:1px solid var(--line); border-radius:12px; padding:10px 12px; background:#fff}
+    .row b{font-weight:800}
+
+    .error{color:#d64545; font-size:14px; display:none; margin-top:8px}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <h1>📊 Painel — Fila de Pacientes</h1>
-      <div class="hint">Selecione o <b>Posto</b> e o <b>Mês</b>. Os números são atualizados manualmente.</div>
-    </header>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-top">
+        <div class="brand">
+          <div class="logo">🦷</div>
+          <div>Prefeitura de Japeri • Saúde</div>
+        </div>
+        <!-- Se quiser imagem de topo, salve como banner.jpg e descomente a linha abaixo no CSS:
+             .hero { background: url('banner.jpg') center/cover no-repeat, linear-gradient(...); } -->
+      </div>
 
-    <div class="panel">
-      <!-- Filtros -->
+      <h1 class="hero-title">
+        <span class="eu">eu</span>
+        <span class="sou">sou</span>
+        <span class="a">a</span>
+      </h1>
+      <div class="hero-bar"><span>SAÚDE BUCAL</span></div>
+    </section>
+
+    <!-- PAINEL -->
+    <section class="panel">
       <div class="toolbar">
         <div>
           <label for="postoSelect">Posto</label>
@@ -57,270 +146,168 @@
           <label for="mesSelect">Mês</label>
           <select id="mesSelect"></select>
         </div>
-        <div style="align-self:end;display:flex;gap:8px">
+        <div style="align-self:end; display:flex; gap:8px">
           <button id="refreshBtn" title="Recarregar agora">Recarregar</button>
         </div>
       </div>
 
-      <!-- Contexto selecionado -->
-      <div class="footer" style="margin-top:0;margin-bottom:10px">
-        <div class="pill" id="pillPosto">Posto: —</div>
-        <div class="pill" id="pillMes">Mês: —</div>
-        <div class="pill" id="pillStamp">Atualizado: —</div>
+      <div class="chips">
+        <div class="chip" id="pillPosto">Posto: —</div>
+        <div class="chip" id="pillMes">Mês: —</div>
+        <div class="chip" id="pillStamp">Atualizado: —</div>
       </div>
 
-      <!-- Mês selecionado -->
       <div class="sectionTitle">Total do mês selecionado</div>
       <div class="grid">
         <div class="card">
           <div class="label">🕒 Em espera</div>
-          <div id="filaMes" class="value brand">—</div>
+          <div id="filaMes" class="value">—</div>
           <div id="filaMesObs" class="sub"></div>
         </div>
       </div>
 
-      <!-- Acumulados -->
       <div class="sectionTitle">Acumulados</div>
       <div class="grid">
         <div class="card">
           <div class="label">🏥 Em espera — Acumulado do posto (todos os meses)</div>
-          <div id="postoAcumFila" class="value brand">—</div>
+          <div id="postoAcumFila" class="value">—</div>
           <div id="postoAcumFilaObs" class="sub"></div>
         </div>
         <div class="card">
           <div class="label">🌎 Em espera — Acumulado geral (todos os postos + meses)</div>
-          <div id="geralAcumFila" class="value brand">—</div>
+          <div id="geralAcumFila" class="value">—</div>
           <div id="geralAcumFilaObs" class="sub"></div>
         </div>
       </div>
 
-      <!-- Resumo por posto -->
       <div class="sectionTitle">Resumo por posto (em espera — soma de todos os meses)</div>
       <div id="postoResumo" class="list"></div>
 
-      <!-- Mensagens -->
-      <div id="error" class="sub" style="margin-top:14px; color:#ef4444; display:none;"></div>
-      <div class="footer">
-        <div class="small">Auto-atualiza a cada 60s.</div>
-        <div class="small">Para mês combinado (ex.: Jul/agos), usamos a chave <code>YYYY-07-08</code>.</div>
-      </div>
-    </div>
+      <div id="error" class="error"></div>
+    </section>
   </div>
 
   <script>
-    const $ = sel => document.querySelector(sel);
-
-    // Elementos
-    const elErr = $('#error');
-    const elPosto = $('#postoSelect'), elMes = $('#mesSelect');
-    const elPillPosto = $('#pillPosto'), elPillMes = $('#pillMes'), elPillStamp = $('#pillStamp');
+    const $ = s => document.querySelector(s);
+    const elPosto = $('#postoSelect'), elMes = $('#mesSelect'), elBtn = $('#refreshBtn');
+    const elPPosto = $('#pillPosto'), elPMes = $('#pillMes'), elPStamp = $('#pillStamp');
     const elFilaMes = $('#filaMes'), elFilaMesObs = $('#filaMesObs');
-    const elPostoAcumFila = $('#postoAcumFila'), elPostoAcumFilaObs = $('#postoAcumFilaObs');
-    const elGeralAcumFila = $('#geralAcumFila'), elGeralAcumFilaObs = $('#geralAcumFilaObs');
-    const elResumo = $('#postoResumo');
-    const btn = $('#refreshBtn');
-
+    const elPostoAcum = $('#postoAcumFila'), elPostoAcumObs = $('#postoAcumFilaObs');
+    const elGeralAcum = $('#geralAcumFila'), elGeralAcumObs = $('#geralAcumFilaObs');
+    const elResumo = $('#postoResumo'), elErr = $('#error');
     let DATA = null;
 
-    // ---- Helpers de mês (suporta "YYYY-MM" e "YYYY-MM-MM") ----
-    function parseKeyRank(k){
-      // "2025-07-08" -> rank = 2025*12 + 7 + 0.5
+    // ------ helpers ------
+    function animate(el, to){
+      const from = Number(el.textContent.replace(/\D/g,'')) || 0;
+      const target = Number(to)||0; const diff = target - from; const steps = 16;
+      if(diff===0){ el.textContent=String(target); return; }
+      let i=0; const tick=()=>{ i++; el.textContent = String(Math.round(from + diff*(i/steps))); if(i<steps) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    }
+    const nomes = ["","jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+    function parseRank(k){
       const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
-      if(m){
-        const y = Number(m[1]), m1 = Number(m[2]), m2 = m[3] ? Number(m[3]) : null;
-        return y*12 + m1 + (m2 ? 0.5 : 0);
-      }
-      // fallback por nome (fev, mar, maio, junho, jul/agos, setembro)
-      const s = k.toLowerCase();
-      if(/fev|fevereiro/.test(s)) return 2;
-      if(/mar|març/.test(s)) return 3;
-      if(/mai|maio/.test(s)) return 5;
-      if(/jun/.test(s)) return 6;
-      if(/jul.*ago|jul\/agos|jul\/ago|jul-ago/.test(s)) return 7.5;
-      if(/ago|agost/.test(s)) return 8;
-      if(/set|setembro/.test(s)) return 9;
-      return 0; // desconhecido
+      if(m){ const y=+m[1], m1=+m[2], m2=m[3]?+m[3]:null; return y*12 + m1 + (m2?0.5:0); }
+      const s=k.toLowerCase();
+      if(/fev/.test(s))return 2; if(/mar/.test(s))return 3; if(/mai/.test(s))return 5;
+      if(/jun/.test(s))return 6; if(/jul.*ago|jul\/ago|jul-ago/.test(s))return 7.5;
+      if(/ago/.test(s))return 8; if(/set/.test(s))return 9; return 0;
     }
     function labelMes(k){
       const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
-      const nomes = ["","jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
-      if(m){
-        const y = m[1], m1 = Number(m[2]), m2 = m[3] ? Number(m[3]) : null;
-        if(m2) return `${nomes[m1]}+${nomes[m2]}/${y}`;
-        return `${nomes[m1]}/${y}`;
-      }
-      return k; // rótulo bruto
+      if(m){ const y=m[1], m1=+m[2], m2=m[3]?+m[3]:null; return m2?`${nomes[m1]}+${nomes[m2]}/${y}`:`${nomes[m1]}/${y}`; }
+      return k;
+    }
+    function stamp(iso){
+      try{ const d=new Date(iso); const two=n=>String(n).padStart(2,'0');
+        return `${two(d.getDate())}/${two(d.getMonth()+1)}/${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}`; }
+      catch{ return '—'; }
     }
 
-    function animateCounter(el, to){
-      const from = Number(el.textContent.replace(/\D/g,'')) || 0;
-      const target = Number(to) || 0;
-      const diff = target - from;
-      const steps = 16;
-      if (diff === 0){ el.textContent = String(target); return; }
-      let i = 0;
-      const tick = () => {
-        i++;
-        const val = Math.round(from + diff*(i/steps));
-        el.textContent = String(val);
-        if (i < steps) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    }
-
-    function getPostos(){
-      return Object.keys(DATA.postos || {}).sort((a,b)=>a.localeCompare(b,'pt'));
-    }
+    function getPostos(){ return Object.keys(DATA.postos||{}).sort((a,b)=>a.localeCompare(b,'pt')); }
     function getMeses(){
       const set = new Set();
       for(const p of Object.values(DATA.postos||{})) for(const k of Object.keys(p)) set.add(k);
-      const arr = Array.from(set);
-      // Ordena do mais recente para o mais antigo (rank desc)
-      arr.sort((a,b)=>parseKeyRank(b)-parseKeyRank(a));
-      return arr;
+      return [...set].sort((a,b)=>parseRank(b)-parseRank(a));
     }
+    function somaPostoMes(p,m){ return Number((DATA.postos?.[p]||{})[m]?.fila||0); }
+    function somaMes(m){ let t=0; for(const p of Object.keys(DATA.postos||{})) t+=somaPostoMes(p,m); return t; }
+    function somaPostoTodos(p){ let t=0; for(const k of Object.keys(DATA.postos?.[p]||{})) t+=Number(DATA.postos[p][k].fila||0); return t; }
+    function somaGeral(){ let t=0; for(const p of Object.keys(DATA.postos||{})) t+=somaPostoTodos(p); return t; }
 
-    function sumPostoMes(posto, ym){
-      const reg = (DATA.postos?.[posto] || {})[ym];
-      return Number(reg?.fila || 0);
-    }
-    function sumAllForMonth(ym){
-      let fila=0;
-      for(const p of Object.keys(DATA.postos||{})){
-        fila += sumPostoMes(p, ym);
-      }
-      return fila;
-    }
-    function sumPostoAllMonths(posto){
-      let fila=0;
-      const reg = DATA.postos?.[posto] || {};
-      for(const k of Object.keys(reg)) fila += Number(reg[k].fila || 0);
-      return fila;
-    }
-    function sumAllPostosAllMonths(){
-      let fila=0;
-      for(const p of Object.keys(DATA.postos||{})) fila += sumPostoAllMonths(p);
-      return fila;
-    }
-    function resumoPorPosto(){
-      const arr = [];
-      for(const p of Object.keys(DATA.postos||{})){
-        arr.push([p, sumPostoAllMonths(p)]);
-      }
-      // Ordena por total desc
-      arr.sort((a,b)=>b[1]-a[1]);
-      return arr;
-    }
-
-    function populateFilters(){
-      // Postos
-      elPosto.innerHTML = '';
-      const optAll = document.createElement('option');
-      optAll.value = '__ALL__'; optAll.textContent = 'Todos os postos';
-      elPosto.appendChild(optAll);
-      for(const p of getPostos()){
-        const o = document.createElement('option'); o.value = p; o.textContent = p; elPosto.appendChild(o);
-      }
-      // Meses
+    // ------ UI ------
+    function populaFiltros(){
+      elPosto.innerHTML='';
+      const optAll = document.createElement('option'); optAll.value='__ALL__'; optAll.textContent='Todos os postos'; elPosto.appendChild(optAll);
+      for(const p of getPostos()){ const o=document.createElement('option'); o.value=p; o.textContent=p; elPosto.appendChild(o); }
       elMes.innerHTML='';
-      for(const ym of getMeses()){
-        const o = document.createElement('option'); o.value = ym; o.textContent = labelMes(ym); elMes.appendChild(o);
-      }
-      // Defaults via hash
-      const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
-      const postoHash = hash.get('posto'); const mesHash = hash.get('mes');
-      elPosto.value = (postoHash && (postoHash==='__ALL__' || getPostos().includes(postoHash))) ? postoHash : '__ALL__';
-      elMes.value   = (mesHash && getMeses().includes(mesHash)) ? mesHash : (getMeses()[0] || '');
-      updatePills();
-    }
+      for(const m of getMeses()){ const o=document.createElement('option'); o.value=m; o.textContent=labelMes(m); elMes.appendChild(o); }
 
-    function updatePills(){
-      elPillPosto.textContent = 'Posto: ' + (elPosto.value==='__ALL__' ? 'Todos' : elPosto.value);
-      elPillMes.textContent   = 'Mês: ' + labelMes(elMes.value || '—');
-      elPillStamp.textContent = 'Atualizado: ' + (DATA?.atualizado_em ? formatStamp(DATA.atualizado_em) : '—');
-      const params = new URLSearchParams(); params.set('posto', elPosto.value); params.set('mes', elMes.value);
-      history.replaceState(null,'', '#'+params.toString());
+      const hash = new URLSearchParams(location.hash.replace(/^#/,''));
+      const hp = hash.get('posto'), hm = hash.get('mes');
+      elPosto.value = (hp && (hp==='__ALL__' || getPostos().includes(hp))) ? hp : '__ALL__';
+      elMes.value   = (hm && getMeses().includes(hm)) ? hm : (getMeses()[0]||'');
+      atualizaChips();
     }
-
-    function formatStamp(iso){
-      try{
-        const d = new Date(iso);
-        const two = n => String(n).padStart(2,'0');
-        return `${two(d.getDate())}/${two(d.getMonth()+1)}/${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}`;
-      }catch{ return '—'; }
+    function atualizaChips(){
+      elPPosto.textContent = 'Posto: ' + (elPosto.value==='__ALL__'?'Todos':elPosto.value);
+      elPMes.textContent   = 'Mês: ' + labelMes(elMes.value||'—');
+      elPStamp.textContent = 'Atualizado: ' + (DATA?.atualizado_em?stamp(DATA.atualizado_em):'—');
+      const p = new URLSearchParams(); p.set('posto', elPosto.value); p.set('mes', elMes.value);
+      history.replaceState(null,'','#'+p.toString());
     }
 
     function render(){
       elErr.style.display='none';
-      const posto = elPosto.value;
-      const ym = elMes.value;
-      if(!ym){
-        elErr.textContent = 'Nenhum mês encontrado no data.json.'; elErr.style.display='block';
-        ['filaMes','postoAcumFila','geralAcumFila'].forEach(id => { const e = document.getElementById(id); if(e) e.textContent='0'; });
-        elResumo.innerHTML='';
-        return;
-      }
+      const posto = elPosto.value, mes = elMes.value;
+      if(!mes){ elErr.textContent='Nenhum mês encontrado no data.json.'; elErr.style.display='block'; return; }
 
-      // Total do mês
-      let filaMes = 0, obsMes = '';
-      if(posto === '__ALL__'){
-        filaMes = sumAllForMonth(ym);
-        obsMes = 'Soma de todos os postos no mês selecionado.';
+      // total do mês
+      let totalMes = (posto==='__ALL__') ? somaMes(mes) : somaPostoMes(posto, mes);
+      animate(elFilaMes, totalMes);
+      elFilaMesObs.textContent = (posto==='__ALL__') ? 'Soma de todos os postos no mês selecionado.' : 'Total do posto no mês selecionado.';
+
+      // acumulado do posto
+      if(posto==='__ALL__'){
+        elPostoAcum.textContent = '—';
+        elPostoAcumObs.textContent = 'Selecione um posto específico para ver o acumulado.';
       }else{
-        filaMes = sumPostoMes(posto, ym);
-        obsMes = 'Total do posto no mês selecionado.';
-      }
-      animateCounter(elFilaMes, filaMes);
-      elFilaMesObs.textContent = obsMes;
-
-      // Acumulado do posto
-      if(posto === '__ALL__'){
-        elPostoAcumFila.textContent = '—';
-        elPostoAcumFilaObs.textContent = 'Selecione um posto específico para ver o acumulado.';
-      }else{
-        const sp = sumPostoAllMonths(posto);
-        animateCounter(elPostoAcumFila, sp);
-        elPostoAcumFilaObs.textContent = 'Soma de todos os meses do posto selecionado.';
+        const a = somaPostoTodos(posto);
+        animate(elPostoAcum, a);
+        elPostoAcumObs.textContent = 'Soma de todos os meses do posto selecionado.';
       }
 
-      // Acumulado geral
-      const sg = sumAllPostosAllMonths();
-      animateCounter(elGeralAcumFila, sg);
-      elGeralAcumFilaObs.textContent = 'Soma de todos os postos em todos os meses.';
+      // acumulado geral
+      const g = somaGeral();
+      animate(elGeralAcum, g);
+      elGeralAcumObs.textContent = 'Soma de todos os postos em todos os meses.';
 
-      // Resumo por posto
-      const list = resumoPorPosto();
-      elResumo.innerHTML = '';
-      for(const [name,total] of list){
-        const row = document.createElement('div');
-        row.className = 'row';
-        row.innerHTML = `<b>${name}</b><span>${total}</span>`;
+      // resumo por posto
+      const arr = Object.keys(DATA.postos||{}).map(p=>[p, somaPostoTodos(p)]).sort((a,b)=>b[1]-a[1]);
+      elResumo.innerHTML='';
+      for(const [name,total] of arr){
+        const row=document.createElement('div'); row.className='row'; row.innerHTML=`<b>${name}</b><span>${total}</span>`;
         elResumo.appendChild(row);
       }
     }
 
     async function loadData(){
-      elErr.style.display='none';
       try{
         const res = await fetch(`data.json?cb=${Date.now()}`);
         if(!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = await res.text();
-        try{
-          DATA = JSON.parse(text);
-        }catch(parseErr){
-          throw new Error('JSON inválido: ' + (parseErr?.message || 'erro ao interpretar'));
-        }
-        populateFilters();
-        render();
+        const txt = await res.text();
+        try{ DATA = JSON.parse(txt); } catch(e){ throw new Error('JSON inválido: '+e.message); }
+        populaFiltros(); render();
       }catch(e){
-        elErr.textContent = 'Não foi possível carregar os dados. Verifique se o data.json está no mesmo diretório. Detalhe: ' + e.message;
+        elErr.textContent = 'Não foi possível carregar os dados. Verifique se o data.json está no mesmo diretório. Detalhe: '+e.message;
         elErr.style.display='block';
       }
     }
 
-    elPosto.addEventListener('change', ()=>{ updatePills(); render(); });
-    elMes.addEventListener('change',   ()=>{ updatePills(); render(); });
-    btn.addEventListener('click', loadData);
+    elPosto.addEventListener('change', ()=>{ atualizaChips(); render(); });
+    elMes.addEventListener('change',   ()=>{ atualizaChips(); render(); });
+    elBtn.addEventListener('click', loadData);
 
     loadData();
     setInterval(loadData, 60000);
