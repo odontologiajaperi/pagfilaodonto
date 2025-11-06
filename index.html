@@ -53,17 +53,34 @@
     .row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
     .row b{font-weight:800}
     .error{color:#d64545;font-size:14px;display:none;margin-top:8px}
+    /* Logo centralizada no hero */
+    .hero-logo{
+      display:block;
+      width:min(90%, 460px);
+      max-width:460px;
+      height:auto;
+      margin: 6px auto 0;
+    }
+
   </style>
 </head>
 <body>
   <div class="wrap">
     <section class="hero">
-      <div class="hero-top">
-        <div class="brand"><div class="logo">🦷</div><div>Prefeitura de Japeri • Saúde</div></div>
-      </div>
-      <h1 class="hero-title"><span class="eu">eu</span><span class="sou">sou</span><span class="a">a</span></h1>
-      <div class="hero-bar"><span>SAÚDE BUCAL</span></div>
-    </section>
+  <div class="hero-top">
+    <div class="brand">
+      <div class="logo">🦷</div>
+      <div>Prefeitura de Japeri • Saúde</div>
+    </div>
+  </div>
+
+  <img
+    src="brasil-sorridente-logo.png"
+    alt="Brasil Sorridente — Saúde Bucal no SUS"
+    class="hero-logo"
+  />
+</section>
+
 
     <section class="panel">
       <div class="toolbar">
