@@ -2,13 +2,13 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <title>Fila de Pacientes — Painel</title>
+  <title>Painel — Fila de Pacientes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark light" />
   <style>
     :root{
       --bg:#0b1220; --panel:#0f172a; --card:#111827; --line:#1f2937;
-      --fg:#e5e7eb; --muted:#9aa4b2; --brand:#60a5fa; --ok:#10b981; --warn:#f59e0b;
+      --fg:#e5e7eb; --muted:#9aa4b2; --brand:#60a5fa; --ok:#10b981;
     }
     *{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
     body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Inter,Arial}
@@ -26,22 +26,24 @@
     .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
     .label{font-size:14px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:8px}
     .value{font-size:clamp(44px,8vw,72px);font-weight:900;line-height:1}
-    .value.ok{color:var(--ok)}
     .value.brand{color:var(--brand)}
     .sub{font-size:14px;color:var(--muted);margin-top:10px}
     .footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;color:var(--muted);font-size:14px;gap:10px;flex-wrap:wrap}
     .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:#0c1323}
-    .err{color:#ef4444}
     .hint{font-size:13px;color:var(--muted)}
     .small{font-size:13px}
     .sectionTitle{margin:18px 2px 8px;font-size:15px;color:var(--muted);font-weight:700;letter-spacing:.3px}
+    .list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+    @media (max-width:640px){ .list{grid-template-columns:1fr} }
+    .row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#0c1323}
+    .row b{font-weight:700}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <h1>📊 Painel — Fila de Pacientes</h1>
-      <div class="hint">Selecione o <b>Posto</b> e o <b>Mês</b> para ver os totais.</div>
+      <div class="hint">Selecione o <b>Posto</b> e o <b>Mês</b>. Os números são atualizados manualmente.</div>
     </header>
 
     <div class="panel">
@@ -68,50 +70,39 @@
       </div>
 
       <!-- Mês selecionado -->
-      <div class="sectionTitle">Totais do mês selecionado</div>
+      <div class="sectionTitle">Total do mês selecionado</div>
       <div class="grid">
         <div class="card">
-          <div class="label">🕒 Fila de espera</div>
-          <div id="fila" class="value brand">—</div>
-          <div id="filaObs" class="sub"></div>
-        </div>
-        <div class="card">
-          <div class="label">📅 Agendados</div>
-          <div id="agendados" class="value ok">—</div>
-          <div id="agObs" class="sub"></div>
+          <div class="label">🕒 Em espera</div>
+          <div id="filaMes" class="value brand">—</div>
+          <div id="filaMesObs" class="sub"></div>
         </div>
       </div>
 
       <!-- Acumulados -->
       <div class="sectionTitle">Acumulados</div>
-      <div class="grid" id="gridAcum">
+      <div class="grid">
         <div class="card">
-          <div class="label">🏥 Fila — Acumulado do posto (todos os meses)</div>
+          <div class="label">🏥 Em espera — Acumulado do posto (todos os meses)</div>
           <div id="postoAcumFila" class="value brand">—</div>
           <div id="postoAcumFilaObs" class="sub"></div>
         </div>
         <div class="card">
-          <div class="label">🏥 Agendados — Acumulado do posto (todos os meses)</div>
-          <div id="postoAcumAg" class="value ok">—</div>
-          <div id="postoAcumAgObs" class="sub"></div>
-        </div>
-        <div class="card">
-          <div class="label">🌎 Fila — Acumulado geral (todos os postos + meses)</div>
+          <div class="label">🌎 Em espera — Acumulado geral (todos os postos + meses)</div>
           <div id="geralAcumFila" class="value brand">—</div>
           <div id="geralAcumFilaObs" class="sub"></div>
         </div>
-        <div class="card">
-          <div class="label">🌎 Agendados — Acumulado geral (todos os postos + meses)</div>
-          <div id="geralAcumAg" class="value ok">—</div>
-          <div id="geralAcumAgObs" class="sub"></div>
-        </div>
       </div>
 
+      <!-- Resumo por posto -->
+      <div class="sectionTitle">Resumo por posto (em espera — soma de todos os meses)</div>
+      <div id="postoResumo" class="list"></div>
+
       <!-- Mensagens -->
-      <div id="error" class="sub err" style="margin-top:14px; display:none;"></div>
+      <div id="error" class="sub" style="margin-top:14px; color:#ef4444; display:none;"></div>
       <div class="footer">
         <div class="small">Auto-atualiza a cada 60s.</div>
-        <div class="small">Dica: para inserir dados de um mês novo, adicione a chave <code>YYYY-MM</code> no <code>data.json</code>.</div>
+        <div class="small">Para mês combinado (ex.: Jul/agos), usamos a chave <code>YYYY-07-08</code>.</div>
       </div>
     </div>
   </div>
@@ -120,34 +111,46 @@
     const $ = sel => document.querySelector(sel);
 
     // Elementos
-    const elFila = $('#fila'), elAg = $('#agendados');
-    const elFilaObs = $('#filaObs'), elAgObs = $('#agObs');
     const elErr = $('#error');
     const elPosto = $('#postoSelect'), elMes = $('#mesSelect');
     const elPillPosto = $('#pillPosto'), elPillMes = $('#pillMes'), elPillStamp = $('#pillStamp');
+    const elFilaMes = $('#filaMes'), elFilaMesObs = $('#filaMesObs');
+    const elPostoAcumFila = $('#postoAcumFila'), elPostoAcumFilaObs = $('#postoAcumFilaObs');
+    const elGeralAcumFila = $('#geralAcumFila'), elGeralAcumFilaObs = $('#geralAcumFilaObs');
+    const elResumo = $('#postoResumo');
     const btn = $('#refreshBtn');
-
-    // Acumulados
-    const elPostoAcumFila = $('#postoAcumFila');
-    const elPostoAcumAg   = $('#postoAcumAg');
-    const elGeralAcumFila = $('#geralAcumFila');
-    const elGeralAcumAg   = $('#geralAcumAg');
-    const elPostoAcumFilaObs = $('#postoAcumFilaObs');
-    const elPostoAcumAgObs   = $('#postoAcumAgObs');
-    const elGeralAcumFilaObs = $('#geralAcumFilaObs');
-    const elGeralAcumAgObs   = $('#geralAcumAgObs');
 
     let DATA = null;
 
-    const ptMes = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
-    const fmtStamp = iso => {
-      try{
-        const d = new Date(iso);
-        const two = n => String(n).padStart(2,'0');
-        return `${two(d.getDate())}/${two(d.getMonth()+1)}/${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}`;
-      }catch{ return '—'; }
-    };
-    const labelMes = ym => /^\d{4}-\d{2}$/.test(ym) ? `${ptMes[Number(ym.slice(5,7))-1]}/${ym.slice(0,4)}` : ym;
+    // ---- Helpers de mês (suporta "YYYY-MM" e "YYYY-MM-MM") ----
+    function parseKeyRank(k){
+      // "2025-07-08" -> rank = 2025*12 + 7 + 0.5
+      const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
+      if(m){
+        const y = Number(m[1]), m1 = Number(m[2]), m2 = m[3] ? Number(m[3]) : null;
+        return y*12 + m1 + (m2 ? 0.5 : 0);
+      }
+      // fallback por nome (fev, mar, maio, junho, jul/agos, setembro)
+      const s = k.toLowerCase();
+      if(/fev|fevereiro/.test(s)) return 2;
+      if(/mar|març/.test(s)) return 3;
+      if(/mai|maio/.test(s)) return 5;
+      if(/jun/.test(s)) return 6;
+      if(/jul.*ago|jul\/agos|jul\/ago|jul-ago/.test(s)) return 7.5;
+      if(/ago|agost/.test(s)) return 8;
+      if(/set|setembro/.test(s)) return 9;
+      return 0; // desconhecido
+    }
+    function labelMes(k){
+      const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
+      const nomes = ["","jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+      if(m){
+        const y = m[1], m1 = Number(m[2]), m2 = m[3] ? Number(m[3]) : null;
+        if(m2) return `${nomes[m1]}+${nomes[m2]}/${y}`;
+        return `${nomes[m1]}/${y}`;
+      }
+      return k; // rótulo bruto
+    }
 
     function animateCounter(el, to){
       const from = Number(el.textContent.replace(/\D/g,'')) || 0;
@@ -165,38 +168,52 @@
       requestAnimationFrame(tick);
     }
 
-    function getPostos(){ return Object.keys(DATA.postos || {}).sort((a,b)=>a.localeCompare(b,'pt')); }
+    function getPostos(){
+      return Object.keys(DATA.postos || {}).sort((a,b)=>a.localeCompare(b,'pt'));
+    }
     function getMeses(){
       const set = new Set();
       for(const p of Object.values(DATA.postos||{})) for(const k of Object.keys(p)) set.add(k);
-      return Array.from(set).sort().reverse();
+      const arr = Array.from(set);
+      // Ordena do mais recente para o mais antigo (rank desc)
+      arr.sort((a,b)=>parseKeyRank(b)-parseKeyRank(a));
+      return arr;
+    }
+
+    function sumPostoMes(posto, ym){
+      const reg = (DATA.postos?.[posto] || {})[ym];
+      return Number(reg?.fila || 0);
     }
     function sumAllForMonth(ym){
-      let fila=0, ag=0;
-      for(const p of Object.values(DATA.postos||{})){
-        if(p[ym]){ fila += Number(p[ym].fila||0); ag += Number(p[ym].agendados||0); }
+      let fila=0;
+      for(const p of Object.keys(DATA.postos||{})){
+        fila += sumPostoMes(p, ym);
       }
-      return {fila, agendados: ag};
+      return fila;
     }
     function sumPostoAllMonths(posto){
-      let fila=0, ag=0;
+      let fila=0;
       const reg = DATA.postos?.[posto] || {};
-      for(const k of Object.keys(reg)){
-        fila += Number(reg[k].fila||0);
-        ag   += Number(reg[k].agendados||0);
-      }
-      return {fila, agendados: ag};
+      for(const k of Object.keys(reg)) fila += Number(reg[k].fila || 0);
+      return fila;
     }
     function sumAllPostosAllMonths(){
-      let fila=0, ag=0;
-      for(const posto of Object.keys(DATA.postos||{})){
-        const s = sumPostoAllMonths(posto);
-        fila += s.fila; ag += s.agendados;
+      let fila=0;
+      for(const p of Object.keys(DATA.postos||{})) fila += sumPostoAllMonths(p);
+      return fila;
+    }
+    function resumoPorPosto(){
+      const arr = [];
+      for(const p of Object.keys(DATA.postos||{})){
+        arr.push([p, sumPostoAllMonths(p)]);
       }
-      return {fila, agendados: ag};
+      // Ordena por total desc
+      arr.sort((a,b)=>b[1]-a[1]);
+      return arr;
     }
 
     function populateFilters(){
+      // Postos
       elPosto.innerHTML = '';
       const optAll = document.createElement('option');
       optAll.value = '__ALL__'; optAll.textContent = 'Todos os postos';
@@ -204,23 +221,33 @@
       for(const p of getPostos()){
         const o = document.createElement('option'); o.value = p; o.textContent = p; elPosto.appendChild(o);
       }
+      // Meses
       elMes.innerHTML='';
       for(const ym of getMeses()){
         const o = document.createElement('option'); o.value = ym; o.textContent = labelMes(ym); elMes.appendChild(o);
       }
+      // Defaults via hash
       const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
       const postoHash = hash.get('posto'); const mesHash = hash.get('mes');
       elPosto.value = (postoHash && (postoHash==='__ALL__' || getPostos().includes(postoHash))) ? postoHash : '__ALL__';
-      elMes.value = (mesHash && getMeses().includes(mesHash)) ? mesHash : (getMeses()[0] || '');
+      elMes.value   = (mesHash && getMeses().includes(mesHash)) ? mesHash : (getMeses()[0] || '');
       updatePills();
     }
 
     function updatePills(){
       elPillPosto.textContent = 'Posto: ' + (elPosto.value==='__ALL__' ? 'Todos' : elPosto.value);
-      elPillMes.textContent = 'Mês: ' + labelMes(elMes.value || '—');
-      elPillStamp.textContent = 'Atualizado: ' + fmtStamp(DATA.atualizado_em || new Date().toISOString());
+      elPillMes.textContent   = 'Mês: ' + labelMes(elMes.value || '—');
+      elPillStamp.textContent = 'Atualizado: ' + (DATA?.atualizado_em ? formatStamp(DATA.atualizado_em) : '—');
       const params = new URLSearchParams(); params.set('posto', elPosto.value); params.set('mes', elMes.value);
       history.replaceState(null,'', '#'+params.toString());
+    }
+
+    function formatStamp(iso){
+      try{
+        const d = new Date(iso);
+        const two = n => String(n).padStart(2,'0');
+        return `${two(d.getDate())}/${two(d.getMonth()+1)}/${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}`;
+      }catch{ return '—'; }
     }
 
     function render(){
@@ -229,52 +256,47 @@
       const ym = elMes.value;
       if(!ym){
         elErr.textContent = 'Nenhum mês encontrado no data.json.'; elErr.style.display='block';
-        ['fila','agendados','postoAcumFila','postoAcumAg','geralAcumFila','geralAcumAg'].forEach(id => { const e = document.getElementById(id); if(e) e.textContent='0'; });
+        ['filaMes','postoAcumFila','geralAcumFila'].forEach(id => { const e = document.getElementById(id); if(e) e.textContent='0'; });
+        elResumo.innerHTML='';
         return;
       }
 
-      // Mês selecionado
-      let filaMes=0, agMes=0, obsFila='', obsAg='';
+      // Total do mês
+      let filaMes = 0, obsMes = '';
       if(posto === '__ALL__'){
-        const tot = sumAllForMonth(ym);
-        filaMes = tot.fila; agMes = tot.agendados;
-        obsFila = 'Soma de todos os postos no mês selecionado.';
-        obsAg   = 'Soma de todos os postos no mês selecionado.';
+        filaMes = sumAllForMonth(ym);
+        obsMes = 'Soma de todos os postos no mês selecionado.';
       }else{
-        const reg = (DATA.postos?.[posto] || {})[ym];
-        if(!reg){
-          filaMes = 0; agMes = 0;
-          obsFila = 'Sem dados para este mês no posto selecionado.';
-          obsAg   = 'Sem dados para este mês no posto selecionado.';
-        }else{
-          filaMes = Number(reg.fila||0); agMes = Number(reg.agendados||0);
-          obsFila = 'Totais do posto no mês selecionado.';
-          obsAg   = 'Totais do posto no mês selecionado.';
-        }
+        filaMes = sumPostoMes(posto, ym);
+        obsMes = 'Total do posto no mês selecionado.';
       }
-      animateCounter(elFila, filaMes); elFilaObs.textContent = obsFila;
-      animateCounter(elAg, agMes);     elAgObs.textContent   = obsAg;
+      animateCounter(elFilaMes, filaMes);
+      elFilaMesObs.textContent = obsMes;
 
-      // Acumulado do posto (todos meses)
+      // Acumulado do posto
       if(posto === '__ALL__'){
         elPostoAcumFila.textContent = '—';
-        elPostoAcumAg.textContent   = '—';
         elPostoAcumFilaObs.textContent = 'Selecione um posto específico para ver o acumulado.';
-        elPostoAcumAgObs.textContent   = 'Selecione um posto específico para ver o acumulado.';
       }else{
         const sp = sumPostoAllMonths(posto);
-        animateCounter(elPostoAcumFila, sp.fila);
-        animateCounter(elPostoAcumAg,   sp.agendados);
+        animateCounter(elPostoAcumFila, sp);
         elPostoAcumFilaObs.textContent = 'Soma de todos os meses do posto selecionado.';
-        elPostoAcumAgObs.textContent   = 'Soma de todos os meses do posto selecionado.';
       }
 
-      // Acumulado geral (todos postos + meses)
+      // Acumulado geral
       const sg = sumAllPostosAllMonths();
-      animateCounter(elGeralAcumFila, sg.fila);
-      animateCounter(elGeralAcumAg,   sg.agendados);
+      animateCounter(elGeralAcumFila, sg);
       elGeralAcumFilaObs.textContent = 'Soma de todos os postos em todos os meses.';
-      elGeralAcumAgObs.textContent   = 'Soma de todos os postos em todos os meses.';
+
+      // Resumo por posto
+      const list = resumoPorPosto();
+      elResumo.innerHTML = '';
+      for(const [name,total] of list){
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.innerHTML = `<b>${name}</b><span>${total}</span>`;
+        elResumo.appendChild(row);
+      }
     }
 
     async function loadData(){
@@ -286,7 +308,7 @@
         try{
           DATA = JSON.parse(text);
         }catch(parseErr){
-          throw new Error('JSON inválido: ' + (parseErr?.message || 'erro ao parsear'));
+          throw new Error('JSON inválido: ' + (parseErr?.message || 'erro ao interpretar'));
         }
         populateFilters();
         render();
