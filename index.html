@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Fila de Pacientes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light">
+  <style>
+    :root{
+      --bg:#0b1220; --panel:#0f172a; --card:#111827; --line:#1f2937;
+      --fg:#e5e7eb; --muted:#9aa4b2; --brand:#60a5fa; --ok:#10b981;
+    }
+    *{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Inter,Arial}
+    .wrap{max-width:900px;margin:0 auto;padding:24px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}
+    h1{font-size:clamp(20px,3.5vw,28px);margin:0;font-weight:700;letter-spacing:.2px}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid var(--line); border-radius:20px; padding:20px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    @media (max-width:640px){ .grid{grid-template-columns:1fr} }
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+    .label{font-size:14px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .value{font-size:clamp(40px,8vw,72px);font-weight:800;line-height:1}
+    .value.ok{color:var(--ok)}
+    .value.brand{color:var(--brand)}
+    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:var(--muted);font-size:14px}
+    button{appearance:none;border:1px solid var(--line);background:#0c1323;color:var(--fg);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600}
+    button:hover{border-color:#324155}
+    .muted{color:var(--muted)}
+    .err{color:#ef4444}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>📊 Painel — Fila de Pacientes</h1>
+      <div>
+        <button id="refreshBtn" title="Recarregar agora">Recarregar</button>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div class="grid">
+        <div class="card">
+          <div class="label">🕒 Em espera (fila)</div>
+          <div id="fila" class="value brand">—</div>
+        </div>
+        <div class="card">
+          <div class="label">📅 Agendados</div>
+          <div id="agendados" class="value ok">—</div>
+        </div>
+      </div>
+      <div class="footer">
+        <div id="stamp" class="muted">Carregando…</div>
+        <div class="muted">Atualiza sozinho a cada 60s</div>
+      </div>
+      <div id="error" class="muted err" style="margin-top:10px; display:none;"></div>
+    </div>
+  </div>
+
+  <script>
+    const elFila = document.getElementById('fila');
+    const elAg = document.getElementById('agendados');
+    const elStamp = document.getElementById('stamp');
+    const elErr = document.getElementById('error');
+    const btn = document.getElementById('refreshBtn');
+
+    function formatStamp(iso){
+      try{
+        const d = new Date(iso);
+        const two = n => String(n).padStart(2,'0');
+        const dia = two(d.getDate());
+        const mes = two(d.getMonth()+1);
+        const ano = d.getFullYear();
+        const hh = two(d.getHours()), mm = two(d.getMinutes());
+        return `${dia}/${mes}/${ano} ${hh}:${mm}`;
+      }catch{ return '—'; }
+    }
+
+    function animateCounter(el, to){
+      const from = Number(el.textContent.replace(/\D/g,'')) || 0;
+      const target = Number(to) || 0;
+      const diff = target - from;
+      const steps = 20;
+      const dur = 400;
+      let i = 0;
+      if (diff === 0){ el.textContent = String(target); return; }
+      const tick = () => {
+        i++;
+        const val = Math.round(from + diff*(i/steps));
+        el.textContent = String(val);
+        if (i < steps) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+
+    async function loadData(){
+      elErr.style.display='none';
+      try{
+        // Adiciona um cache-buster para evitar cache agressivo do Pages/CDN
+        const res = await fetch(`data.json?cb=${Date.now()}`);
+        if(!res.ok) throw new Error('Erro ao buscar data.json');
+        const data = await res.json();
+        animateCounter(elFila, data.fila ?? 0);
+        animateCounter(elAg, data.agendados ?? 0);
+        elStamp.textContent = `Atualizado em ${formatStamp(data.atualizado_em || new Date().toISOString())}`;
+      }catch(e){
+        elErr.textContent = 'Não foi possível carregar os dados. Tente recarregar.';
+        elErr.style.display='block';
+      }
+    }
+
+    btn.addEventListener('click', loadData);
+    loadData();
+    setInterval(loadData, 60000); // 60s
+  </script>
+</body>
+</html>
