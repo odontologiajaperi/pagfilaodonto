@@ -34,6 +34,7 @@
     .err{color:#ef4444}
     .hint{font-size:13px;color:var(--muted)}
     .small{font-size:13px}
+    .sectionTitle{margin:18px 2px 8px;font-size:15px;color:var(--muted);font-weight:700;letter-spacing:.3px}
   </style>
 </head>
 <body>
@@ -66,17 +67,43 @@
         <div class="pill" id="pillStamp">Atualizado: —</div>
       </div>
 
-      <!-- Cards -->
+      <!-- Mês selecionado -->
+      <div class="sectionTitle">Totais do mês selecionado</div>
       <div class="grid">
         <div class="card">
-          <div class="label">🕒 Fila de espera (total do mês)</div>
+          <div class="label">🕒 Fila de espera</div>
           <div id="fila" class="value brand">—</div>
           <div id="filaObs" class="sub"></div>
         </div>
         <div class="card">
-          <div class="label">📅 Agendados (total do mês)</div>
+          <div class="label">📅 Agendados</div>
           <div id="agendados" class="value ok">—</div>
           <div id="agObs" class="sub"></div>
+        </div>
+      </div>
+
+      <!-- Acumulados -->
+      <div class="sectionTitle">Acumulados</div>
+      <div class="grid" id="gridAcum">
+        <div class="card">
+          <div class="label">🏥 Fila — Acumulado do posto (todos os meses)</div>
+          <div id="postoAcumFila" class="value brand">—</div>
+          <div id="postoAcumFilaObs" class="sub"></div>
+        </div>
+        <div class="card">
+          <div class="label">🏥 Agendados — Acumulado do posto (todos os meses)</div>
+          <div id="postoAcumAg" class="value ok">—</div>
+          <div id="postoAcumAgObs" class="sub"></div>
+        </div>
+        <div class="card">
+          <div class="label">🌎 Fila — Acumulado geral (todos os postos + meses)</div>
+          <div id="geralAcumFila" class="value brand">—</div>
+          <div id="geralAcumFilaObs" class="sub"></div>
+        </div>
+        <div class="card">
+          <div class="label">🌎 Agendados — Acumulado geral (todos os postos + meses)</div>
+          <div id="geralAcumAg" class="value ok">—</div>
+          <div id="geralAcumAgObs" class="sub"></div>
         </div>
       </div>
 
@@ -90,19 +117,25 @@
   </div>
 
   <script>
-    // -------- Helpers UI --------
     const $ = sel => document.querySelector(sel);
-    const elFila = $('#fila');
-    const elAg = $('#agendados');
-    const elFilaObs = $('#filaObs');
-    const elAgObs = $('#agObs');
+
+    // Elementos
+    const elFila = $('#fila'), elAg = $('#agendados');
+    const elFilaObs = $('#filaObs'), elAgObs = $('#agObs');
     const elErr = $('#error');
-    const elPosto = $('#postoSelect');
-    const elMes = $('#mesSelect');
-    const elPillPosto = $('#pillPosto');
-    const elPillMes = $('#pillMes');
-    const elPillStamp = $('#pillStamp');
+    const elPosto = $('#postoSelect'), elMes = $('#mesSelect');
+    const elPillPosto = $('#pillPosto'), elPillMes = $('#pillMes'), elPillStamp = $('#pillStamp');
     const btn = $('#refreshBtn');
+
+    // Acumulados
+    const elPostoAcumFila = $('#postoAcumFila');
+    const elPostoAcumAg   = $('#postoAcumAg');
+    const elGeralAcumFila = $('#geralAcumFila');
+    const elGeralAcumAg   = $('#geralAcumAg');
+    const elPostoAcumFilaObs = $('#postoAcumFilaObs');
+    const elPostoAcumAgObs   = $('#postoAcumAgObs');
+    const elGeralAcumFilaObs = $('#geralAcumFilaObs');
+    const elGeralAcumAgObs   = $('#geralAcumAgObs');
 
     let DATA = null;
 
@@ -114,11 +147,7 @@
         return `${two(d.getDate())}/${two(d.getMonth()+1)}/${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}`;
       }catch{ return '—'; }
     };
-    const labelMes = ym => {
-      if(!/^\d{4}-\d{2}$/.test(ym)) return ym;
-      const [y,m] = ym.split('-').map(Number);
-      return `${ptMes[(m-1)%12]}/${y}`;
-    };
+    const labelMes = ym => /^\d{4}-\d{2}$/.test(ym) ? `${ptMes[Number(ym.slice(5,7))-1]}/${ym.slice(0,4)}` : ym;
 
     function animateCounter(el, to){
       const from = Number(el.textContent.replace(/\D/g,'')) || 0;
@@ -136,57 +165,53 @@
       requestAnimationFrame(tick);
     }
 
-    function getPostos(){
-      return Object.keys(DATA.postos || {}).sort((a,b)=>a.localeCompare(b,'pt'));
-    }
+    function getPostos(){ return Object.keys(DATA.postos || {}).sort((a,b)=>a.localeCompare(b,'pt')); }
     function getMeses(){
-      // União de todos os meses existentes em todos os postos
       const set = new Set();
-      for(const p of Object.values(DATA.postos||{})){
-        for(const k of Object.keys(p)) set.add(k);
-      }
-      // Ordena desc (YYYY-MM ordena lexicalmente ok)
+      for(const p of Object.values(DATA.postos||{})) for(const k of Object.keys(p)) set.add(k);
       return Array.from(set).sort().reverse();
     }
     function sumAllForMonth(ym){
       let fila=0, ag=0;
       for(const p of Object.values(DATA.postos||{})){
-        if(p[ym]){
-          fila += Number(p[ym].fila||0);
-          ag   += Number(p[ym].agendados||0);
-        }
+        if(p[ym]){ fila += Number(p[ym].fila||0); ag += Number(p[ym].agendados||0); }
+      }
+      return {fila, agendados: ag};
+    }
+    function sumPostoAllMonths(posto){
+      let fila=0, ag=0;
+      const reg = DATA.postos?.[posto] || {};
+      for(const k of Object.keys(reg)){
+        fila += Number(reg[k].fila||0);
+        ag   += Number(reg[k].agendados||0);
+      }
+      return {fila, agendados: ag};
+    }
+    function sumAllPostosAllMonths(){
+      let fila=0, ag=0;
+      for(const posto of Object.keys(DATA.postos||{})){
+        const s = sumPostoAllMonths(posto);
+        fila += s.fila; ag += s.agendados;
       }
       return {fila, agendados: ag};
     }
 
     function populateFilters(){
-      // Postos
       elPosto.innerHTML = '';
       const optAll = document.createElement('option');
-      optAll.value = '__ALL__';
-      optAll.textContent = 'Todos os postos';
+      optAll.value = '__ALL__'; optAll.textContent = 'Todos os postos';
       elPosto.appendChild(optAll);
       for(const p of getPostos()){
-        const o = document.createElement('option');
-        o.value = p; o.textContent = p;
-        elPosto.appendChild(o);
+        const o = document.createElement('option'); o.value = p; o.textContent = p; elPosto.appendChild(o);
       }
-      // Meses
       elMes.innerHTML='';
       for(const ym of getMeses()){
-        const o = document.createElement('option');
-        o.value = ym; o.textContent = labelMes(ym);
-        elMes.appendChild(o);
+        const o = document.createElement('option'); o.value = ym; o.textContent = labelMes(ym); elMes.appendChild(o);
       }
-      // Defaults: se houver hash, usa. Senão, mês mais recente e "Todos"
       const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
-      const postoHash = hash.get('posto');
-      const mesHash = hash.get('mes');
-      if(postoHash && (postoHash==='__ALL__' || getPostos().includes(postoHash))) elPosto.value = postoHash;
-      else elPosto.value = '__ALL__';
-
-      if(mesHash && getMeses().includes(mesHash)) elMes.value = mesHash;
-      else elMes.value = getMeses()[0] || '';
+      const postoHash = hash.get('posto'); const mesHash = hash.get('mes');
+      elPosto.value = (postoHash && (postoHash==='__ALL__' || getPostos().includes(postoHash))) ? postoHash : '__ALL__';
+      elMes.value = (mesHash && getMeses().includes(mesHash)) ? mesHash : (getMeses()[0] || '');
       updatePills();
     }
 
@@ -194,10 +219,7 @@
       elPillPosto.textContent = 'Posto: ' + (elPosto.value==='__ALL__' ? 'Todos' : elPosto.value);
       elPillMes.textContent = 'Mês: ' + labelMes(elMes.value || '—');
       elPillStamp.textContent = 'Atualizado: ' + fmtStamp(DATA.atualizado_em || new Date().toISOString());
-      // Atualiza hash para compartilhar link do filtro atual
-      const params = new URLSearchParams();
-      params.set('posto', elPosto.value);
-      params.set('mes', elMes.value);
+      const params = new URLSearchParams(); params.set('posto', elPosto.value); params.set('mes', elMes.value);
       history.replaceState(null,'', '#'+params.toString());
     }
 
@@ -205,64 +227,81 @@
       elErr.style.display='none';
       const posto = elPosto.value;
       const ym = elMes.value;
-      let fila = 0, ag = 0;
-      let obsFila = '', obsAg = '';
-
       if(!ym){
-        elErr.textContent = 'Nenhum mês encontrado no data.json.';
-        elErr.style.display='block';
-        elFila.textContent = '0';
-        elAg.textContent = '0';
+        elErr.textContent = 'Nenhum mês encontrado no data.json.'; elErr.style.display='block';
+        ['fila','agendados','postoAcumFila','postoAcumAg','geralAcumFila','geralAcumAg'].forEach(id => { const e = document.getElementById(id); if(e) e.textContent='0'; });
         return;
       }
 
+      // Mês selecionado
+      let filaMes=0, agMes=0, obsFila='', obsAg='';
       if(posto === '__ALL__'){
         const tot = sumAllForMonth(ym);
-        fila = tot.fila; ag = tot.agendados;
-        // Observações
+        filaMes = tot.fila; agMes = tot.agendados;
         obsFila = 'Soma de todos os postos no mês selecionado.';
         obsAg   = 'Soma de todos os postos no mês selecionado.';
       }else{
         const reg = (DATA.postos?.[posto] || {})[ym];
         if(!reg){
-          fila = 0; ag = 0;
+          filaMes = 0; agMes = 0;
           obsFila = 'Sem dados para este mês no posto selecionado.';
           obsAg   = 'Sem dados para este mês no posto selecionado.';
         }else{
-          fila = Number(reg.fila||0);
-          ag   = Number(reg.agendados||0);
+          filaMes = Number(reg.fila||0); agMes = Number(reg.agendados||0);
           obsFila = 'Totais do posto no mês selecionado.';
           obsAg   = 'Totais do posto no mês selecionado.';
         }
       }
+      animateCounter(elFila, filaMes); elFilaObs.textContent = obsFila;
+      animateCounter(elAg, agMes);     elAgObs.textContent   = obsAg;
 
-      animateCounter(elFila, fila);
-      animateCounter(elAg, ag);
-      elFilaObs.textContent = obsFila;
-      elAgObs.textContent = obsAg;
+      // Acumulado do posto (todos meses)
+      if(posto === '__ALL__'){
+        elPostoAcumFila.textContent = '—';
+        elPostoAcumAg.textContent   = '—';
+        elPostoAcumFilaObs.textContent = 'Selecione um posto específico para ver o acumulado.';
+        elPostoAcumAgObs.textContent   = 'Selecione um posto específico para ver o acumulado.';
+      }else{
+        const sp = sumPostoAllMonths(posto);
+        animateCounter(elPostoAcumFila, sp.fila);
+        animateCounter(elPostoAcumAg,   sp.agendados);
+        elPostoAcumFilaObs.textContent = 'Soma de todos os meses do posto selecionado.';
+        elPostoAcumAgObs.textContent   = 'Soma de todos os meses do posto selecionado.';
+      }
+
+      // Acumulado geral (todos postos + meses)
+      const sg = sumAllPostosAllMonths();
+      animateCounter(elGeralAcumFila, sg.fila);
+      animateCounter(elGeralAcumAg,   sg.agendados);
+      elGeralAcumFilaObs.textContent = 'Soma de todos os postos em todos os meses.';
+      elGeralAcumAgObs.textContent   = 'Soma de todos os postos em todos os meses.';
     }
 
     async function loadData(){
+      elErr.style.display='none';
       try{
         const res = await fetch(`data.json?cb=${Date.now()}`);
-        if(!res.ok) throw new Error('Erro ao buscar data.json');
-        DATA = await res.json();
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        try{
+          DATA = JSON.parse(text);
+        }catch(parseErr){
+          throw new Error('JSON inválido: ' + (parseErr?.message || 'erro ao parsear'));
+        }
         populateFilters();
         render();
       }catch(e){
-        elErr.textContent = 'Não foi possível carregar os dados. Verifique se o data.json está no mesmo diretório.';
+        elErr.textContent = 'Não foi possível carregar os dados. Verifique se o data.json está no mesmo diretório. Detalhe: ' + e.message;
         elErr.style.display='block';
       }
     }
 
-    // Eventos
-    elPosto?.addEventListener('change', ()=>{ updatePills(); render(); });
-    elMes?.addEventListener('change',   ()=>{ updatePills(); render(); });
-    btn?.addEventListener('click', loadData);
+    elPosto.addEventListener('change', ()=>{ updatePills(); render(); });
+    elMes.addEventListener('change',   ()=>{ updatePills(); render(); });
+    btn.addEventListener('click', loadData);
 
-    // Boot
     loadData();
-    setInterval(loadData, 60000); // 60s
+    setInterval(loadData, 60000);
   </script>
 </body>
 </html>
