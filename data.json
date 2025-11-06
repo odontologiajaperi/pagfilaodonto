@@ -2,7 +2,7 @@
   "atualizado_em": "2025-11-06T08:30:00-03:00",
   "agendados_total": 2317,
   "postos": {
-    "Maraba": {
+    "Marabá": {
       "2025-02": { "fila": 33 },
       "2025-03": { "fila": 142 },
       "2025-05": { "fila": 159 },
@@ -30,13 +30,13 @@
     "Chacrinha": {
       "2025-09": { "fila": 47 }
     },
-    "Unidade Odontologica movel do Rio d'oruo": {
+    "Unidade Odontológica movel do Rio d'ouro": {
       "2025-09": { "fila": 28 }
     },
-    "Unidade Odontologica movel do laranjal": {
+    "Unidade Odontológica movel do laranjal": {
       "2025-09": { "fila": 34 }
     },
-    "Unidade Odontologica movel do marajuara": {
+    "Unidade Odontológica movel do marajóara": {
       "2025-09": { "fila": 42 }
     }
   }
