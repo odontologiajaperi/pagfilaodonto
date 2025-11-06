@@ -5,150 +5,71 @@
   <title>Painel — Fila de Pacientes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light">
-  <!-- Fonte amigável -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Inter:wght@500;600;800&display=swap" rel="stylesheet">
-
   <style>
     :root{
-      /* Paleta inspirada no seu layout */
-      --bg:#EAF5FF;           /* azul bem claro do fundo */
-      --panel:#FFFFFF;        /* painéis brancos */
-      --line:#DDEAF7;         /* borda suave */
-      --fg:#1B304A;           /* texto principal */
-      --muted:#6B87A4;        /* texto secundário */
-      --brand-blue:#3BB3FF;   /* “eu” */
-      --brand-green:#6CDC64;  /* “sou” */
-      --yellow:#FFF070;       /* faixa “SAÚDE BUCAL” */
-      --chip:#F3FAFF;         /* pílulas info */
-      --accent:#0F8BD6;       /* detalhes */
+      --bg:#EAF5FF; --panel:#FFFFFF; --line:#DDEAF7; --fg:#1B304A; --muted:#6B87A4;
+      --brand-blue:#3BB3FF; --brand-green:#6CDC64; --yellow:#FFF070; --chip:#F3FAFF; --accent:#0F8BD6;
     }
     *{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
     body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial}
     .wrap{max-width:1060px;margin:0 auto;padding:20px}
+    .hero{position:relative;border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,#F7FBFF 0%,#F0F8FF 100%);padding:28px 20px 24px;overflow:hidden}
+    .hero::after{content:"";position:absolute;inset:-20px -10px auto auto;width:360px;height:360px;opacity:.08;background:
+      radial-gradient(circle at 20% 30%, #2aa7ea 10px, transparent 11px),
+      radial-gradient(circle at 60% 20%, #6ddc5c 8px, transparent 9px),
+      radial-gradient(circle at 75% 55%, #2aa7ea 7px, transparent 8px),
+      radial-gradient(circle at 40% 70%, #6ddc5c 12px, transparent 13px);
+      filter: blur(2px);pointer-events:none}
+    .hero-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--accent)}
+    .brand .logo{width:38px;height:38px;border-radius:10px;background:#D7F2FF;border:1px solid var(--line);display:grid;place-items:center;font-size:18px}
+    .hero-title{margin:8px 0 0;line-height:1.05;font-family:"Baloo 2",system-ui,sans-serif;display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
+    .hero-title .eu{color:var(--brand-blue);font-size:clamp(36px,6.2vw,64px);font-weight:800;transform:rotate(-2deg)}
+    .hero-title .sou{color:var(--brand-green);font-size:clamp(36px,6.2vw,64px);font-weight:800;transform:rotate(2deg)}
+    .hero-title .a{color:var(--muted);font-size:clamp(18px,2.8vw,28px);margin-left:2px;transform:translateY(-4px)}
+    .hero-bar{display:inline-block;margin-top:8px;padding:8px 14px;background:var(--yellow);border-radius:10px;box-shadow:0 4px 0 rgba(0,0,0,.04);transform:rotate(-1deg)}
+    .hero-bar span{display:inline-block;font-weight:900;letter-spacing:.6px;color:#15a0d6;font-size:clamp(18px,3.6vw,28px)}
 
-    /* HERO */
-    .hero{
-      position:relative;
-      border:1px solid var(--line);
-      border-radius:24px;
-      background:linear-gradient(180deg, #F7FBFF 0%, #F0F8FF 100%);
-      padding:28px 20px 24px;
-      overflow:hidden;
-    }
-    .hero::after{
-      /* um “doodle” suave com circles */
-      content:"";
-      position:absolute; inset:-20px -10px auto auto; width:360px; height:360px; opacity:.08;
-      background:
-        radial-gradient(circle at 20% 30%, #2aa7ea 10px, transparent 11px),
-        radial-gradient(circle at 60% 20%, #6ddc5c 8px, transparent 9px),
-        radial-gradient(circle at 75% 55%, #2aa7ea 7px, transparent 8px),
-        radial-gradient(circle at 40% 70%, #6ddc5c 12px, transparent 13px);
-      filter: blur(2px);
-      pointer-events:none;
-    }
-    .hero-top{
-      display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px;
-    }
-    .brand{
-      display:flex; align-items:center; gap:10px; font-weight:700; color:var(--accent);
-    }
-    .brand .logo{
-      width:38px; height:38px; border-radius:10px; background:#D7F2FF; border:1px solid var(--line);
-      display:grid; place-items:center; font-size:18px;
-    }
-    .hero-title{
-      margin:8px 0 0; line-height:1.05; font-family:"Baloo 2", system-ui, sans-serif;
-      display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap;
-    }
-    .hero-title .eu{ color:var(--brand-blue); font-size: clamp(36px,6.2vw,64px); font-weight:800; transform: rotate(-2deg); }
-    .hero-title .sou{ color:var(--brand-green); font-size: clamp(36px,6.2vw,64px); font-weight:800; transform: rotate(2deg); }
-    .hero-title .a{ color:var(--muted); font-size: clamp(18px,2.8vw,28px); margin-left:2px; transform: translateY(-4px); }
-    .hero-bar{
-      display:inline-block; margin-top:8px; padding:8px 14px;
-      background:var(--yellow); border-radius:10px;
-      box-shadow:0 4px 0 rgba(0,0,0,.04);
-      transform: rotate(-1deg);
-    }
-    .hero-bar span{
-      display:inline-block; font-weight:900; letter-spacing:.6px;
-      color:#15a0d6; font-size: clamp(18px,3.6vw,28px);
-    }
+    .panel{margin-top:16px;border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:16px}
+    .toolbar{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;margin-bottom:10px}
+    @media (max-width:700px){.toolbar{grid-template-columns:1fr}}
+    label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block}
+    select,button{width:100%;appearance:none;border:1px solid var(--line);background:#fff;color:var(--fg);padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:600}
+    select:focus,button:hover{outline:none;border-color:#cfe3f7}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 2px 14px}
+    .chip{background:var(--chip);border:1px solid var(--line);color:var(--muted);padding:6px 10px;border-radius:999px;font-size:13px}
 
-    /* PAINEL */
-    .panel{
-      margin-top:16px; border:1px solid var(--line); background:var(--panel); border-radius:20px; padding:16px;
-    }
-    .toolbar{display:grid; grid-template-columns:1fr 1fr auto; gap:12px; margin-bottom:10px}
-    @media (max-width:700px){ .toolbar{grid-template-columns:1fr} }
-    label{font-size:12px; color:var(--muted); margin-bottom:6px; display:block}
-    select,button{
-      width:100%; appearance:none; border:1px solid var(--line); background:#fff;
-      color:var(--fg); padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:600
-    }
-    select:focus,button:hover{outline:none; border-color:#cfe3f7}
-    .chips{display:flex; flex-wrap:wrap; gap:8px; margin:4px 2px 14px}
-    .chip{background:var(--chip); border:1px solid var(--line); color:var(--muted); padding:6px 10px; border-radius:999px; font-size:13px}
-
-    .sectionTitle{margin:14px 2px 10px; font-size:14px; color:var(--muted); font-weight:800; letter-spacing:.3px}
-    .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px}
-    @media (max-width:700px){ .grid{grid-template-columns:1fr} }
-
-    .card{border:1px solid var(--line); background:#fff; border-radius:16px; padding:16px}
-    .label{font-size:14px; color:var(--muted); margin-bottom:8px; display:flex; align-items:center; gap:8px}
-    .value{
-      font-size: clamp(40px,7.2vw,68px); font-weight:900; line-height:1;
-      color:#15a0d6; letter-spacing:.4px;
-      background:linear-gradient(0deg,#fff 0 40%, var(--yellow) 40% 100%);
-      display:inline-block; padding:4px 8px; border-radius:10px;
-    }
-    .sub{font-size:13px; color:var(--muted); margin-top:8px}
-
-    .list{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:8px}
-    @media (max-width:700px){ .list{grid-template-columns:1fr} }
-    .row{display:flex; justify-content:space-between; align-items:center; border:1px solid var(--line); border-radius:12px; padding:10px 12px; background:#fff}
+    .sectionTitle{margin:14px 2px 10px;font-size:14px;color:var(--muted);font-weight:800;letter-spacing:.3px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    @media (max-width:700px){.grid{grid-template-columns:1fr}}
+    .card{border:1px solid var(--line);background:#fff;border-radius:16px;padding:16px}
+    .label{font-size:14px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .value{font-size:clamp(40px,7.2vw,68px);font-weight:900;line-height:1;color:#15a0d6;letter-spacing:.4px;background:linear-gradient(0deg,#fff 0 40%, var(--yellow) 40% 100%);display:inline-block;padding:4px 8px;border-radius:10px}
+    .sub{font-size:13px;color:var(--muted);margin-top:8px}
+    .list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+    @media (max-width:700px){.list{grid-template-columns:1fr}}
+    .row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
     .row b{font-weight:800}
-
-    .error{color:#d64545; font-size:14px; display:none; margin-top:8px}
+    .error{color:#d64545;font-size:14px;display:none;margin-top:8px}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <!-- HERO -->
     <section class="hero">
       <div class="hero-top">
-        <div class="brand">
-          <div class="logo">🦷</div>
-          <div>Prefeitura de Japeri • Saúde</div>
-        </div>
-        <!-- Se quiser imagem de topo, salve como banner.jpg e descomente a linha abaixo no CSS:
-             .hero { background: url('banner.jpg') center/cover no-repeat, linear-gradient(...); } -->
+        <div class="brand"><div class="logo">🦷</div><div>Prefeitura de Japeri • Saúde</div></div>
       </div>
-
-      <h1 class="hero-title">
-        <span class="eu">eu</span>
-        <span class="sou">sou</span>
-        <span class="a">a</span>
-      </h1>
+      <h1 class="hero-title"><span class="eu">eu</span><span class="sou">sou</span><span class="a">a</span></h1>
       <div class="hero-bar"><span>SAÚDE BUCAL</span></div>
     </section>
 
-    <!-- PAINEL -->
     <section class="panel">
       <div class="toolbar">
-        <div>
-          <label for="postoSelect">Posto</label>
-          <select id="postoSelect"></select>
-        </div>
-        <div>
-          <label for="mesSelect">Mês</label>
-          <select id="mesSelect"></select>
-        </div>
-        <div style="align-self:end; display:flex; gap:8px">
-          <button id="refreshBtn" title="Recarregar agora">Recarregar</button>
-        </div>
+        <div><label for="postoSelect">Posto</label><select id="postoSelect"></select></div>
+        <div><label for="mesSelect">Mês</label><select id="mesSelect"></select></div>
+        <div style="align-self:end;display:flex;gap:8px"><button id="refreshBtn">Recarregar</button></div>
       </div>
 
       <div class="chips">
@@ -163,6 +84,11 @@
           <div class="label">🕒 Em espera</div>
           <div id="filaMes" class="value">—</div>
           <div id="filaMesObs" class="sub"></div>
+        </div>
+        <div class="card">
+          <div class="label">📅 Agendados (total fixo)</div>
+          <div id="agTotal" class="value">—</div>
+          <div class="sub">Não muda com filtros. Edite em <code>agendados_total</code>.</div>
         </div>
       </div>
 
@@ -189,128 +115,89 @@
 
   <script>
     const $ = s => document.querySelector(s);
-    const elPosto = $('#postoSelect'), elMes = $('#mesSelect'), elBtn = $('#refreshBtn');
-    const elPPosto = $('#pillPosto'), elPMes = $('#pillMes'), elPStamp = $('#pillStamp');
-    const elFilaMes = $('#filaMes'), elFilaMesObs = $('#filaMesObs');
-    const elPostoAcum = $('#postoAcumFila'), elPostoAcumObs = $('#postoAcumFilaObs');
-    const elGeralAcum = $('#geralAcumFila'), elGeralAcumObs = $('#geralAcumFilaObs');
-    const elResumo = $('#postoResumo'), elErr = $('#error');
-    let DATA = null;
+    const elPosto=$('#postoSelect'), elMes=$('#mesSelect'), elBtn=$('#refreshBtn');
+    const elPPosto=$('#pillPosto'), elPMes=$('#pillMes'), elPStamp=$('#pillStamp');
+    const elFilaMes=$('#filaMes'), elFilaMesObs=$('#filaMesObs');
+    const elAgTotal=$('#agTotal');
+    const elPostoAcum=$('#postoAcumFila'), elPostoAcumObs=$('#postoAcumFilaObs');
+    const elGeralAcum=$('#geralAcumFila'), elGeralAcumObs=$('#geralAcumFilaObs');
+    const elResumo=$('#postoResumo'), elErr=$('#error');
+    let DATA=null;
 
-    // ------ helpers ------
-    function animate(el, to){
-      const from = Number(el.textContent.replace(/\D/g,'')) || 0;
-      const target = Number(to)||0; const diff = target - from; const steps = 16;
-      if(diff===0){ el.textContent=String(target); return; }
-      let i=0; const tick=()=>{ i++; el.textContent = String(Math.round(from + diff*(i/steps))); if(i<steps) requestAnimationFrame(tick); };
-      requestAnimationFrame(tick);
-    }
-    const nomes = ["","jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+    // helpers
+    const nomes=["","jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
     function parseRank(k){
-      const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
+      const m=/^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
       if(m){ const y=+m[1], m1=+m[2], m2=m[3]?+m[3]:null; return y*12 + m1 + (m2?0.5:0); }
-      const s=k.toLowerCase();
-      if(/fev/.test(s))return 2; if(/mar/.test(s))return 3; if(/mai/.test(s))return 5;
-      if(/jun/.test(s))return 6; if(/jul.*ago|jul\/ago|jul-ago/.test(s))return 7.5;
-      if(/ago/.test(s))return 8; if(/set/.test(s))return 9; return 0;
+      const s=k.toLowerCase(); if(/fev/.test(s))return 2; if(/mar/.test(s))return 3; if(/mai/.test(s))return 5;
+      if(/jun/.test(s))return 6; if(/jul.*ago|jul\/ago|jul-ago/.test(s))return 7.5; if(/ago/.test(s))return 8; if(/set/.test(s))return 9; return 0;
     }
     function labelMes(k){
-      const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
+      const m=/^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
       if(m){ const y=m[1], m1=+m[2], m2=m[3]?+m[3]:null; return m2?`${nomes[m1]}+${nomes[m2]}/${y}`:`${nomes[m1]}/${y}`; }
       return k;
     }
-    function stamp(iso){
-      try{ const d=new Date(iso); const two=n=>String(n).padStart(2,'0');
-        return `${two(d.getDate())}/${two(d.getMonth()+1)}/${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}`; }
-      catch{ return '—'; }
-    }
+    function stamp(iso){ try{ const d=new Date(iso); const two=n=>String(n).padStart(2,'0'); return `${two(d.getDate())}/${two(d.getMonth()+1)}/${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}`;}catch{return'—'} }
+    function animate(el,to){ const from=Number(el.textContent.replace(/\D/g,''))||0; const target=Number(to)||0; const diff=target-from; const steps=16; if(diff===0){el.textContent=String(target);return;} let i=0; const tick=()=>{i++; el.textContent=String(Math.round(from+diff*(i/steps))); if(i<steps) requestAnimationFrame(tick);}; requestAnimationFrame(tick); }
 
     function getPostos(){ return Object.keys(DATA.postos||{}).sort((a,b)=>a.localeCompare(b,'pt')); }
     function getMeses(){
-      const set = new Set();
+      const set=new Set();
       for(const p of Object.values(DATA.postos||{})) for(const k of Object.keys(p)) set.add(k);
       return [...set].sort((a,b)=>parseRank(b)-parseRank(a));
     }
     function somaPostoMes(p,m){ return Number((DATA.postos?.[p]||{})[m]?.fila||0); }
-    function somaMes(m){ let t=0; for(const p of Object.keys(DATA.postos||{})) t+=somaPostoMes(p,m); return t; }
+    function somaMesFila(m){ let t=0; for(const p of Object.keys(DATA.postos||{})) t+=somaPostoMes(p,m); return t; }
     function somaPostoTodos(p){ let t=0; for(const k of Object.keys(DATA.postos?.[p]||{})) t+=Number(DATA.postos[p][k].fila||0); return t; }
-    function somaGeral(){ let t=0; for(const p of Object.keys(DATA.postos||{})) t+=somaPostoTodos(p); return t; }
+    function somaGeralFila(){ let t=0; for(const p of Object.keys(DATA.postos||{})) t+=somaPostoTodos(p); return t; }
 
-    // ------ UI ------
     function populaFiltros(){
-      elPosto.innerHTML='';
-      const optAll = document.createElement('option'); optAll.value='__ALL__'; optAll.textContent='Todos os postos'; elPosto.appendChild(optAll);
+      elPosto.innerHTML=''; const optAll=document.createElement('option'); optAll.value='__ALL__'; optAll.textContent='Todos os postos'; elPosto.appendChild(optAll);
       for(const p of getPostos()){ const o=document.createElement('option'); o.value=p; o.textContent=p; elPosto.appendChild(o); }
-      elMes.innerHTML='';
-      for(const m of getMeses()){ const o=document.createElement('option'); o.value=m; o.textContent=labelMes(m); elMes.appendChild(o); }
-
-      const hash = new URLSearchParams(location.hash.replace(/^#/,''));
-      const hp = hash.get('posto'), hm = hash.get('mes');
-      elPosto.value = (hp && (hp==='__ALL__' || getPostos().includes(hp))) ? hp : '__ALL__';
-      elMes.value   = (hm && getMeses().includes(hm)) ? hm : (getMeses()[0]||'');
+      elMes.innerHTML=''; for(const m of getMeses()){ const o=document.createElement('option'); o.value=m; o.textContent=labelMes(m); elMes.appendChild(o); }
+      const hash=new URLSearchParams(location.hash.replace(/^#/,'')); const hp=hash.get('posto'), hm=hash.get('mes');
+      elPosto.value=(hp && (hp==='__ALL__' || getPostos().includes(hp)))?hp:'__ALL__';
+      elMes.value=(hm && getMeses().includes(hm))?hm:(getMeses()[0]||'');
       atualizaChips();
     }
     function atualizaChips(){
-      elPPosto.textContent = 'Posto: ' + (elPosto.value==='__ALL__'?'Todos':elPosto.value);
-      elPMes.textContent   = 'Mês: ' + labelMes(elMes.value||'—');
-      elPStamp.textContent = 'Atualizado: ' + (DATA?.atualizado_em?stamp(DATA.atualizado_em):'—');
-      const p = new URLSearchParams(); p.set('posto', elPosto.value); p.set('mes', elMes.value);
-      history.replaceState(null,'','#'+p.toString());
+      elPPosto.textContent='Posto: '+(elPosto.value==='__ALL__'?'Todos':elPosto.value);
+      elPMes.textContent='Mês: '+labelMes(elMes.value||'—');
+      elPStamp.textContent='Atualizado: '+(DATA?.atualizado_em?stamp(DATA.atualizado_em):'—');
+      const p=new URLSearchParams(); p.set('posto',elPosto.value); p.set('mes',elMes.value); history.replaceState(null,'','#'+p.toString());
     }
 
     function render(){
       elErr.style.display='none';
-      const posto = elPosto.value, mes = elMes.value;
-      if(!mes){ elErr.textContent='Nenhum mês encontrado no data.json.'; elErr.style.display='block'; return; }
-
-      // total do mês
-      let totalMes = (posto==='__ALL__') ? somaMes(mes) : somaPostoMes(posto, mes);
-      animate(elFilaMes, totalMes);
+      const posto=elPosto.value, mes=elMes.value;
+      if(!mes){ elErr.textContent='Nenhum mês encontrado no data.json.'; elErr.style.display='block'; }
+      // Em espera (mês)
+      const filaMes = (posto==='__ALL__') ? somaMesFila(mes) : somaPostoMes(posto, mes);
+      animate(elFilaMes, filaMes);
       elFilaMesObs.textContent = (posto==='__ALL__') ? 'Soma de todos os postos no mês selecionado.' : 'Total do posto no mês selecionado.';
-
-      // acumulado do posto
-      if(posto==='__ALL__'){
-        elPostoAcum.textContent = '—';
-        elPostoAcumObs.textContent = 'Selecione um posto específico para ver o acumulado.';
-      }else{
-        const a = somaPostoTodos(posto);
-        animate(elPostoAcum, a);
-        elPostoAcumObs.textContent = 'Soma de todos os meses do posto selecionado.';
-      }
-
-      // acumulado geral
-      const g = somaGeral();
-      animate(elGeralAcum, g);
-      elGeralAcumObs.textContent = 'Soma de todos os postos em todos os meses.';
-
-      // resumo por posto
-      const arr = Object.keys(DATA.postos||{}).map(p=>[p, somaPostoTodos(p)]).sort((a,b)=>b[1]-a[1]);
-      elResumo.innerHTML='';
-      for(const [name,total] of arr){
-        const row=document.createElement('div'); row.className='row'; row.innerHTML=`<b>${name}</b><span>${total}</span>`;
-        elResumo.appendChild(row);
-      }
+      // Agendados total (fixo)
+      animate(elAgTotal, Number(DATA.agendados_total||0));
+      // Acumulado do posto
+      if(posto==='__ALL__'){ elPostoAcum.textContent='—'; elPostoAcumObs.textContent='Selecione um posto específico para ver o acumulado.'; }
+      else { const a=somaPostoTodos(posto); animate(elPostoAcum,a); elPostoAcumObs.textContent='Soma de todos os meses do posto selecionado.'; }
+      // Acumulado geral
+      const g=somaGeralFila(); animate(elGeralAcum,g); elGeralAcumObs.textContent='Soma de todos os postos em todos os meses.';
+      // Resumo por posto
+      const arr=Object.keys(DATA.postos||{}).map(p=>[p,somaPostoTodos(p)]).sort((a,b)=>b[1]-a[1]);
+      elResumo.innerHTML=''; for(const [name,total] of arr){ const row=document.createElement('div'); row.className='row'; row.innerHTML=`<b>${name}</b><span>${total}</span>`; elResumo.appendChild(row); }
     }
 
     async function loadData(){
       try{
-        const res = await fetch(`data.json?cb=${Date.now()}`);
-        if(!res.ok) throw new Error(`HTTP ${res.status}`);
-        const txt = await res.text();
-        try{ DATA = JSON.parse(txt); } catch(e){ throw new Error('JSON inválido: '+e.message); }
+        const res=await fetch(`data.json?cb=${Date.now()}`); if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const txt=await res.text(); try{ DATA=JSON.parse(txt); }catch(e){ throw new Error('JSON inválido: '+e.message); }
         populaFiltros(); render();
-      }catch(e){
-        elErr.textContent = 'Não foi possível carregar os dados. Verifique se o data.json está no mesmo diretório. Detalhe: '+e.message;
-        elErr.style.display='block';
-      }
+      }catch(e){ elErr.textContent='Não foi possível carregar os dados. Verifique se o data.json está no mesmo diretório. Detalhe: '+e.message; elErr.style.display='block'; }
     }
-
     elPosto.addEventListener('change', ()=>{ atualizaChips(); render(); });
     elMes.addEventListener('change',   ()=>{ atualizaChips(); render(); });
     elBtn.addEventListener('click', loadData);
-
-    loadData();
-    setInterval(loadData, 60000);
+    loadData(); setInterval(loadData, 60000);
   </script>
 </body>
 </html>
