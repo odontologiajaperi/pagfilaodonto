@@ -9,119 +9,39 @@
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Inter:wght@500;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#EAF5FF;
-      --panel:#FFFFFF;
-      --line:#DDEAF7;
-      --fg:#1B304A;
-      --muted:#6B87A4;
-      --brand-blue:#0F8BD6;
-      --yellow:#FFF070;
-      --chip:#F3FAFF;
-      --big1:#15a0d6;
-      --big2:#1DC56F;
+      --bg:#EAF5FF; --panel:#FFFFFF; --line:#DDEAF7; --fg:#1B304A; --muted:#6B87A4;
+      --brand-blue:#0F8BD6; --yellow:#FFF070; --chip:#F3FAFF;
+      --big1:#15a0d6; --big2:#1DC56F;
     }
     *{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
     body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial}
     .wrap{max-width:1060px;margin:0 auto;padding:20px}
 
     /* HERO */
-    .hero{
-      position:relative;
-      border:1px solid var(--line);
-      border-radius:24px;
-      background:linear-gradient(180deg,#F7FBFF 0%,#F0F8FF 100%);
-      padding:18px 20px 14px;
-      overflow:hidden;
-      margin-bottom:14px;
-    }
-    .hero-top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .hero-brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
-    }
-    .hero-brand img{
-      height:56px;
-      width:auto;
-      object-fit:contain;
-    }
-    .hero-title-text{
-      font-size:14px;
-      color:var(--muted);
-    }
+    .hero{position:relative;border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,#F7FBFF 0%,#F0F8FF 100%);padding:18px 20px 14px;overflow:hidden;margin-bottom:14px}
+    .hero-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .hero-brand{display:flex;align-items:center;gap:14px}
+    .hero-brand img{height:56px;width:auto;object-fit:contain}
+    .hero-title-text{font-size:14px;color:var(--muted)}
+    .hero-logo{display:block;width:min(90%, 460px);max-width:460px;height:auto;margin:10px auto 0}
 
     /* PAINEL */
-    .panel{
-      border:1px solid var(--line);
-      background:var(--panel);
-      border-radius:20px;
-      padding:16px;
-      margin-bottom:16px;
-    }
+    .panel{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:16px;margin-bottom:16px}
 
-    /* TOP METRICS (os 2 GRANDES) */
-    .top-metrics{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:14px;
-      margin-bottom:16px;
-    }
-    @media (max-width:700px){
-      .top-metrics{grid-template-columns:1fr}
-    }
-    .bigcard{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:16px 18px;
-      min-height:140px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      box-shadow:0 6px 10px rgba(0,0,0,.02);
-    }
-    .bigcard-title{
-      font-size:13px;
-      color:var(--muted);
-      margin-bottom:10px;
-      display:flex;
-      gap:6px;
-      align-items:center;
-    }
-    .big-number{
-      font-size: clamp(48px,8vw,80px);
-      font-weight:900;
-      line-height:1;
-      display:inline-block;
-    }
-    .big1{color:var(--big1);}
-    .big2{color:var(--big2);}
-    .bigcard-foot{
-      font-size:13px;
-      color:var(--muted);
-      margin-top:6px;
-    }
+    /* TOP METRICS */
+    .top-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+    @media (max-width:700px){.top-metrics{grid-template-columns:1fr}}
+    .bigcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px;min-height:140px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 10px rgba(0,0,0,.02)}
+    .bigcard-title{font-size:13px;color:var(--muted);margin-bottom:10px;display:flex;gap:6px;align-items:center}
+    .big-number{font-size:clamp(48px,8vw,80px);font-weight:900;line-height:1;display:inline-block}
+    .big1{color:var(--big1)} .big2{color:var(--big2)}
+    .bigcard-foot{font-size:13px;color:var(--muted);margin-top:6px}
 
-    /* TOOLBAR (filtros) */
+    /* TOOLBAR */
     .toolbar{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;margin-bottom:10px}
     @media (max-width:700px){.toolbar{grid-template-columns:1fr}}
     label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block}
-    select,button{
-      width:100%;
-      appearance:none;
-      border:1px solid var(--line);
-      background:#fff;
-      color:var(--fg);
-      padding:10px 12px;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:600
-    }
+    select,button{width:100%;appearance:none;border:1px solid var(--line);background:#fff;color:var(--fg);padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:600}
     select:focus,button:hover{outline:none;border-color:#cfe3f7}
 
     .chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 2px 14px}
@@ -142,34 +62,25 @@
     .row b{font-weight:800}
 
     /* rodapé */
-    footer{
-      margin-top:14px;
-      padding:16px 0 6px;
-      text-align:center;
-      color:var(--muted);
-      font-size:13px;
-    }
-    footer img{
-      height:46px;
-      width:auto;
-      display:block;
-      margin:0 auto 8px;
-    }
+    footer{margin-top:14px;padding:16px 0 6px;text-align:center;color:var(--muted);font-size:13px}
+    footer img{height:46px;width:auto;display:block;margin:0 auto 8px}
 
     .error{color:#d64545;font-size:14px;display:none;margin-top:8px}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <!-- HERO COM LOGO DA PREFEITURA -->
+    <!-- HERO: marca Japeri + Brasil Sorridente -->
     <section class="hero">
       <div class="hero-top">
         <div class="hero-brand">
-          <!-- coloque o nome correto do arquivo aqui -->
-          <img src="logo-japeri.png" alt="Prefeitura de Japeri">
+          <!-- >>> AQUI troquei para o nome correto do arquivo: japeri-logo.png <<< -->
+          <img src="japeri-logo.png" alt="Prefeitura de Japeri">
           <div class="hero-title-text">Saúde Bucal • Painel de Acompanhamento</div>
         </div>
       </div>
+      <!-- Logo Brasil Sorridente centralizada -->
+      <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente — Saúde Bucal no SUS" class="hero-logo">
     </section>
 
     <!-- PAINEL -->
@@ -184,7 +95,7 @@
         <div class="bigcard">
           <div class="bigcard-title">📅 Agendados (total)</div>
           <div id="agTotal" class="big-number big2">—</div>
-          <div class="bigcard-foot">Número total de pacientes que já estão agendados.</div>
+          <div class="bigcard-foot">Total de pacientes com agendamento.</div>
         </div>
       </div>
 
@@ -233,7 +144,8 @@
 
     <!-- RODAPÉ COM LOGO -->
     <footer>
-      <img src="logo-japeri.png" alt="Prefeitura de Japeri">
+      <!-- >>> E aqui também corrigi para japeri-logo.png <<< -->
+      <img src="japeri-logo.png" alt="Prefeitura de Japeri">
       Painel interno de acompanhamento da Saúde Bucal — Prefeitura de Japeri
     </footer>
   </div>
@@ -256,14 +168,9 @@
       const m=/^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
       if(m){const y=+m[1], m1=+m[2], m2=m[3]?+m[3]:null;return y*12+m1+(m2?0.5:0);}
       const s=k.toLowerCase();
-      if(/fev/.test(s))return 2;
-      if(/mar/.test(s))return 3;
-      if(/mai/.test(s))return 5;
-      if(/jun/.test(s))return 6;
-      if(/jul.*ago|jul\/ago|jul-ago/.test(s))return 7.5;
-      if(/ago/.test(s))return 8;
-      if(/set/.test(s))return 9;
-      return 0;
+      if(/fev/.test(s))return 2; if(/mar/.test(s))return 3; if(/mai/.test(s))return 5;
+      if(/jun/.test(s))return 6; if(/jul.*ago|jul\/ago|jul-ago/.test(s))return 7.5;
+      if(/ago/.test(s))return 8; if(/set/.test(s))return 9; return 0;
     }
     function labelMes(k){
       const m=/^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
@@ -325,8 +232,7 @@
       const posto=elPosto.value, mes=elMes.value;
 
       // top: acumulado geral
-      const geral = somaGeralFila();
-      animate(elGeralAcum, geral);
+      animate(elGeralAcum, somaGeralFila());
 
       // top: agendados total (fixo)
       animate(elAgTotal, Number(DATA.agendados_total || 0));
@@ -339,12 +245,10 @@
         return;
       }
 
-      // em espera do mês
+      // mês selecionado
       const filaMes = (posto==='__ALL__') ? somaMesFila(mes) : somaPostoMes(posto, mes);
       animate(elFilaMes, filaMes);
-      elFilaMesObs.textContent = (posto==='__ALL__')
-        ? 'Somando todos os postos neste mês.'
-        : 'Total deste posto no mês escolhido.';
+      elFilaMesObs.textContent = (posto==='__ALL__') ? 'Somando todos os postos neste mês.' : 'Total deste posto no mês escolhido.';
 
       // acumulado do posto
       if(posto==='__ALL__'){
