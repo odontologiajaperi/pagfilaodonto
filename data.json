@@ -1,26 +1,42 @@
 {
   "atualizado_em": "2025-11-06T08:30:00-03:00",
   "postos": {
-    "Marabá": {
-      "2025-11": { "fila": 12, "agendados": 34 }
-    },
-    "Unidade Odontologica movél": {
-      "2025-11": { "fila": 5, "agendados": 17 }
+    "Maraba": {
+      "2025-02": { "fila": 33 },
+      "2025-03": { "fila": 142 },
+      "2025-05": { "fila": 159 },
+      "2025-06": { "fila": 138 },
+      "2025-07-08": { "fila": 114 },
+      "2025-09": { "fila": 154 }
     },
     "Alecrim": {
-      "2025-11": { "fila": 3, "agendados": 9 }
+      "2025-05": { "fila": 290 },
+      "2025-06": { "fila": 217 },
+      "2025-07-08": { "fila": 215 },
+      "2025-09": { "fila": 241 }
     },
     "Vila Central": {
-      "2025-11": { "fila": 3, "agendados": 9 }
+      "2025-05": { "fila": 95 },
+      "2025-06": { "fila": 198 },
+      "2025-07-08": { "fila": 150 },
+      "2025-09": { "fila": 190 }
     },
-    "CEMES Japeri": {
-      "2025-11": { "fila": 3, "agendados": 9 }
+    "Japeri Centro": {
+      "2025-06": { "fila": 44 },
+      "2025-07-08": { "fila": 96 },
+      "2025-09": { "fila": 119 }
     },
     "Chacrinha": {
-      "2025-11": { "fila": 3, "agendados": 9 }
+      "2025-09": { "fila": 47 }
     },
-    "Guandu": {
-      "2025-11": { "fila": 3, "agendados": 9 }
+    "Unidade Odontologica movel do Rio d'oruo": {
+      "2025-09": { "fila": 28 }
+    },
+    "Unidade Odontologica movel do laranjal": {
+      "2025-09": { "fila": 34 }
+    },
+    "Unidade Odontologica movel do marajuara": {
+      "2025-09": { "fila": 42 }
     }
   }
 }
