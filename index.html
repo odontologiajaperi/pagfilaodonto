@@ -1,179 +1,57 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <title>Painel — Saúde Bucal Japeri</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light">
-  <link rel="icon" type="image/png" sizes="32x32" href="brasil-sorridente-logo222.png?v=2">
-  <link rel="apple-touch-icon" href="brasil-sorridente-logo222.png?v=2">
-  <meta name="theme-color" content="#0F8BD6">
-
-  <!-- estilos separados -->
+  <meta charset="utf-8">
+  <title>Início — Saúde Bucal Japeri</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="styles.css">
-
+  <link rel="icon" href="brasil-sorridente-logo222.png">
 </head>
+
 <body>
-  <div class="wrap">
-
-    <!-- HEADER + NAV -->
-    <header class="site-header">
-      <div class="header-left">
-        <div class="logos">
-          <img src="japeri-logo.png" alt="Prefeitura de Japeri" class="logo-small">
-          <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente" class="logo-small">
-        </div>
-        <h1 class="site-title">Saúde Bucal — Painel de Acompanhamento</h1>
-      </div>
-
-      <nav class="top-nav" aria-label="Navegação principal">
-        <button class="tabbtn active" data-view="home">Início</button>
-        <button class="tabbtn" data-view="avisos">Avisos</button>
-        <button class="tabbtn" data-view="painel">Painel</button>
-      </nav>
-
-      <!-- three-dots menu -->
-      <div class="menu-wrap">
-        <button id="menuToggle" class="menu-btn" aria-haspopup="true" aria-expanded="false" title="Opções">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        </button>
-        <div id="menuPanel" class="menu-panel" role="menu" aria-hidden="true">
-          <button class="menu-item" data-action="goto" data-target="home">Ir para Início</button>
-          <button class="menu-item" data-action="goto" data-target="avisos">Ir para Avisos</button>
-          <button class="menu-item" data-action="goto" data-target="painel">Ir para Painel</button>
-          <hr>
-          <a class="menu-item" href="data.json" download="data.json">Baixar data.json</a>
-          <button class="menu-item" id="refreshData">Atualizar dados</button>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <!-- HOME -->
-      <section id="home" class="view active">
-        <div class="hero-card">
-          <div class="hero-content">
-            <h2>Bem vindo ao Painel de Saúde Bucal</h2>
-            <p class="lead">Acompanhe o total de pacientes em espera e os agendamentos. Em breve será possível entrar na fila pelo site.</p>
-            <div class="hero-quick">
-              <div>
-                <strong id="homeGeral">—</strong>
-                <div class="muted">Em espera — acumulado geral</div>
-              </div>
-              <div>
-                <strong id="homeAg">—</strong>
-                <div class="muted">Agendados (total)</div>
-              </div>
-            </div>
-          </div>
-          <div class="hero-illustration">
-            <img src="brasil-sorridente-logo.png" alt="" aria-hidden="true">
-          </div>
-        </div>
-
-        <section class="cards-row">
-          <div class="card">
-            <h3>Resumo rápido</h3>
-            <p class="muted">Filtrar por posto no painel para ver detalhes por unidade.</p>
-            <ul class="short-list" id="homeResumo"></ul>
-          </div>
-
-          <div class="card">
-            <h3>Sobre</h3>
-            <p class="muted">Este painel é usado para controle interno da Saúde Bucal — Prefeitura de Japeri.</p>
-            <p class="muted small">Quer saber sua posição exata? Entre em contato: <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a></p>
-          </div>
-        </section>
-      </section>
-
-      <!-- AVISOS -->
-      <section id="avisos" class="view">
-        <div class="card">
-          <h2>Avisos e comunicados</h2>
-          <p class="muted">Coloque aqui comunicados públicos (manutenções, feriados, campanhas etc.).</p>
-
-          <div id="avisosList" class="avisos-list">
-            <!-- preenchido por JS; placeholders: -->
-            <div class="aviso">
-              <div class="aviso-title">Nenhum aviso cadastrado</div>
-              <div class="muted">Use essa área futuramente para publicar comunicados.</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAINEL (conteúdo principal que você já tinha) -->
-      <section id="painel" class="view">
-        <div class="panel card">
-          <div class="top-metrics grid-2" aria-hidden="false">
-            <div class="bigcard">
-              <div class="bigcard-title">🟦 Em espera — Total</div>
-              <div id="geralAcumFila" class="big-number big1">—</div>
-              <div class="bigcard-foot">Soma de todos os postos em todos os meses registrados.</div>
-            </div>
-            <div class="bigcard">
-              <div class="bigcard-title">📅 Agendados — Total</div>
-              <div id="agTotal" class="big-number big2">—</div>
-              <div class="bigcard-foot">Total de pacientes com agendamento.</div>
-            </div>
-          </div>
-
-          <div class="notice">
-            📩 Quer saber sua posição exata na fila? Fale com nossa equipe pelo e-mail
-            <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a>.
-          </div>
-
-          <div class="toolbar grid-3">
-            <div>
-              <label for="postoSelect">Posto</label>
-              <div class="select-wrap"><select id="postoSelect"></select></div>
-            </div>
-            <div>
-              <label for="mesSelect">Mês</label>
-              <div class="select-wrap"><select id="mesSelect"></select></div>
-            </div>
-            <div class="align-end">
-              <button id="refreshBtn" class="btn">Recarregar</button>
-            </div>
-          </div>
-
-          <div class="chips">
-            <div class="chip" id="pillPosto">Posto: —</div>
-            <div class="chip" id="pillMes">Mês: —</div>
-            <div class="chip" id="pillStamp">Atualizado: —</div>
-          </div>
-
-          <div class="sectionTitle">Totais conforme o filtro</div>
-          <div class="grid-2">
-            <div class="card small">
-              <div class="label">🕒 Em espera — mês selecionado do posto</div>
-              <div id="filaMes" class="value">—</div>
-              <div id="filaMesObs" class="sub"></div>
-            </div>
-            <div class="card small">
-              <div class="label">🏥 Em espera — Total do posto</div>
-              <div id="postoAcumFila" class="value">—</div>
-              <div id="postoAcumFilaObs" class="sub"></div>
-            </div>
-          </div>
-
-          <div class="sectionTitle">Resumo por posto (soma de todos os meses)</div>
-          <div id="postoResumo" class="list"></div>
-
-          <div id="error" class="error"></div>
-        </div>
-      </section>
-
-    </main>
-
-    <footer class="site-footer">
-      <img src="japeri-logo.png" alt="Prefeitura de Japeri">
-      <div class="muted">Painel interno de acompanhamento da Saúde Bucal — Prefeitura de Japeri</div>
-    </footer>
-
+<header class="topbar">
+  <div class="logos">
+    <img src="japeri-logo.png">
+    <img src="brasil-sorridente-logo.png">
   </div>
 
-  <!-- script separado -->
-  <script src="app.js"></script>
+  <nav class="nav">
+    <a href="index.html" class="active">Início</a>
+    <a href="avisos.html">Avisos</a>
+    <a href="painel.html">Painel</a>
+  </nav>
+</header>
+
+<main class="page">
+  <h1>Painel de Saúde Bucal — Japeri</h1>
+
+  <p class="lead">
+    Bem-vindo ao sistema interno de acompanhamento da Saúde Bucal.
+    Aqui você encontra informações gerais, avisos e o painel completo.
+  </p>
+
+  <section class="card">
+    <h2>O que você pode fazer aqui</h2>
+    <ul>
+      <li>Consultar o painel completo</li>
+      <li>Acessar avisos e comunicados</li>
+      <li>Acompanhar total de pacientes em espera e agendados</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Dúvidas?</h2>
+    <p>
+      Envie um e-mail para:
+      <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a>
+    </p>
+  </section>
+</main>
+
+<footer class="footer">
+  <img src="japeri-logo.png">
+  <div>Prefeitura de Japeri — Saúde Bucal</div>
+</footer>
+
 </body>
 </html>
