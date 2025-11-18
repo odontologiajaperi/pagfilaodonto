@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Painel — Saúde Bucal Japeri</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="brasil-sorridente-logo222.png">
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="logos">
+    <img src="japeri-logo.png">
+    <img src="brasil-sorridente-logo.png">
+  </div>
+
+  <nav class="nav">
+    <a href="index.html">Início</a>
+    <a href="avisos.html">Avisos</a>
+    <a href="painel.html" class="active">Painel</a>
+  </nav>
+</header>
+
+<main class="page">
+
+  <h1>Painel de Acompanhamento</h1>
+
+  <!-- o conteúdo que você já tinha permanece aqui -->
+  <!-- mantive tudo igual, só limpei tags desnecessárias -->
+
+  <section class="card">
+    <div class="grid-2">
+      <div class="bigcard">
+        <div class="bigcard-title">🟦 Em espera — Total</div>
+        <div id="geralAcumFila" class="big-number big1">—</div>
+      </div>
+      <div class="bigcard">
+        <div class="bigcard-title">📅 Agendados — Total</div>
+        <div id="agTotal" class="big-number big2">—</div>
+      </div>
+    </div>
+
+    <div class="notice">
+      📩 Quer saber sua posição exata na fila?
+      <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a>
+    </div>
+
+    <div class="grid-3 toolbar">
+      <div>
+        <label>Posto</label>
+        <select id="postoSelect"></select>
+      </div>
+      <div>
+        <label>Mês</label>
+        <select id="mesSelect"></select>
+      </div>
+      <div>
+        <button id="refreshBtn">Recarregar</button>
+      </div>
+    </div>
+
+    <div class="chips">
+      <div id="pillPosto" class="chip">Posto: —</div>
+      <div id="pillMes" class="chip">Mês: —</div>
+      <div id="pillStamp" class="chip">Atualizado: —</div>
+    </div>
+
+    <h2>Totais conforme o filtro</h2>
+    <div class="grid-2">
+      <div class="card small">
+        <div class="label">🕒 Em espera — mês selecionado</div>
+        <div id="filaMes" class="value">—</div>
+      </div>
+      <div class="card small">
+        <div class="label">🏥 Em espera — Total do posto</div>
+        <div id="postoAcumFila" class="value">—</div>
+      </div>
+    </div>
+
+    <h2>Resumo por posto</h2>
+    <div id="postoResumo" class="list"></div>
+
+  </section>
+
+  <div id="error" class="error"></div>
+
+</main>
+
+<footer class="footer">
+  <img src="japeri-logo.png">
+  <div>Prefeitura de Japeri — Saúde Bucal</div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
