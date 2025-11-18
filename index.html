@@ -6,6 +6,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" type="image/png" href="brasil-sorridente-logo222.png?v=2">
+
+  <!-- Correções/estilo do drawer e ajustes header/hero para mobile (adicionei só isto) -->
+  <style>
+    /* evita que o título e logos empurrem o botão */
+    .topbar { align-items: center; gap:8px; }
+    .header-left { display:flex; align-items:center; gap:10px; min-width:0; }
+    .site-title { max-width:46vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    /* hero image menor no mobile para não empurrar texto */
+    .hero-illustration img { max-width:120px; height:auto; display:block; margin-left:auto; }
+    @media (min-width:900px){
+      .hero-illustration img { max-width:220px; }
+      .site-title { max-width: 38vw; }
+    }
+
+    /* side drawer (right) */
+    #drawerOverlay{position:fixed; inset:0;background:rgba(0,0,0,0.32);display:none;z-index:90}
+    .side-drawer{
+      position:fixed; right:0; top:0; height:100vh; width:84%;
+      max-width:320px; background:#fff; box-shadow: -8px 0 30px rgba(0,0,0,0.12);
+      transform:translateX(110%); transition:transform .26s ease;
+      z-index:100; padding:18px; overflow:auto;
+      border-left:1px solid rgba(15,139,214,0.06);
+    }
+    .side-drawer.open{transform:translateX(0)}
+    .drawer-close{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .drawer-item{display:block;padding:10px 12px;border-radius:8px;color:var(--fg);font-weight:700;text-decoration:none;margin-bottom:6px}
+    .drawer-item:hover{background:#f0f8ff;color:var(--brand)}
+    /* no desktop deixa drawer como menu lateral discreto */
+    @media (min-width:900px){
+      #drawerOverlay{display:none}
+      .side-drawer{right:8px; width:280px; transform:translateX(20px); border-radius:12px}
+    }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -29,17 +62,10 @@
         <a href="painel.html">Painel</a>
       </nav>
 
-      <!-- mobile hamburger -->
-      <button class="hamburger" aria-label="Abrir menu" aria-expanded="false" type="button">
-        <span class="bar"></span>
+      <!-- botão 3-pontos abre drawer lateral -->
+      <button id="drawerToggle" class="menu-btn" aria-label="Abrir opções" title="Opções">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
       </button>
-
-      <!-- mobile nav panel (hidden, toggled via script) -->
-      <div class="mobile-nav-panel" role="navigation" aria-hidden="true">
-        <a href="index.html" class="tabbtn">Início</a>
-        <a href="avisos.html" class="tabbtn">Avisos</a>
-        <a href="painel.html" class="tabbtn">Painel</a>
-      </div>
     </header>
 
     <!-- MAIN -->
@@ -89,22 +115,50 @@
     </footer>
   </div>
 
-  <!-- mobile nav toggle script -->
+  <!-- overlay + drawer -->
+  <div id="drawerOverlay" aria-hidden="true"></div>
+  <aside id="sideDrawer" class="side-drawer" aria-hidden="true" role="dialog" aria-label="Opções do site">
+    <div class="drawer-close">
+      <strong>Opções</strong>
+      <button id="drawerClose" style="margin-left:auto;padding:6px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer">Fechar</button>
+    </div>
+    <nav>
+      <a class="drawer-item" href="index.html">Início</a>
+      <a class="drawer-item" href="avisos.html">Avisos</a>
+      <a class="drawer-item" href="painel.html">Painel</a>
+      <hr>
+      <a class="drawer-item" href="mailto:odontologiajaperi@gmail.com">Contato (e-mail)</a>
+      <a class="drawer-item" href="data.json" download>Baixar data.json</a>
+    </nav>
+  </aside>
+
+  <!-- mobile nav toggle script (drawer behavior) -->
   <script>
     (function(){
-      const ham = document.querySelector('.hamburger');
-      const mpanel = document.querySelector('.mobile-nav-panel');
-      if(!ham || !mpanel) return;
-      ham.addEventListener('click', ()=> {
-        const open = mpanel.classList.toggle('open');
-        ham.setAttribute('aria-expanded', open ? 'true' : 'false');
-        mpanel.setAttribute('aria-hidden', open ? 'false' : 'true');
-      });
-      document.addEventListener('click', (e)=> {
-        if(!mpanel.classList.contains('open')) return;
-        if(e.target.closest('.mobile-nav-panel') || e.target.closest('.hamburger')) return;
-        mpanel.classList.remove('open'); ham.setAttribute('aria-expanded','false'); mpanel.setAttribute('aria-hidden','true');
-      });
+      const toggle = document.getElementById('drawerToggle');
+      const drawer = document.getElementById('sideDrawer');
+      const overlay = document.getElementById('drawerOverlay');
+      const closeBtn = document.getElementById('drawerClose');
+
+      function openDrawer(){
+        drawer.classList.add('open');
+        drawer.setAttribute('aria-hidden','false');
+        overlay.style.display='block';
+        overlay.setAttribute('aria-hidden','false');
+      }
+      function closeDrawer(){
+        drawer.classList.remove('open');
+        drawer.setAttribute('aria-hidden','true');
+        overlay.style.display='none';
+        overlay.setAttribute('aria-hidden','true');
+      }
+
+      toggle?.addEventListener('click', (e)=>{ e.stopPropagation(); openDrawer(); });
+      closeBtn?.addEventListener('click', closeDrawer);
+      overlay?.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', (ev)=>{ if(ev.key==='Escape') closeDrawer(); });
+      // fechar se clicar em link do drawer
+      drawer?.addEventListener('click', (e)=>{ if(e.target.closest('.drawer-item')) closeDrawer(); });
     })();
   </script>
 </body>
