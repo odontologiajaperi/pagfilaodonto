@@ -9,6 +9,7 @@
 </head>
 <body>
   <div class="wrap">
+    <!-- HEADER -->
     <header class="topbar">
       <div class="header-left">
         <div class="logos">
@@ -21,13 +22,27 @@
         </div>
       </div>
 
+      <!-- desktop nav -->
       <nav class="nav" aria-label="Navegação">
         <a href="index.html" class="active">Início</a>
         <a href="avisos.html">Avisos</a>
         <a href="painel.html">Painel</a>
       </nav>
+
+      <!-- mobile hamburger -->
+      <button class="hamburger" aria-label="Abrir menu" aria-expanded="false" type="button">
+        <span class="bar"></span>
+      </button>
+
+      <!-- mobile nav panel (hidden, toggled via script) -->
+      <div class="mobile-nav-panel" role="navigation" aria-hidden="true">
+        <a href="index.html" class="tabbtn">Início</a>
+        <a href="avisos.html" class="tabbtn">Avisos</a>
+        <a href="painel.html" class="tabbtn">Painel</a>
+      </div>
     </header>
 
+    <!-- MAIN -->
     <main>
       <section class="hero-card">
         <div class="hero-content">
@@ -74,26 +89,23 @@
     </footer>
   </div>
 
-  <!-- index não carrega app.js -->
+  <!-- mobile nav toggle script -->
   <script>
-  // mobile nav toggle - simples e leve
-  (function(){
-    const ham = document.querySelector('.hamburger');
-    const mpanel = document.querySelector('.mobile-nav-panel');
-    if(!ham || !mpanel) return;
-    ham.addEventListener('click', ()=> {
-      const open = mpanel.classList.toggle('open');
-      ham.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-    // fechar ao clicar fora
-    document.addEventListener('click', (e)=> {
-      if(!mpanel.classList.contains('open')) return;
-      if(e.target.closest('.mobile-nav-panel') || e.target.closest('.hamburger')) return;
-      mpanel.classList.remove('open');
-      ham.setAttribute('aria-expanded','false');
-    });
-  })();
-</script>
-
+    (function(){
+      const ham = document.querySelector('.hamburger');
+      const mpanel = document.querySelector('.mobile-nav-panel');
+      if(!ham || !mpanel) return;
+      ham.addEventListener('click', ()=> {
+        const open = mpanel.classList.toggle('open');
+        ham.setAttribute('aria-expanded', open ? 'true' : 'false');
+        mpanel.setAttribute('aria-hidden', open ? 'false' : 'true');
+      });
+      document.addEventListener('click', (e)=> {
+        if(!mpanel.classList.contains('open')) return;
+        if(e.target.closest('.mobile-nav-panel') || e.target.closest('.hamburger')) return;
+        mpanel.classList.remove('open'); ham.setAttribute('aria-expanded','false'); mpanel.setAttribute('aria-hidden','true');
+      });
+    })();
+  </script>
 </body>
 </html>
