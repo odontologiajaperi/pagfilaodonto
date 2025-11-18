@@ -111,5 +111,25 @@
   </div>
 
   <script src="app.js"></script>
+  <script>
+  // mobile nav toggle - simples e leve
+  (function(){
+    const ham = document.querySelector('.hamburger');
+    const mpanel = document.querySelector('.mobile-nav-panel');
+    if(!ham || !mpanel) return;
+    ham.addEventListener('click', ()=> {
+      const open = mpanel.classList.toggle('open');
+      ham.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    // fechar ao clicar fora
+    document.addEventListener('click', (e)=> {
+      if(!mpanel.classList.contains('open')) return;
+      if(e.target.closest('.mobile-nav-panel') || e.target.closest('.hamburger')) return;
+      mpanel.classList.remove('open');
+      ham.setAttribute('aria-expanded','false');
+    });
+  })();
+</script>
+
 </body>
 </html>
