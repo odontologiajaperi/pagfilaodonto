@@ -6,14 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" type="image/png" href="brasil-sorridente-logo222.png?v=2">
-
-  <!-- ajustes drawer + header -->
   <style>
     .site-title { max-width:46vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .hero-illustration img{ max-width:120px; }
-    #drawerOverlay{position:fixed; inset:0;background:rgba(0,0,0,0.32);display:none;z-index:90}
-    .side-drawer{position:fixed; right:0; top:0; height:100vh; width:84%; max-width:320px; background:#fff; box-shadow:-8px 0 30px rgba(0,0,0,0.12); transform:translateX(110%); transition:transform .26s ease; z-index:100; padding:18px; overflow:auto; border-left:1px solid rgba(15,139,214,0.06);}
-    .side-drawer.open{transform:translateX(0)}
+    @media (min-width:900px){ .hero-illustration img{ max-width:220px } }
   </style>
 </head>
 <body>
@@ -36,7 +32,6 @@
         <a href="painel.html" class="active">Painel</a>
       </nav>
 
-      <!-- drawer toggle -->
       <div style="display:flex;align-items:center;gap:8px">
         <button id="drawerToggle" class="menu-btn" aria-label="Abrir opções" title="Opções">
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
@@ -131,29 +126,38 @@
     </nav>
   </aside>
 
-  <!-- carrega app.js (mantive igual) -->
+  <!-- Mantive app.js (responsável por loadData, render, etc) -->
   <script src="app.js"></script>
 
-  <!-- drawer script -->
   <script>
-    (function(){
-      const toggle = document.getElementById('drawerToggle');
-      const drawer = document.getElementById('sideDrawer');
-      const overlay = document.getElementById('drawerOverlay');
-      const closeBtn = document.getElementById('drawerClose');
-      const refreshDataBtn = document.getElementById('refreshDataBtn');
-
-      function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); overlay.style.display='block'; overlay.setAttribute('aria-hidden','false'); }
-      function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); }
-
-      toggle?.addEventListener('click', (e)=>{ e.stopPropagation(); openDrawer(); });
-      closeBtn?.addEventListener('click', closeDrawer);
-      overlay?.addEventListener('click', closeDrawer);
-      document.addEventListener('keydown', (ev)=>{ if(ev.key==='Escape') closeDrawer(); });
-      drawer?.addEventListener('click', (e)=>{ if(e.target.closest('.drawer-item')) closeDrawer(); });
-
-      refreshDataBtn?.addEventListener('click', ()=>{ if(window.loadData) window.loadData(); });
+  (function(){
+    const byIdOrClass = (id, cls) => document.getElementById(id) || document.querySelector('.' + cls);
+    const toggleBtn = byIdOrClass('drawerToggle','drawer-toggle');
+    const drawer = byIdOrClass('sideDrawer','side-drawer');
+    const overlay = byIdOrClass('drawerOverlay','drawer-overlay') || (function(){
+      const o = document.createElement('div'); o.id = 'drawerOverlay';
+      o.style.position='fixed'; o.style.inset='0'; o.style.background='rgba(0,0,0,0.32)';
+      o.style.display='none'; o.style.zIndex='90'; document.body.appendChild(o); return o;
     })();
+    const closeBtn = document.getElementById('drawerClose') || document.querySelector('[data-drawer-close]');
+    if(!drawer || !toggleBtn) return;
+    function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); overlay.style.display='block'; overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
+    function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
+    toggleBtn.addEventListener('click', function(evt){ evt.stopPropagation(); if(drawer.classList.contains('open')) closeDrawer(); else openDrawer(); this.setAttribute('aria-expanded', drawer.classList.contains('open') ? 'true' : 'false'); });
+    overlay.addEventListener('click', function(){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
+    if(closeBtn) closeBtn.addEventListener('click', function(){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
+    drawer.addEventListener('click', function(e){ const item = e.target.closest('.drawer-item, [data-drawer-item]'); if(item){ setTimeout(()=> closeDrawer(), 120); } });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && drawer.classList.contains('open')){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); } });
+    document.addEventListener('click', function(e){ if(!drawer.classList.contains('open')) return; if(e.target.closest('#sideDrawer') || e.target.closest('#drawerToggle')) return; closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
+    const observer = new MutationObserver(()=>{ if(drawer.classList.contains('open')){ const first = drawer.querySelector('a, button, [tabindex]:not([tabindex="-1"])'); if(first) first.focus(); } });
+    observer.observe(drawer, { attributes: true, attributeFilter:['class'] });
+
+    // ligar botão do drawer que atualiza dados ao loadData de app.js (se houver)
+    const refreshBtn = document.getElementById('refreshDataBtn');
+    if(refreshBtn){
+      refreshBtn.addEventListener('click', ()=>{ if(window.loadData) window.loadData(); });
+    }
+  })();
   </script>
 </body>
 </html>
