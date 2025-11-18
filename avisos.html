@@ -1,47 +1,49 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>Avisos — Saúde Bucal Japeri</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="brasil-sorridente-logo222.png">
+  <link rel="icon" type="image/png" href="brasil-sorridente-logo222.png?v=2">
 </head>
-
 <body>
-<header class="topbar">
-  <div class="logos">
-    <img src="japeri-logo.png">
-    <img src="brasil-sorridente-logo.png">
+  <div class="wrap">
+    <header class="topbar">
+      <div class="header-left">
+        <div class="logos">
+          <img src="japeri-logo.png" alt="Japeri" class="logo-small">
+          <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente" class="logo-small">
+        </div>
+        <div>
+          <div class="site-title">Painel de Saúde Bucal — Japeri</div>
+          <div class="muted small">Avisos e comunicados</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Navegação">
+        <a href="index.html">Início</a>
+        <a href="avisos.html" class="active">Avisos</a>
+        <a href="painel.html">Painel</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card">
+        <h1>Avisos e Comunicados</h1>
+        <div class="avisos-list" id="avisosList">
+          <div class="aviso">
+            <div class="aviso-title">Nenhum aviso cadastrado</div>
+            <div class="muted small">Use esta área futuramente para publicar comunicados.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <img src="japeri-logo.png" alt="Japeri">
+      <div class="muted">Prefeitura de Japeri — Saúde Bucal</div>
+    </footer>
   </div>
-
-  <nav class="nav">
-    <a href="index.html">Início</a>
-    <a href="avisos.html" class="active">Avisos</a>
-    <a href="painel.html">Painel</a>
-  </nav>
-</header>
-
-<main class="page">
-  <h1>Avisos e Comunicados</h1>
-
-  <section class="card">
-    <h2>Avisos recentes</h2>
-
-    <div class="aviso">
-      Nenhum aviso cadastrado por enquanto.
-    </div>
-
-    <p class="muted small">
-      Esta área servirá futuramente para avisos importantes e comunicados.
-    </p>
-  </section>
-</main>
-
-<footer class="footer">
-  <img src="japeri-logo.png">
-  <div>Prefeitura de Japeri — Saúde Bucal</div>
-</footer>
-
 </body>
 </html>
