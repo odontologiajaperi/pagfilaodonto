@@ -6,38 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" type="image/png" href="brasil-sorridente-logo222.png?v=2">
-
-  <!-- Correções/estilo do drawer e ajustes header/hero para mobile (adicionei só isto) -->
+  <!-- Pequenos ajustes locais para evitar sobreposição no mobile -->
   <style>
-    /* evita que o título e logos empurrem o botão */
-    .topbar { align-items: center; gap:8px; }
-    .header-left { display:flex; align-items:center; gap:10px; min-width:0; }
     .site-title { max-width:46vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    /* hero image menor no mobile para não empurrar texto */
     .hero-illustration img { max-width:120px; height:auto; display:block; margin-left:auto; }
-    @media (min-width:900px){
-      .hero-illustration img { max-width:220px; }
-      .site-title { max-width: 38vw; }
-    }
-
-    /* side drawer (right) */
-    #drawerOverlay{position:fixed; inset:0;background:rgba(0,0,0,0.32);display:none;z-index:90}
-    .side-drawer{
-      position:fixed; right:0; top:0; height:100vh; width:84%;
-      max-width:320px; background:#fff; box-shadow: -8px 0 30px rgba(0,0,0,0.12);
-      transform:translateX(110%); transition:transform .26s ease;
-      z-index:100; padding:18px; overflow:auto;
-      border-left:1px solid rgba(15,139,214,0.06);
-    }
-    .side-drawer.open{transform:translateX(0)}
-    .drawer-close{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-    .drawer-item{display:block;padding:10px 12px;border-radius:8px;color:var(--fg);font-weight:700;text-decoration:none;margin-bottom:6px}
-    .drawer-item:hover{background:#f0f8ff;color:var(--brand)}
-    /* no desktop deixa drawer como menu lateral discreto */
-    @media (min-width:900px){
-      #drawerOverlay{display:none}
-      .side-drawer{right:8px; width:280px; transform:translateX(20px); border-radius:12px}
-    }
+    @media (min-width:900px){ .hero-illustration img { max-width:220px } }
   </style>
 </head>
 <body>
@@ -115,10 +88,11 @@
     </footer>
   </div>
 
-  <!-- overlay + drawer -->
+  <!-- drawer overlay + drawer (eles existem em todas as páginas) -->
   <div id="drawerOverlay" aria-hidden="true"></div>
+
   <aside id="sideDrawer" class="side-drawer" aria-hidden="true" role="dialog" aria-label="Opções do site">
-    <div class="drawer-close">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
       <strong>Opções</strong>
       <button id="drawerClose" style="margin-left:auto;padding:6px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer">Fechar</button>
     </div>
@@ -132,34 +106,30 @@
     </nav>
   </aside>
 
-  <!-- mobile nav toggle script (drawer behavior) -->
+  <!-- Drawer script robusto (cole exatamente) -->
   <script>
-    (function(){
-      const toggle = document.getElementById('drawerToggle');
-      const drawer = document.getElementById('sideDrawer');
-      const overlay = document.getElementById('drawerOverlay');
-      const closeBtn = document.getElementById('drawerClose');
-
-      function openDrawer(){
-        drawer.classList.add('open');
-        drawer.setAttribute('aria-hidden','false');
-        overlay.style.display='block';
-        overlay.setAttribute('aria-hidden','false');
-      }
-      function closeDrawer(){
-        drawer.classList.remove('open');
-        drawer.setAttribute('aria-hidden','true');
-        overlay.style.display='none';
-        overlay.setAttribute('aria-hidden','true');
-      }
-
-      toggle?.addEventListener('click', (e)=>{ e.stopPropagation(); openDrawer(); });
-      closeBtn?.addEventListener('click', closeDrawer);
-      overlay?.addEventListener('click', closeDrawer);
-      document.addEventListener('keydown', (ev)=>{ if(ev.key==='Escape') closeDrawer(); });
-      // fechar se clicar em link do drawer
-      drawer?.addEventListener('click', (e)=>{ if(e.target.closest('.drawer-item')) closeDrawer(); });
+  (function(){
+    const byIdOrClass = (id, cls) => document.getElementById(id) || document.querySelector('.' + cls);
+    const toggleBtn = byIdOrClass('drawerToggle','drawer-toggle');
+    const drawer = byIdOrClass('sideDrawer','side-drawer');
+    const overlay = byIdOrClass('drawerOverlay','drawer-overlay') || (function(){
+      const o = document.createElement('div'); o.id = 'drawerOverlay';
+      o.style.position='fixed'; o.style.inset='0'; o.style.background='rgba(0,0,0,0.32)';
+      o.style.display='none'; o.style.zIndex='90'; document.body.appendChild(o); return o;
     })();
+    const closeBtn = document.getElementById('drawerClose') || document.querySelector('[data-drawer-close]');
+    if(!drawer || !toggleBtn) return;
+    function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); overlay.style.display='block'; overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
+    function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
+    toggleBtn.addEventListener('click', function(evt){ evt.stopPropagation(); if(drawer.classList.contains('open')) closeDrawer(); else openDrawer(); this.setAttribute('aria-expanded', drawer.classList.contains('open') ? 'true' : 'false'); });
+    overlay.addEventListener('click', function(){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
+    if(closeBtn) closeBtn.addEventListener('click', function(){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
+    drawer.addEventListener('click', function(e){ const item = e.target.closest('.drawer-item, [data-drawer-item]'); if(item){ setTimeout(()=> closeDrawer(), 120); } });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && drawer.classList.contains('open')){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); } });
+    document.addEventListener('click', function(e){ if(!drawer.classList.contains('open')) return; if(e.target.closest('#sideDrawer') || e.target.closest('#drawerToggle')) return; closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
+    const observer = new MutationObserver(()=>{ if(drawer.classList.contains('open')){ const first = drawer.querySelector('a, button, [tabindex]:not([tabindex="-1"])'); if(first) first.focus(); } });
+    observer.observe(drawer, { attributes: true, attributeFilter:['class'] });
+  })();
   </script>
 </body>
 </html>
