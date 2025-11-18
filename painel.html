@@ -9,6 +9,7 @@
 </head>
 <body>
   <div class="wrap">
+    <!-- HEADER -->
     <header class="topbar">
       <div class="header-left">
         <div class="logos">
@@ -21,13 +22,15 @@
         </div>
       </div>
 
+      <!-- desktop nav -->
       <nav class="nav" aria-label="Navegação">
         <a href="index.html">Início</a>
         <a href="avisos.html">Avisos</a>
         <a href="painel.html" class="active">Painel</a>
       </nav>
 
-      <div class="menu-wrap">
+      <!-- menu 3-pontos (desktop) -->
+      <div class="menu-wrap" style="margin-left:8px">
         <button id="menuToggle" class="menu-btn" aria-haspopup="true" aria-expanded="false" title="Opções">
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
         </button>
@@ -40,8 +43,21 @@
           <button class="menu-item" data-action="refresh">Atualizar dados</button>
         </div>
       </div>
+
+      <!-- mobile hamburger -->
+      <button class="hamburger" aria-label="Abrir menu" aria-expanded="false" type="button" style="margin-left:10px">
+        <span class="bar"></span>
+      </button>
+
+      <!-- mobile nav panel -->
+      <div class="mobile-nav-panel" role="navigation" aria-hidden="true">
+        <a href="index.html" class="tabbtn">Início</a>
+        <a href="avisos.html" class="tabbtn">Avisos</a>
+        <a href="painel.html" class="tabbtn">Painel</a>
+      </div>
     </header>
 
+    <!-- MAIN -->
     <main>
       <section class="card">
         <div class="grid-2" style="margin-bottom:12px">
@@ -110,26 +126,52 @@
     </footer>
   </div>
 
+  <!-- app.js (painel behaviors) -->
   <script src="app.js"></script>
-  <script>
-  // mobile nav toggle - simples e leve
-  (function(){
-    const ham = document.querySelector('.hamburger');
-    const mpanel = document.querySelector('.mobile-nav-panel');
-    if(!ham || !mpanel) return;
-    ham.addEventListener('click', ()=> {
-      const open = mpanel.classList.toggle('open');
-      ham.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-    // fechar ao clicar fora
-    document.addEventListener('click', (e)=> {
-      if(!mpanel.classList.contains('open')) return;
-      if(e.target.closest('.mobile-nav-panel') || e.target.closest('.hamburger')) return;
-      mpanel.classList.remove('open');
-      ham.setAttribute('aria-expanded','false');
-    });
-  })();
-</script>
 
+  <!-- menu toggle & mobile nav toggle -->
+  <script>
+    // toggle three-dots menu (desktop)
+    (function(){
+      const menuToggle = document.getElementById('menuToggle');
+      const menuPanel = document.getElementById('menuPanel');
+      if(menuToggle && menuPanel){
+        menuToggle.addEventListener('click', ()=> {
+          const open = menuPanel.getAttribute('aria-hidden') === 'false';
+          menuPanel.setAttribute('aria-hidden', open ? 'true' : 'false');
+          menuToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
+        });
+        document.addEventListener('click', (e)=> {
+          if(!e.target.closest('.menu-wrap')) {
+            if(menuPanel) { menuPanel.setAttribute('aria-hidden','true'); menuToggle.setAttribute('aria-expanded','false'); }
+          }
+        });
+        menuPanel.addEventListener('click', (e)=> {
+          const btn = e.target.closest('[data-action]');
+          if(!btn) return;
+          const action = btn.dataset.action;
+          if(action === 'goto'){ location.href = btn.dataset.target; }
+          if(action === 'refresh'){ /* app.js has loadData */ if(window.loadData) window.loadData(); }
+        });
+      }
+    })();
+
+    // mobile nav toggle
+    (function(){
+      const ham = document.querySelector('.hamburger');
+      const mpanel = document.querySelector('.mobile-nav-panel');
+      if(!ham || !mpanel) return;
+      ham.addEventListener('click', ()=> {
+        const open = mpanel.classList.toggle('open');
+        ham.setAttribute('aria-expanded', open ? 'true' : 'false');
+        mpanel.setAttribute('aria-hidden', open ? 'false' : 'true');
+      });
+      document.addEventListener('click', (e)=> {
+        if(!mpanel.classList.contains('open')) return;
+        if(e.target.closest('.mobile-nav-panel') || e.target.closest('.hamburger')) return;
+        mpanel.classList.remove('open'); ham.setAttribute('aria-expanded','false'); mpanel.setAttribute('aria-hidden','true');
+      });
+    })();
+  </script>
 </body>
 </html>
