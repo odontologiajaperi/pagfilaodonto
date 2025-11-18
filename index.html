@@ -1,57 +1,79 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>Início — Saúde Bucal Japeri</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="brasil-sorridente-logo222.png">
+  <link rel="icon" type="image/png" href="brasil-sorridente-logo222.png?v=2">
 </head>
-
 <body>
-<header class="topbar">
-  <div class="logos">
-    <img src="japeri-logo.png">
-    <img src="brasil-sorridente-logo.png">
+  <div class="wrap">
+    <header class="topbar">
+      <div class="header-left">
+        <div class="logos">
+          <img src="japeri-logo.png" alt="Japeri" class="logo-small">
+          <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente" class="logo-small">
+        </div>
+        <div>
+          <div class="site-title">Painel de Saúde Bucal — Japeri</div>
+          <div class="muted small">Sistema público de acompanhamento</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Navegação">
+        <a href="index.html" class="active">Início</a>
+        <a href="avisos.html">Avisos</a>
+        <a href="painel.html">Painel</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero-card">
+        <div class="hero-content">
+          <h2>Bem-vindo ao Painel de Saúde Bucal</h2>
+          <p class="lead">Acompanhe o total de pacientes em espera e os agendamentos. Em breve será possível entrar na fila pelo site.</p>
+
+          <div class="hero-quick" style="margin-top:14px">
+            <div>
+              <strong id="homeGeral">—</strong>
+              <div class="muted">Em espera — acumulado geral</div>
+            </div>
+            <div>
+              <strong id="homeAg">—</strong>
+              <div class="muted">Agendados (total)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-illustration">
+          <img src="brasil-sorridente-logo.png" alt="">
+        </div>
+      </section>
+
+      <section class="cards-row">
+        <div class="card">
+          <h3>O que você pode fazer aqui</h3>
+          <ul class="short-list">
+            <li>Consultar o painel completo</li>
+            <li>Acessar avisos e comunicados</li>
+            <li>Acompanhar total de pacientes em espera e agendados</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Dúvidas?</h3>
+          <p class="muted small">Entre em contato: <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <img src="japeri-logo.png" alt="Japeri">
+      <div class="muted">Prefeitura de Japeri — Saúde Bucal</div>
+    </footer>
   </div>
 
-  <nav class="nav">
-    <a href="index.html" class="active">Início</a>
-    <a href="avisos.html">Avisos</a>
-    <a href="painel.html">Painel</a>
-  </nav>
-</header>
-
-<main class="page">
-  <h1>Painel de Saúde Bucal — Japeri</h1>
-
-  <p class="lead">
-    Bem-vindo ao sistema interno de acompanhamento da Saúde Bucal.
-    Aqui você encontra informações gerais, avisos e o painel completo.
-  </p>
-
-  <section class="card">
-    <h2>O que você pode fazer aqui</h2>
-    <ul>
-      <li>Consultar o painel completo</li>
-      <li>Acessar avisos e comunicados</li>
-      <li>Acompanhar total de pacientes em espera e agendados</li>
-    </ul>
-  </section>
-
-  <section class="card">
-    <h2>Dúvidas?</h2>
-    <p>
-      Envie um e-mail para:
-      <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a>
-    </p>
-  </section>
-</main>
-
-<footer class="footer">
-  <img src="japeri-logo.png">
-  <div>Prefeitura de Japeri — Saúde Bucal</div>
-</footer>
-
+  <!-- index não carrega app.js -->
 </body>
 </html>
