@@ -4,12 +4,53 @@
   <meta charset="utf-8" />
   <title>Painel — Saúde Bucal Japeri</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="styles.css">
-  <link rel="icon" type="image/png" href="brasil-sorridente-logo222.png?v=2">
+  <link rel="icon" href="brasil-sorridente-logo222.png?v=2" type="image/png">
   <style>
-    .site-title { max-width:46vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .hero-illustration img{ max-width:120px; }
-    @media (min-width:900px){ .hero-illustration img{ max-width:220px } }
+    /* same styles as index/avisos */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+    :root{--bg:#EAF5FF;--panel:#FFFFFF;--line:#DDEAF7;--fg:#0F2740;--muted:#6B87A4;--brand:#0F8BD6;--accent:#1DC56F;--warning:#FFF3B0;--chip:#F3FAFF;--r-sm:8px;--r-md:12px;--r-lg:20px;--shadow:0 8px 24px rgba(16,40,80,0.06);--maxw:1100px}
+    *{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;background:linear-gradient(180deg,#fff 0%,var(--bg) 100%);color:var(--fg);padding:12px}
+    .wrap{max-width:var(--maxw);margin:0 auto}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .header-left{display:flex;align-items:center;gap:12px;min-width:0}
+    .logos{display:flex;gap:10px;align-items:center}
+    .logo-small{height:44px;width:auto;display:block}
+    .site-title{font-weight:800;font-size:15px;line-height:1;max-width:48vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .muted.small{font-size:12px;color:var(--muted)}
+    .nav{display:flex;gap:8px;align-items:center}
+    .nav a{padding:8px 10px;border-radius:10px;color:var(--muted);text-decoration:none;font-weight:700}
+    .nav a.active{color:var(--brand);background:rgba(15,139,214,0.06);border-radius:10px}
+    .menu-btn{background:var(--panel);border:1px solid var(--line);padding:8px;border-radius:10px;cursor:pointer;display:flex;gap:5px;align-items:center}
+    .menu-btn .dot{width:6px;height:6px;background:var(--muted);border-radius:50%}
+    .card{background:var(--panel);border-radius:12px;padding:12px;border:1px solid var(--line);box-shadow:var(--shadow);margin-bottom:12px}
+    .sectionTitle{font-weight:800;color:var(--muted);margin:12px 0 8px;font-size:14px}
+    .bigcard{background:#fff;border-radius:12px;padding:12px;border:1px solid var(--line);margin-bottom:10px}
+    .bigcard-title{font-weight:800;color:var(--fg);margin-bottom:8px;font-size:14px}
+    .big-number{font-weight:900;font-size:28px}
+    .big1{color:var(--brand)} .big2{color:var(--accent)}
+    .bigcard-foot{color:var(--muted);font-size:13px;margin-top:8px}
+    .select-wrap{position:relative}
+    .select-wrap::after{content:"▾";position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--brand)}
+    select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);appearance:none;background:#fff;font-weight:700}
+    .btn{padding:10px 12px;border-radius:12px;border:0;background:var(--brand);color:#fff;font-weight:800;cursor:pointer}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+    .chip{background:var(--chip);border:1px solid var(--line);padding:8px 12px;border-radius:999px;color:var(--muted);font-weight:700}
+    .label{font-size:14px;color:var(--fg);margin-bottom:8px;font-weight:800}
+    .value{font-weight:900;font-size:22px;color:var(--brand);background:linear-gradient(0deg,#fff 0 40%, var(--warning) 40% 100%);padding:6px 10px;border-radius:8px;display:inline-block}
+    .sub{color:var(--muted);font-size:13px;margin-top:8px}
+    .list{margin-top:8px}
+    .row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;margin-bottom:8px}
+    .notice{margin:12px 0;padding:12px;border-radius:12px;background:linear-gradient(90deg,#f8fbff,#fff);border-left:6px solid var(--brand);color:var(--fg);font-weight:700}
+    .footer{display:flex;flex-direction:column;align-items:center;gap:8px;margin:14px 0;color:var(--muted);font-size:13px}
+    .footer img{height:36px}
+    #drawerOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.32);display:none;z-index:90}
+    .side-drawer{position:fixed;right:0;top:0;height:100vh;width:86%;max-width:320px;background:#fff;box-shadow:-12px 0 30px rgba(0,0,0,0.14);transform:translateX(110%);transition:transform .26s ease;z-index:100;padding:16px;overflow:auto;border-left:1px solid rgba(15,139,214,0.06)}
+    .side-drawer.open{transform:translateX(0)}
+    .drawer-item{display:block;padding:10px 12px;border-radius:8px;color:var(--fg);font-weight:800;text-decoration:none}
+    .drawer-item:hover{background:#f0f8ff;color:var(--brand)}
+    a:focus,button:focus,select:focus{outline:3px solid rgba(15,139,214,0.12);outline-offset:2px}
+    @media(min-width:900px){.logo-small{height:56px}.big-number{font-size:clamp(36px,6vw,72px)}.wrap{padding:8px}.side-drawer{right:16px;width:280px;transform:translateX(20px);border-radius:12px}#drawerOverlay{display:none}}
+    .menu-btn:not(:first-of-type){display:none !important}
   </style>
 </head>
 <body>
@@ -32,19 +73,12 @@
         <a href="painel.html" class="active">Painel</a>
       </nav>
 
-      <div style="display:flex;align-items:center;gap:8px">
-        <button id="drawerToggle" class="menu-btn" aria-label="Abrir opções" title="Opções">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        </button>
-        <button class="hamburger" aria-label="Abrir menu mobil" type="button" style="margin-left:6px">
-          <span class="bar"></span>
-        </button>
-      </div>
+      <button id="drawerToggle" class="menu-btn" aria-label="Abrir opções" title="Opções"><span class="dot"></span><span class="dot"></span><span class="dot"></span></button>
     </header>
 
     <main>
       <section class="card">
-        <div class="grid-2" style="margin-bottom:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div class="bigcard">
             <div class="bigcard-title">🟦 Em espera — Total</div>
             <div id="geralAcumFila" class="big-number big1">—</div>
@@ -58,12 +92,9 @@
           </div>
         </div>
 
-        <div class="notice">
-          📩 Quer saber sua posição exata na fila?
-          Fale com nossa equipe pelo e-mail <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a>.
-        </div>
+        <div class="notice">📩 Quer saber sua posição exata na fila? Fale com nossa equipe pelo e-mail <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a>.</div>
 
-        <div class="grid-3 toolbar" style="align-items:end;margin-top:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;margin-top:12px">
           <div>
             <label for="postoSelect">Posto</label>
             <div class="select-wrap"><select id="postoSelect"></select></div>
@@ -72,19 +103,19 @@
             <label for="mesSelect">Mês</label>
             <div class="select-wrap"><select id="mesSelect"></select></div>
           </div>
-          <div class="align-end">
+          <div style="display:flex;align-items:center">
             <button id="refreshBtn" class="btn">Recarregar</button>
           </div>
         </div>
 
-        <div class="chips">
+        <div class="chips" style="margin-top:12px">
           <div class="chip" id="pillPosto">Posto: —</div>
           <div class="chip" id="pillMes">Mês: —</div>
           <div class="chip" id="pillStamp">Atualizado: —</div>
         </div>
 
         <div class="sectionTitle">Totais conforme o filtro</div>
-        <div class="grid-2">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="card small">
             <div class="label">🕒 Em espera — mês selecionado do posto</div>
             <div id="filaMes" class="value">—</div>
@@ -100,7 +131,7 @@
         <div class="sectionTitle">Resumo por posto (soma de todos os meses)</div>
         <div id="postoResumo" class="list"></div>
 
-        <div id="error" class="error"></div>
+        <div id="error" class="error" style="color:#d64545;display:none;margin-top:8px"></div>
       </section>
     </main>
 
@@ -126,38 +157,123 @@
     </nav>
   </aside>
 
-  <!-- Mantive app.js (responsável por loadData, render, etc) -->
-  <script src="app.js"></script>
-
+  <!-- painel logic (load data, populate filters and UI) -->
   <script>
-  (function(){
-    const byIdOrClass = (id, cls) => document.getElementById(id) || document.querySelector('.' + cls);
-    const toggleBtn = byIdOrClass('drawerToggle','drawer-toggle');
-    const drawer = byIdOrClass('sideDrawer','side-drawer');
-    const overlay = byIdOrClass('drawerOverlay','drawer-overlay') || (function(){
-      const o = document.createElement('div'); o.id = 'drawerOverlay';
-      o.style.position='fixed'; o.style.inset='0'; o.style.background='rgba(0,0,0,0.32)';
-      o.style.display='none'; o.style.zIndex='90'; document.body.appendChild(o); return o;
+    (function(){
+      const $ = s=>document.querySelector(s);
+      const elPosto = $('#postoSelect'), elMes = $('#mesSelect'), elBtn = $('#refreshBtn');
+      const elPPosto = $('#pillPosto'), elPMes = $('#pillMes'), elPStamp = $('#pillStamp');
+      const elFilaMes = $('#filaMes'), elFilaMesObs = $('#filaMesObs');
+      const elPostoAcum = $('#postoAcumFila'), elPostoAcumObs = $('#postoAcumFilaObs');
+      const elGeralAcum = $('#geralAcumFila'); const elAgTotal = $('#agTotal'); const elResumo = $('#postoResumo');
+      const elErr = $('#error');
+      let DATA = null;
+      const nomes=["","jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+      function parseRank(k){
+        const m=/^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
+        if(m){const y=+m[1], m1=+m[2], m2=m[3]?+m[3]:null;return y*12+m1+(m2?0.5:0);}
+        const s=k.toLowerCase();
+        if(/fev/.test(s))return 2; if(/mar/.test(s))return 3; if(/mai/.test(s))return 5;
+        if(/jun/.test(s))return 6; if(/jul.*ago|jul\/ago|jul-ago/.test(s))return 7.5;
+        if(/ago/.test(s))return 8; if(/set/.test(s))return 9; return 0;
+      }
+      function labelMes(k){
+        const m=/^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(k);
+        if(m){const y=m[1], m1=+m[2], m2=m[3]?+m[3]:null;return m2?`${nomes[m1]}+${nomes[m2]}/${y}`:`${nomes[m1]}/${y}`;}
+        return k;
+      }
+      function stamp(iso){ try{const d=new Date(iso);const two=n=>String(n).padStart(2,'0');return `${two(d.getDate())}/${two(d.getMonth()+1)}/${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}`;}catch{return '—'} }
+      function animate(el,to){ const from=Number(el.textContent.replace(/\D/g,''))||0; const target=Number(to)||0; const diff=target-from; const steps=12;
+        if(diff===0){el.textContent=String(target);return;}
+        let i=0; const tick=()=>{ i++; el.textContent=String(Math.round(from+diff*(i/steps))); if(i<steps) requestAnimationFrame(tick); }; requestAnimationFrame(tick);
+      }
+      function getPostos(){ return Object.keys(DATA.postos||{}).sort((a,b)=>a.localeCompare(b,'pt')); }
+      function getMeses(){ const set=new Set(); for(const p of Object.values(DATA.postos||{})) for(const k of Object.keys(p)) set.add(k); return [...set].sort((a,b)=>parseRank(b)-parseRank(a)); }
+      function somaPostoMes(p,m){ return Number((DATA.postos?.[p]||{})[m]?.fila||0); }
+      function somaMesFila(m){ let t=0; for(const p of Object.keys(DATA.postos||{})) t+=somaPostoMes(p,m); return t; }
+      function somaPostoTodos(p){ let t=0; for(const k of Object.keys(DATA.postos?.[p]||{})) t+=Number(DATA.postos[p][k].fila||0); return t; }
+      function somaGeralFila(){ let t=0; for(const p of Object.keys(DATA.postos||{})) t+=somaPostoTodos(p); return t; }
+      function populaFiltros(){
+        elPosto.innerHTML=''; const optAll=document.createElement('option'); optAll.value='__ALL__'; optAll.textContent='Todos os postos'; elPosto.appendChild(optAll);
+        for(const p of getPostos()){ const o=document.createElement('option'); o.value=p; o.textContent=p; elPosto.appendChild(o); }
+        elMes.innerHTML=''; for(const m of getMeses()){ const o=document.createElement('option'); o.value=m; o.textContent=labelMes(m); elMes.appendChild(o); }
+        const hash=new URLSearchParams(location.hash.replace(/^#/,'')); const hp=hash.get('posto'), hm=hash.get('mes');
+        elPosto.value=(hp && (hp==='__ALL__' || getPostos().includes(hp)))?hp:'__ALL__';
+        elMes.value=(hm && getMeses().includes(hm))?hm:(getMeses()[0]||'');
+        atualizaChips();
+      }
+      function atualizaChips(){ elPPosto.textContent='Posto: '+(elPosto.value==='__ALL__'?'Todos':elPosto.value); elPMes.textContent='Mês: '+labelMes(elMes.value||'—'); elPStamp.textContent='Atualizado: '+(DATA?.atualizado_em?stamp(DATA.atualizado_em):'—'); const p=new URLSearchParams(); p.set('posto',elPosto.value); p.set('mes',elMes.value); history.replaceState(null,'','#'+p.toString()); }
+      function render(){
+        elErr.style.display='none';
+        const posto=elPosto.value, mes=elMes.value;
+        animate(elGeralAcum, somaGeralFila());
+        animate(elAgTotal, Number(DATA.agendados_total || 0));
+        if(!mes){ elFilaMes.textContent='0'; elFilaMesObs.textContent='Selecione um mês.'; elPostoAcum.textContent='—'; elPostoAcumObs.textContent='Selecione um posto.'; return; }
+        const filaMes = (posto==='__ALL__') ? somaMesFila(mes) : somaPostoMes(posto, mes);
+        animate(elFilaMes, filaMes);
+        elFilaMesObs.textContent = (posto==='__ALL__') ? 'Somando todos os postos neste mês.' : 'Total deste posto no mês escolhido.';
+        if(posto==='__ALL__'){ elPostoAcum.textContent='—'; elPostoAcumObs.textContent='Escolha um posto para ver o total dele.'; } else {
+          const a = somaPostoTodos(posto);
+          animate(elPostoAcum, a);
+          elPostoAcumObs.textContent='Somando todos os meses registrados para este posto.';
+        }
+        const arr = Object.keys(DATA.postos||{}).map(p=>[p,somaPostoTodos(p)]).sort((a,b)=>b[1]-a[1]);
+        elResumo.innerHTML='';
+        for(const [name,total] of arr){
+          const row=document.createElement('div'); row.className='row'; row.innerHTML=`<b>${name}</b><span>${total}</span>`; elResumo.appendChild(row);
+        }
+      }
+      async function loadData(){
+        try{
+          elErr.style.display='none';
+          const res = await fetch('data.json?cb='+Date.now());
+          if(!res.ok) throw new Error('HTTP '+res.status);
+          const txt = await res.text();
+          try{ DATA = JSON.parse(txt); }catch(e){ throw new Error('JSON inválido: '+e.message); }
+          populaFiltros(); render();
+        }catch(e){
+          elErr.textContent='Não foi possível carregar os dados. Veja se o "data.json" está na mesma pasta. Detalhe: '+e.message; elErr.style.display='block';
+        }
+      }
+      elPosto.addEventListener('change', ()=>{ atualizaChips(); render(); });
+      elMes.addEventListener('change',   ()=>{ atualizaChips(); render(); });
+      elBtn.addEventListener('click', loadData);
+      window.loadData = loadData;
+      loadData();
+      setInterval(loadData, 60000);
     })();
-    const closeBtn = document.getElementById('drawerClose') || document.querySelector('[data-drawer-close]');
-    if(!drawer || !toggleBtn) return;
-    function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); overlay.style.display='block'; overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
-    function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
-    toggleBtn.addEventListener('click', function(evt){ evt.stopPropagation(); if(drawer.classList.contains('open')) closeDrawer(); else openDrawer(); this.setAttribute('aria-expanded', drawer.classList.contains('open') ? 'true' : 'false'); });
-    overlay.addEventListener('click', function(){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
-    if(closeBtn) closeBtn.addEventListener('click', function(){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
-    drawer.addEventListener('click', function(e){ const item = e.target.closest('.drawer-item, [data-drawer-item]'); if(item){ setTimeout(()=> closeDrawer(), 120); } });
-    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && drawer.classList.contains('open')){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); } });
-    document.addEventListener('click', function(e){ if(!drawer.classList.contains('open')) return; if(e.target.closest('#sideDrawer') || e.target.closest('#drawerToggle')) return; closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
-    const observer = new MutationObserver(()=>{ if(drawer.classList.contains('open')){ const first = drawer.querySelector('a, button, [tabindex]:not([tabindex="-1"])'); if(first) first.focus(); } });
-    observer.observe(drawer, { attributes: true, attributeFilter:['class'] });
+  </script>
 
-    // ligar botão do drawer que atualiza dados ao loadData de app.js (se houver)
-    const refreshBtn = document.getElementById('refreshDataBtn');
-    if(refreshBtn){
-      refreshBtn.addEventListener('click', ()=>{ if(window.loadData) window.loadData(); });
-    }
-  })();
+  <!-- drawer script (same robust one) -->
+  <script>
+    (function(){
+      const toggleSelectors = ['#drawerToggle', '.menu-btn', '.drawer-toggle', '.hamburger'];
+      const toggles = Array.from(new Set(toggleSelectors.flatMap(s => Array.from(document.querySelectorAll(s)))));
+      const drawer = document.getElementById('sideDrawer') || document.querySelector('.side-drawer');
+      let overlay = document.getElementById('drawerOverlay') || document.querySelector('.drawer-overlay');
+      if(!overlay){
+        overlay = document.createElement('div'); overlay.id='drawerOverlay'; overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.background='rgba(0,0,0,0.32)'; overlay.style.display='none'; overlay.style.zIndex='90'; document.body.appendChild(overlay);
+      }
+      const internalClose = Array.from(document.querySelectorAll('#drawerClose, [data-drawer-close], .drawer-close-btn'));
+      if(!drawer || toggles.length === 0) return;
+      drawer.setAttribute('role', drawer.getAttribute('role') || 'dialog'); drawer.setAttribute('aria-hidden', drawer.classList.contains('open') ? 'false' : 'true');
+      function setExpanded(exp){ toggles.forEach(t => { try{ t.setAttribute('aria-expanded', exp ? 'true' : 'false'); }catch(e){} }); }
+      function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); overlay.style.display='block'; overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; setExpanded(true); setTimeout(()=>{ const first = drawer.querySelector('a,button,[tabindex]:not([tabindex="-1"])'); if(first) first.focus(); },220); }
+      function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; document.body.style.overflow=''; setExpanded(false); }
+      toggles.forEach(t=>{ if(t._drawerBound) return; t._drawerBound=true; t.style.cursor='pointer'; t.addEventListener('click', e=>{ e.stopPropagation(); if(drawer.classList.contains('open')) closeDrawer(); else openDrawer(); }); });
+      overlay.addEventListener('click', ()=>{ closeDrawer(); });
+      internalClose.forEach(b=>{ if(b._drawerBoundClose) return; b._drawerBoundClose=true; b.addEventListener('click', e=>{ e.stopPropagation(); closeDrawer(); }); });
+      drawer.addEventListener('click', function(e){ const item = e.target.closest('.drawer-item, [data-drawer-item], a, button'); if(!item) return; setTimeout(()=> closeDrawer(), 120); });
+      document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape' && drawer.classList.contains('open')) closeDrawer(); });
+      document.addEventListener('click', function(e){ if(!drawer.classList.contains('open')) return; if(e.target.closest('#sideDrawer') || toggles.some(t => t.contains(e.target) || t === e.target)) return; closeDrawer(); });
+      const hideOtherOverlays = ()=> { Array.from(document.querySelectorAll('.drawer-overlay, #drawerOverlay')).forEach(o=>{ if(o !== overlay) o.style.display = 'none'; }); };
+      const mo = new MutationObserver(()=>{ hideOtherOverlays(); setExpanded(drawer.classList.contains('open')); });
+      mo.observe(drawer, { attributes:true, attributeFilter:['class'] });
+
+      // connect drawer refresh button (if present) to window.loadData
+      const refreshDataBtn = document.getElementById('refreshDataBtn');
+      if(refreshDataBtn) refreshDataBtn.addEventListener('click', ()=>{ if(window.loadData) window.loadData(); });
+    })();
   </script>
 </body>
 </html>
