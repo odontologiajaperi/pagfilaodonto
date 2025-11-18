@@ -5,12 +5,7 @@
   <title>Avisos — Saúde Bucal Japeri</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" type="image/png" href="brasil-sorridente-logo222.png?v=2">
-  <style>
-    .site-title { max-width:46vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .hero-illustration img { max-width:120px; }
-    @media (min-width:900px){ .hero-illustration img { max-width:220px } }
-  </style>
+  <link rel="icon" href="brasil-sorridente-logo222.png?v=2" type="image/png">
 </head>
 <body>
   <div class="wrap">
@@ -76,23 +71,19 @@
     const byIdOrClass = (id, cls) => document.getElementById(id) || document.querySelector('.' + cls);
     const toggleBtn = byIdOrClass('drawerToggle','drawer-toggle');
     const drawer = byIdOrClass('sideDrawer','side-drawer');
-    const overlay = byIdOrClass('drawerOverlay','drawer-overlay') || (function(){
-      const o = document.createElement('div'); o.id = 'drawerOverlay';
-      o.style.position='fixed'; o.style.inset='0'; o.style.background='rgba(0,0,0,0.32)';
-      o.style.display='none'; o.style.zIndex='90'; document.body.appendChild(o); return o;
+    const overlay = document.getElementById('drawerOverlay') || (function(){
+      const o=document.createElement('div'); o.id='drawerOverlay'; o.style.position='fixed'; o.style.inset='0'; o.style.background='rgba(0,0,0,0.32)'; o.style.display='none'; o.style.zIndex='90'; document.body.appendChild(o); return o;
     })();
     const closeBtn = document.getElementById('drawerClose') || document.querySelector('[data-drawer-close]');
     if(!drawer || !toggleBtn) return;
     function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); overlay.style.display='block'; overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
     function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
-    toggleBtn.addEventListener('click', function(evt){ evt.stopPropagation(); if(drawer.classList.contains('open')) closeDrawer(); else openDrawer(); this.setAttribute('aria-expanded', drawer.classList.contains('open') ? 'true' : 'false'); });
+    toggleBtn.addEventListener('click', function(e){ e.stopPropagation(); if(drawer.classList.contains('open')) closeDrawer(); else openDrawer(); this.setAttribute('aria-expanded', drawer.classList.contains('open') ? 'true' : 'false'); });
     overlay.addEventListener('click', function(){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
     if(closeBtn) closeBtn.addEventListener('click', function(){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
     drawer.addEventListener('click', function(e){ const item = e.target.closest('.drawer-item, [data-drawer-item]'); if(item){ setTimeout(()=> closeDrawer(), 120); } });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && drawer.classList.contains('open')){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); } });
     document.addEventListener('click', function(e){ if(!drawer.classList.contains('open')) return; if(e.target.closest('#sideDrawer') || e.target.closest('#drawerToggle')) return; closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
-    const observer = new MutationObserver(()=>{ if(drawer.classList.contains('open')){ const first = drawer.querySelector('a, button, [tabindex]:not([tabindex="-1"])'); if(first) first.focus(); } });
-    observer.observe(drawer, { attributes: true, attributeFilter:['class'] });
   })();
   </script>
 </body>
