@@ -5,13 +5,7 @@
   <title>Início — Saúde Bucal Japeri</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" type="image/png" href="brasil-sorridente-logo222.png?v=2">
-  <!-- Pequenos ajustes locais para evitar sobreposição no mobile -->
-  <style>
-    .site-title { max-width:46vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .hero-illustration img { max-width:120px; height:auto; display:block; margin-left:auto; }
-    @media (min-width:900px){ .hero-illustration img { max-width:220px } }
-  </style>
+  <link rel="icon" href="brasil-sorridente-logo222.png?v=2" type="image/png">
 </head>
 <body>
   <div class="wrap">
@@ -28,14 +22,12 @@
         </div>
       </div>
 
-      <!-- desktop nav -->
       <nav class="nav" aria-label="Navegação">
         <a href="index.html" class="active">Início</a>
         <a href="avisos.html">Avisos</a>
         <a href="painel.html">Painel</a>
       </nav>
 
-      <!-- botão 3-pontos abre drawer lateral -->
       <button id="drawerToggle" class="menu-btn" aria-label="Abrir opções" title="Opções">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
       </button>
@@ -47,21 +39,19 @@
         <div class="hero-content">
           <h2>Bem-vindo ao Painel de Saúde Bucal</h2>
           <p class="lead">Acompanhe o total de pacientes em espera e os agendamentos. Em breve será possível entrar na fila pelo site.</p>
-
-          <div class="hero-quick" style="margin-top:14px">
+          <div class="hero-quick" style="margin-top:16px; display:flex; gap:18px; align-items:center;">
             <div>
-              <strong id="homeGeral">—</strong>
-              <div class="muted">Em espera — acumulado geral</div>
+              <div class="muted" style="font-size:12px">Em espera — acumulado geral</div>
+              <div id="homeGeral" class="big-number big1">—</div>
             </div>
             <div>
-              <strong id="homeAg">—</strong>
-              <div class="muted">Agendados (total)</div>
+              <div class="muted" style="font-size:12px">Agendados (total)</div>
+              <div id="homeAg" class="big-number big2">—</div>
             </div>
           </div>
         </div>
-
         <div class="hero-illustration">
-          <img src="brasil-sorridente-logo.png" alt="">
+          <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente">
         </div>
       </section>
 
@@ -88,9 +78,8 @@
     </footer>
   </div>
 
-  <!-- drawer overlay + drawer (eles existem em todas as páginas) -->
+  <!-- drawer -->
   <div id="drawerOverlay" aria-hidden="true"></div>
-
   <aside id="sideDrawer" class="side-drawer" aria-hidden="true" role="dialog" aria-label="Opções do site">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
       <strong>Opções</strong>
@@ -106,29 +95,50 @@
     </nav>
   </aside>
 
-  <!-- Drawer script robusto (cole exatamente) -->
+  <!-- small script to load top numbers from data.json if exists -->
+  <script>
+    (function(){
+      async function loadTop(){
+        try{
+          const res = await fetch('data.json?cb=' + Date.now());
+          if(!res.ok) return;
+          const DATA = await res.json();
+          // soma geral
+          let geral = 0;
+          for(const p of Object.keys(DATA.postos||{})) {
+            for(const m of Object.keys(DATA.postos[p]||{})) {
+              geral += Number(DATA.postos[p][m].fila || 0);
+            }
+          }
+          document.getElementById('homeGeral').textContent = geral;
+          document.getElementById('homeAg').textContent = Number(DATA.agendados_total || 0);
+        }catch(e){
+          console.log('top load error', e);
+        }
+      }
+      loadTop();
+    })();
+  </script>
+
+  <!-- drawer behavior (robusto) -->
   <script>
   (function(){
     const byIdOrClass = (id, cls) => document.getElementById(id) || document.querySelector('.' + cls);
     const toggleBtn = byIdOrClass('drawerToggle','drawer-toggle');
     const drawer = byIdOrClass('sideDrawer','side-drawer');
-    const overlay = byIdOrClass('drawerOverlay','drawer-overlay') || (function(){
-      const o = document.createElement('div'); o.id = 'drawerOverlay';
-      o.style.position='fixed'; o.style.inset='0'; o.style.background='rgba(0,0,0,0.32)';
-      o.style.display='none'; o.style.zIndex='90'; document.body.appendChild(o); return o;
+    const overlay = document.getElementById('drawerOverlay') || (function(){
+      const o=document.createElement('div'); o.id='drawerOverlay'; o.style.position='fixed'; o.style.inset='0'; o.style.background='rgba(0,0,0,0.32)'; o.style.display='none'; o.style.zIndex='90'; document.body.appendChild(o); return o;
     })();
     const closeBtn = document.getElementById('drawerClose') || document.querySelector('[data-drawer-close]');
     if(!drawer || !toggleBtn) return;
     function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); overlay.style.display='block'; overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
     function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; document.body.style.overflow=''; }
-    toggleBtn.addEventListener('click', function(evt){ evt.stopPropagation(); if(drawer.classList.contains('open')) closeDrawer(); else openDrawer(); this.setAttribute('aria-expanded', drawer.classList.contains('open') ? 'true' : 'false'); });
+    toggleBtn.addEventListener('click', function(e){ e.stopPropagation(); if(drawer.classList.contains('open')) closeDrawer(); else openDrawer(); this.setAttribute('aria-expanded', drawer.classList.contains('open') ? 'true' : 'false'); });
     overlay.addEventListener('click', function(){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
     if(closeBtn) closeBtn.addEventListener('click', function(){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
     drawer.addEventListener('click', function(e){ const item = e.target.closest('.drawer-item, [data-drawer-item]'); if(item){ setTimeout(()=> closeDrawer(), 120); } });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && drawer.classList.contains('open')){ closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); } });
     document.addEventListener('click', function(e){ if(!drawer.classList.contains('open')) return; if(e.target.closest('#sideDrawer') || e.target.closest('#drawerToggle')) return; closeDrawer(); if(toggleBtn) toggleBtn.setAttribute('aria-expanded','false'); });
-    const observer = new MutationObserver(()=>{ if(drawer.classList.contains('open')){ const first = drawer.querySelector('a, button, [tabindex]:not([tabindex="-1"])'); if(first) first.focus(); } });
-    observer.observe(drawer, { attributes: true, attributeFilter:['class'] });
   })();
   </script>
 </body>
