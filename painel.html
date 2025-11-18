@@ -6,10 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" type="image/png" href="brasil-sorridente-logo222.png?v=2">
+
+  <!-- ajustes drawer + header -->
+  <style>
+    .site-title { max-width:46vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .hero-illustration img{ max-width:120px; }
+    #drawerOverlay{position:fixed; inset:0;background:rgba(0,0,0,0.32);display:none;z-index:90}
+    .side-drawer{position:fixed; right:0; top:0; height:100vh; width:84%; max-width:320px; background:#fff; box-shadow:-8px 0 30px rgba(0,0,0,0.12); transform:translateX(110%); transition:transform .26s ease; z-index:100; padding:18px; overflow:auto; border-left:1px solid rgba(15,139,214,0.06);}
+    .side-drawer.open{transform:translateX(0)}
+  </style>
 </head>
 <body>
   <div class="wrap">
-    <!-- HEADER -->
     <header class="topbar">
       <div class="header-left">
         <div class="logos">
@@ -22,42 +30,23 @@
         </div>
       </div>
 
-      <!-- desktop nav -->
       <nav class="nav" aria-label="Navegação">
         <a href="index.html">Início</a>
         <a href="avisos.html">Avisos</a>
         <a href="painel.html" class="active">Painel</a>
       </nav>
 
-      <!-- menu 3-pontos (desktop) -->
-      <div class="menu-wrap" style="margin-left:8px">
-        <button id="menuToggle" class="menu-btn" aria-haspopup="true" aria-expanded="false" title="Opções">
+      <!-- drawer toggle -->
+      <div style="display:flex;align-items:center;gap:8px">
+        <button id="drawerToggle" class="menu-btn" aria-label="Abrir opções" title="Opções">
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
         </button>
-        <div id="menuPanel" class="menu-panel" role="menu" aria-hidden="true">
-          <button class="menu-item" data-action="goto" data-target="index.html">Ir para Início</button>
-          <button class="menu-item" data-action="goto" data-target="avisos.html">Ir para Avisos</button>
-          <button class="menu-item" data-action="goto" data-target="painel.html">Ir para Painel</button>
-          <hr>
-          <a class="menu-item" href="data.json" download="data.json">Baixar data.json</a>
-          <button class="menu-item" data-action="refresh">Atualizar dados</button>
-        </div>
-      </div>
-
-      <!-- mobile hamburger -->
-      <button class="hamburger" aria-label="Abrir menu" aria-expanded="false" type="button" style="margin-left:10px">
-        <span class="bar"></span>
-      </button>
-
-      <!-- mobile nav panel -->
-      <div class="mobile-nav-panel" role="navigation" aria-hidden="true">
-        <a href="index.html" class="tabbtn">Início</a>
-        <a href="avisos.html" class="tabbtn">Avisos</a>
-        <a href="painel.html" class="tabbtn">Painel</a>
+        <button class="hamburger" aria-label="Abrir menu mobil" type="button" style="margin-left:6px">
+          <span class="bar"></span>
+        </button>
       </div>
     </header>
 
-    <!-- MAIN -->
     <main>
       <section class="card">
         <div class="grid-2" style="margin-bottom:12px">
@@ -126,51 +115,44 @@
     </footer>
   </div>
 
-  <!-- app.js (painel behaviors) -->
+  <div id="drawerOverlay" aria-hidden="true"></div>
+  <aside id="sideDrawer" class="side-drawer" aria-hidden="true" role="dialog" aria-label="Opções do site">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <strong>Opções</strong>
+      <button id="drawerClose" style="margin-left:auto;padding:6px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer">Fechar</button>
+    </div>
+    <nav>
+      <a class="drawer-item" href="index.html">Início</a>
+      <a class="drawer-item" href="avisos.html">Avisos</a>
+      <a class="drawer-item" href="painel.html">Painel</a>
+      <hr>
+      <a class="drawer-item" href="data.json" download>Baixar data.json</a>
+      <button id="refreshDataBtn" class="drawer-item" style="background:transparent;border:0;text-align:left;cursor:pointer">Atualizar dados</button>
+    </nav>
+  </aside>
+
+  <!-- carrega app.js (mantive igual) -->
   <script src="app.js"></script>
 
-  <!-- menu toggle & mobile nav toggle -->
+  <!-- drawer script -->
   <script>
-    // toggle three-dots menu (desktop)
     (function(){
-      const menuToggle = document.getElementById('menuToggle');
-      const menuPanel = document.getElementById('menuPanel');
-      if(menuToggle && menuPanel){
-        menuToggle.addEventListener('click', ()=> {
-          const open = menuPanel.getAttribute('aria-hidden') === 'false';
-          menuPanel.setAttribute('aria-hidden', open ? 'true' : 'false');
-          menuToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
-        });
-        document.addEventListener('click', (e)=> {
-          if(!e.target.closest('.menu-wrap')) {
-            if(menuPanel) { menuPanel.setAttribute('aria-hidden','true'); menuToggle.setAttribute('aria-expanded','false'); }
-          }
-        });
-        menuPanel.addEventListener('click', (e)=> {
-          const btn = e.target.closest('[data-action]');
-          if(!btn) return;
-          const action = btn.dataset.action;
-          if(action === 'goto'){ location.href = btn.dataset.target; }
-          if(action === 'refresh'){ /* app.js has loadData */ if(window.loadData) window.loadData(); }
-        });
-      }
-    })();
+      const toggle = document.getElementById('drawerToggle');
+      const drawer = document.getElementById('sideDrawer');
+      const overlay = document.getElementById('drawerOverlay');
+      const closeBtn = document.getElementById('drawerClose');
+      const refreshDataBtn = document.getElementById('refreshDataBtn');
 
-    // mobile nav toggle
-    (function(){
-      const ham = document.querySelector('.hamburger');
-      const mpanel = document.querySelector('.mobile-nav-panel');
-      if(!ham || !mpanel) return;
-      ham.addEventListener('click', ()=> {
-        const open = mpanel.classList.toggle('open');
-        ham.setAttribute('aria-expanded', open ? 'true' : 'false');
-        mpanel.setAttribute('aria-hidden', open ? 'false' : 'true');
-      });
-      document.addEventListener('click', (e)=> {
-        if(!mpanel.classList.contains('open')) return;
-        if(e.target.closest('.mobile-nav-panel') || e.target.closest('.hamburger')) return;
-        mpanel.classList.remove('open'); ham.setAttribute('aria-expanded','false'); mpanel.setAttribute('aria-hidden','true');
-      });
+      function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); overlay.style.display='block'; overlay.setAttribute('aria-hidden','false'); }
+      function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); }
+
+      toggle?.addEventListener('click', (e)=>{ e.stopPropagation(); openDrawer(); });
+      closeBtn?.addEventListener('click', closeDrawer);
+      overlay?.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', (ev)=>{ if(ev.key==='Escape') closeDrawer(); });
+      drawer?.addEventListener('click', (e)=>{ if(e.target.closest('.drawer-item')) closeDrawer(); });
+
+      refreshDataBtn?.addEventListener('click', ()=>{ if(window.loadData) window.loadData(); });
     })();
   </script>
 </body>
