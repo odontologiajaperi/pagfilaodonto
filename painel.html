@@ -3,11 +3,135 @@
 <head>
   <meta charset="utf-8" />
   <title>Painel — Saúde Bucal Japeri</title>
-... (restante do head e styles) ...
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <link rel="icon" href="brasil-sorridente-logo222.png?v=2" type="image/png">
+  <style>
+    /* same styles as index/avisos */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+    :root{--bg:#EAF5FF;--panel:#FFFFFF;--line:#DDEAF7;--fg:#0F2740;--muted:#6B87A4;--brand:#0F8BD6;--accent:#1DC56F;--warning:#FFF3B0;--chip:#F3FAFF;--r-sm:8px;--r-md:12px;--r-lg:20px;--shadow:0 8px 24px rgba(16,40,80,0.06);--maxw:1100px;--transition:all 0.3s cubic-bezier(0.4,0,0.2,1)}
+    *{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;background:linear-gradient(180deg,#fff 0%,var(--bg) 100%);color:var(--fg);padding:12px;transition:var(--transition)}
+    .wrap{max-width:var(--maxw);margin:0 auto}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;position:fixed;top:0;left:0;right:0;background:#fff;z-index:80;padding:10px 12px;box-shadow:0 2px 8px rgba(16,40,80,0.08);transition:transform 0.3s ease;border-bottom:1px solid var(--line);min-height:60px}
+    body{padding-top:80px}
+    .topbar.hide{transform:translateY(-100%)}
+    .header-left{display:flex;align-items:center;gap:8px;min-width:0;flex:0 1 auto}
+    .logos{display:flex;gap:6px;align-items:center;flex-shrink:0}
+    .logo-small{height:38px;width:auto;display:block}
+    .site-title{font-weight:800;font-size:14px;line-height:1.2;max-width:calc(100vw - 180px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .muted.small{font-size:11px;color:var(--muted);display:none}@media(min-width:600px){.muted.small{display:block}}
+    .nav{display:flex;gap:8px;align-items:center}
+    .nav a{padding:8px 10px;border-radius:10px;color:var(--muted);text-decoration:none;font-weight:700}
+    .nav a.active{color:var(--brand);background:rgba(15,139,214,0.06);border-radius:10px}
+    .menu-btn{background:var(--brand);border:none;padding:8px 12px;border-radius:10px;cursor:pointer;display:flex;gap:5px;align-items:center;transition:var(--transition);flex-shrink:0;color:#fff;font-weight:700;font-size:12px;box-shadow:0 2px 8px rgba(15,139,214,0.2);white-space:nowrap}.menu-btn:hover{background:linear-gradient(135deg,var(--brand),#0a6ba8);transform:translateY(-2px);box-shadow:0 4px 12px rgba(15,139,214,0.3)}.menu-btn:active{transform:translateY(0)}
+    .menu-btn .dot{width:5px;height:5px;background:#fff;border-radius:50%}
+    .card{background:var(--panel);border-radius:14px;padding:16px;border:1px solid var(--line);box-shadow:var(--shadow);margin-bottom:14px;transition:var(--transition)}.card:hover{box-shadow:0 12px 32px rgba(16,40,80,0.12);border-color:var(--brand)}
+    .sectionTitle{font-weight:800;color:var(--muted);margin:12px 0 8px;font-size:14px}
+    .bigcard{background:#fff;border-radius:12px;padding:14px;border:1px solid var(--line);margin-bottom:10px;transition:var(--transition)}.bigcard:hover{border-color:var(--brand);box-shadow:0 4px 12px rgba(15,139,214,0.1)}
+    .bigcard-title{font-weight:800;color:var(--fg);margin-bottom:8px;font-size:14px}
+    .big-number{font-weight:900;font-size:32px;line-height:1}
+    .big1{color:var(--brand)} .big2{color:var(--accent)}
+    .bigcard-foot{color:var(--muted);font-size:13px;margin-top:8px}
+    .select-wrap{position:relative}
+    .select-wrap::after{content:"▾";position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--brand)}
+    select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);appearance:none;background:#fff;font-weight:700}
+    .btn{padding:10px 12px;border-radius:12px;border:0;background:var(--brand);color:#fff;font-weight:800;cursor:pointer;transition:var(--transition)}.btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(15,139,214,0.3)}.btn:active{transform:translateY(0)}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+    .chip{background:var(--chip);border:1px solid var(--line);padding:8px 12px;border-radius:999px;color:var(--muted);font-weight:700;transition:var(--transition)}.chip:hover{background:rgba(15,139,214,0.08);border-color:var(--brand)}
+    .label{font-size:14px;color:var(--fg);margin-bottom:8px;font-weight:800}
+    .value{font-weight:900;font-size:22px;color:var(--brand);background:linear-gradient(0deg,#fff 0 40%, var(--warning) 40% 100%);padding:6px 10px;border-radius:8px;display:inline-block}
+    .sub{color:var(--muted);font-size:13px;margin-top:8px}
+    .list{margin-top:8px}
+    .row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;margin-bottom:8px;transition:var(--transition)}.row:hover{background:#f8fbff;border-color:var(--brand)}
+    .notice{margin:12px 0;padding:12px;border-radius:12px;background:linear-gradient(90deg,#f8fbff,#fff);border-left:6px solid var(--brand);color:var(--fg);font-weight:700;transition:var(--transition)}.notice:hover{box-shadow:0 4px 12px rgba(15,139,214,0.12)}
+    .footer{display:flex;flex-direction:column;align-items:center;gap:8px;margin:14px 0;color:var(--muted);font-size:13px}
+    .footer img{height:36px}
+    #drawerOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.32);display:none;z-index:90;opacity:0;transition:opacity 0.26s ease}#drawerOverlay.open{opacity:1}
+    .side-drawer{position:fixed;right:0;top:0;height:100vh;width:86%;max-width:320px;background:#fff;box-shadow:-12px 0 30px rgba(0,0,0,0.14);transform:translateX(110%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);z-index:100;padding:16px;overflow:auto;border-left:1px solid rgba(15,139,214,0.06)} .side-drawer:not(.open){transform:translateX(110%)}
+    .side-drawer.open{transform:translateX(0)}
+    .drawer-item{display:block;padding:12px 14px;border-radius:10px;color:var(--fg);font-weight:700;text-decoration:none;transition:var(--transition);font-size:15px}
+    .drawer-item:hover{background:#f0f8ff;color:var(--brand);transform:translateX(4px)}
+    a:focus,button:focus,select:focus{outline:3px solid rgba(15,139,214,0.12);outline-offset:2px}a,button,select{transition:var(--transition)}
+    @media(min-width:600px){.logo-small{height:44px}.topbar{padding:12px 16px;gap:12px}.wrap{padding:12px}}
+    @media(min-width:900px){.logo-small{height:56px}.big-number{font-size:clamp(36px,6vw,72px)}.wrap{padding:8px}.menu-btn{display:inline-flex;padding:10px 14px;font-size:13px}.side-drawer{right:16px;width:280px;transform:translateX(20px);border-radius:12px}#drawerOverlay{display:none}.card{margin-bottom:16px}.topbar{padding:12px 20px}}
+    .menu-btn:not(:first-of-type){display:none !important} .nav{display:none !important}
+  </style>
 </head>
 <body>
   <div class="wrap">
-... (restante do header e main) ...
+    <header class="topbar">
+      <div class="header-left">
+        <div class="logos">
+          <img src="japeri-logo.png" alt="Japeri" class="logo-small">
+          <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente" class="logo-small">
+        </div>
+
+      </div>
+
+      
+
+      <button id="drawerToggle" class="menu-btn" aria-label="Abrir menu" title="Abrir menu"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span style="font-size:12px">Menu</span></button>
+    </header>
+
+    <main>
+      <section class="card" style="margin-bottom:16px">
+        <div class="muted small" style="font-size:13px;margin-bottom:12px">Painel de acompanhamento (interno)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div class="bigcard">
+            <div class="bigcard-title">🟦 Em espera — Total</div>
+            <div id="geralAcumFila" class="big-number big1">—</div>
+            <div class="bigcard-foot">Soma de todos os postos em todos os meses registrados.</div>
+          </div>
+
+          <div class="bigcard">
+            <div class="bigcard-title">📅 Agendados — Total</div>
+            <div id="agTotal" class="big-number big2">—</div>
+            <div class="bigcard-foot">Total de pacientes com agendamento.</div>
+          </div>
+        </div>
+
+        <div class="notice">📩 Quer saber sua posição exata na fila? Fale com nossa equipe pelo e-mail <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a>.</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;margin-top:12px">
+          <div>
+            <label for="postoSelect">Posto</label>
+            <div class="select-wrap"><select id="postoSelect"></select></div>
+          </div>
+          <div>
+            <label for="mesSelect">Mês</label>
+            <div class="select-wrap"><select id="mesSelect"></select></div>
+          </div>
+          <div style="display:flex;align-items:center">
+            <button id="refreshBtn" class="btn">Recarregar</button>
+          </div>
+        </div>
+
+        <div class="chips" style="margin-top:12px">
+          <div class="chip" id="pillPosto">Posto: —</div>
+          <div class="chip" id="pillMes">Mês: —</div>
+          <div class="chip" id="pillStamp">Atualizado: —</div>
+        </div>
+
+        <div class="sectionTitle">Totais conforme o filtro</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="card small">
+            <div class="label">🕒 Em espera — mês selecionado do posto</div>
+            <div id="filaMes" class="value">—</div>
+            <div id="filaMesObs" class="sub"></div>
+          </div>
+          <div class="card small">
+            <div class="label">🏥 Em espera — Total do posto</div>
+            <div id="postoAcumFila" class="value">—</div>
+            <div id="postoAcumFilaObs" class="sub"></div>
+          </div>
+        </div>
+
+        <div class="sectionTitle">Resumo por posto (soma de todos os meses)</div>
+        <div id="postoResumo" class="list"></div>
+
+        <div id="error" class="error" style="color:#d64545;display:none;margin-top:8px"></div>
+      </section>
+    </main>
+
     <footer class="footer">
       <img src="japeri-logo.png" alt="Japeri">
       <div class="muted">Prefeitura de Japeri — Saúde Bucal</div>
@@ -23,12 +147,13 @@
     <nav>
       <a class="drawer-item" href="index.html">Início</a>
       <a class="drawer-item" href="avisos.html">Avisos</a>
-      <a class="drawer-item" href="painel.html">Painel</a>
-      <hr>
-      <button id="refreshDataBtn" class="drawer-item" style="background:transparent;border:0;text-align:left;cursor:pointer">Atualizar dados</button>
+      <a class="drawer-item" href="painel.html">Fila</a>
+
+      <a class="drawer-item" href="mailto:odontologiajaperi@gmail.com">Contato (e-mail)</a>
     </nav>
   </aside>
 
+  <!-- painel logic (load data, populate filters and UI) -->
   <script>
     (function(){
       const $ = s=>document.querySelector(s);
@@ -115,44 +240,61 @@
     })();
   </script>
 
+  <!-- drawer script (same robust one) -->
   <script>
     (function(){
-      const drawer = document.getElementById("sideDrawer");
-      const drawerToggle = document.getElementById("drawerToggle");
-      const drawerClose = document.getElementById("drawerClose");
-      const overlay = document.getElementById("drawerOverlay");
-
-      function openDrawer() {
-        drawer?.classList.add("open");
-        overlay?.style.setProperty('display', 'block');
-        document.body.style.overflow = 'hidden';
+      const toggleSelectors = ['#drawerToggle', '.menu-btn', '.drawer-toggle', '.hamburger'];
+      const toggles = Array.from(new Set(toggleSelectors.flatMap(s => Array.from(document.querySelectorAll(s)))));
+      const drawer = document.getElementById('sideDrawer') || document.querySelector('.side-drawer');
+      let overlay = document.getElementById('drawerOverlay') || document.querySelector('.drawer-overlay');
+      if(!overlay){
+        overlay = document.createElement('div'); overlay.id='drawerOverlay'; overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.background='rgba(0,0,0,0.32)'; overlay.style.display='none'; overlay.style.zIndex='90'; document.body.appendChild(overlay);
       }
+      const internalClose = Array.from(document.querySelectorAll('#drawerClose, [data-drawer-close], .drawer-close-btn'));
+      if(!drawer || toggles.length === 0) return;
+      drawer.setAttribute('role', drawer.getAttribute('role') || 'dialog'); drawer.setAttribute('aria-hidden', drawer.classList.contains('open') ? 'false' : 'true');
+      function setExpanded(exp){ toggles.forEach(t => { try{ t.setAttribute('aria-expanded', exp ? 'true' : 'false'); }catch(e){} }); }
+      function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); overlay.style.display='block'; overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; setExpanded(true); setTimeout(()=>{ const first = drawer.querySelector('a,button,[tabindex]:not([tabindex="-1"])'); if(first) first.focus(); },220); }
+      function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; document.body.style.overflow=''; setExpanded(false); }
+      toggles.forEach(t=>{ if(t._drawerBound) return; t._drawerBound=true; t.style.cursor='pointer'; t.addEventListener('click', e=>{ e.stopPropagation(); if(drawer.classList.contains('open')) closeDrawer(); else openDrawer(); }); });
+      overlay.addEventListener('click', ()=>{ closeDrawer(); });
+      internalClose.forEach(b=>{ if(b._drawerBoundClose) return; b._drawerBoundClose=true; b.addEventListener('click', e=>{ e.stopPropagation(); closeDrawer(); }); });
+      drawer.addEventListener('click', function(e){ const item = e.target.closest('.drawer-item, [data-drawer-item], a, button'); if(!item) return; setTimeout(()=> closeDrawer(), 120); });
+      document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape' && drawer.classList.contains('open')) closeDrawer(); });
+      document.addEventListener('click', function(e){ if(!drawer.classList.contains('open')) return; if(e.target.closest('#sideDrawer') || toggles.some(t => t.contains(e.target) || t === e.target)) return; closeDrawer(); });
+      const hideOtherOverlays = ()=> { Array.from(document.querySelectorAll('.drawer-overlay, #drawerOverlay')).forEach(o=>{ if(o !== overlay) o.style.display = 'none'; }); };
+      const mo = new MutationObserver(()=>{ hideOtherOverlays(); setExpanded(drawer.classList.contains('open')); });
+      mo.observe(drawer, { attributes:true, attributeFilter:['class'] });
 
-      function closeDrawer() {
-        drawer?.classList.remove("open");
-        overlay?.style.setProperty('display', 'none');
-        document.body.style.overflow = '';
-      }
-
-      drawerToggle?.addEventListener("click", openDrawer);
-      drawerClose?.addEventListener("click", closeDrawer);
-      overlay?.addEventListener("click", closeDrawer);
-
-      /* Fechar com tecla ESC */
-      document.addEventListener("keydown", e => {
-        if (e.key === "Escape" && drawer?.classList.contains('open')) closeDrawer();
-      });
-
-      /* Fechar ao clicar em item de navegação */
-      drawer?.addEventListener('click', function(e){
-        const item = e.target.closest('.drawer-item');
-        if(!item) return;
-        setTimeout(()=> closeDrawer(), 120);
-      });
-      
-      // Conecta o botão de atualizar à função loadData do Painel
+      // connect drawer refresh button (if present) to window.loadData
       const refreshDataBtn = document.getElementById('refreshDataBtn');
-      if(refreshDataBtn && window.loadData) refreshDataBtn.addEventListener('click', window.loadData);
+      if(refreshDataBtn) refreshDataBtn.addEventListener('click', ()=>{ if(window.loadData) window.loadData(); });
+    })();
+  </script>
+
+  <!-- sticky header script (hide on scroll down, show on scroll up) -->
+  <script>
+    (function(){
+      const topbar = document.querySelector('.topbar');
+      if(!topbar) return;
+      let lastScrollTop = 0;
+      let ticking = false;
+      function updateHeaderVisibility(){
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        if(scrollTop > lastScrollTop && scrollTop > 100){
+          topbar.classList.add('hide');
+        } else {
+          topbar.classList.remove('hide');
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        ticking = false;
+      }
+      window.addEventListener('scroll', ()=>{
+        if(!ticking){
+          window.requestAnimationFrame(updateHeaderVisibility);
+          ticking = true;
+        }
+      }, false);
     })();
   </script>
 </body>
