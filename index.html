@@ -1,238 +1,88 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <title>Início — Saúde Bucal Japeri</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="brasil-sorridente-logo222.png?v=2" type="image/png">
-  <style>
-    /* ===== styles (mobile-first) - copie exatamente ===== */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-    :root{--bg:#EAF5FF;--panel:#FFFFFF;--line:#DDEAF7;--fg:#0F2740;--muted:#6B87A4;--brand:#0F8BD6;--accent:#1DC56F;--warning:#FFF3B0;--chip:#F3FAFF;--r-sm:8px;--r-md:12px;--r-lg:20px;--shadow:0 8px 24px rgba(16,40,80,0.06);--maxw:1100px}
-    *{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;background:linear-gradient(180deg,#fff 0%,var(--bg) 100%);color:var(--fg);padding:12px}
-    .wrap{max-width:var(--maxw);margin:0 auto}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-    .header-left{display:flex;align-items:center;gap:12px;min-width:0}
-    .logos{display:flex;gap:10px;align-items:center}
-    .logo-small{height:44px;width:auto;display:block}
-    .site-title{font-weight:800;font-size:15px;line-height:1;max-width:48vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .muted.small{font-size:12px;color:var(--muted)}
-    .nav{display:flex;gap:8px;align-items:center}
-    .nav a{padding:8px 10px;border-radius:10px;color:var(--muted);text-decoration:none;font-weight:700}
-    .nav a.active{color:var(--brand);background:rgba(15,139,214,0.06);border-radius:10px}
-    .menu-btn{background:var(--panel);border:1px solid var(--line);padding:8px;border-radius:10px;cursor:pointer;display:flex;gap:5px;align-items:center}
-    .menu-btn .dot{width:6px;height:6px;background:var(--muted);border-radius:50%}
-    .hero-card{display:flex;gap:12px;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#fff,#f7fbff);border-radius:12px;padding:12px;border:1px solid var(--line);box-shadow:var(--shadow);margin-bottom:12px}
-    .hero-content h2{margin:0 0 6px;font-size:18px}.lead{margin:0;color:var(--muted);font-size:14px}.hero-illustration img{max-width:120px;height:auto;display:block;margin-left:auto}
-    .card{background:var(--panel);border-radius:12px;padding:12px;border:1px solid var(--line);box-shadow:var(--shadow);margin-bottom:12px}
-    .sectionTitle{font-weight:800;color:var(--muted);margin:12px 0 8px;font-size:14px}
-    .bigcard{background:#fff;border-radius:12px;padding:12px;border:1px solid var(--line);margin-bottom:10px}
-    .bigcard-title{font-weight:800;color:var(--fg);margin-bottom:8px;font-size:14px}
-    .big-number{font-weight:900;font-size:28px}
-    .big1{color:var(--brand)} .big2{color:var(--accent)}
-    .bigcard-foot{color:var(--muted);font-size:13px;margin-top:8px}
-    .select-wrap{position:relative}
-    .select-wrap::after{content:"▾";position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--brand)}
-    select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);appearance:none;background:#fff;font-weight:700}
-    .btn{padding:10px 12px;border-radius:12px;border:0;background:var(--brand);color:#fff;font-weight:800;cursor:pointer}
-    .chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-    .chip{background:var(--chip);border:1px solid var(--line);padding:8px 12px;border-radius:999px;color:var(--muted);font-weight:700}
-    .label{font-size:14px;color:var(--fg);margin-bottom:8px;font-weight:800}
-    .value{font-weight:900;font-size:22px;color:var(--brand);background:linear-gradient(0deg,#fff 0 40%, var(--warning) 40% 100%);padding:6px 10px;border-radius:8px;display:inline-block}
-    .sub{color:var(--muted);font-size:13px;margin-top:8px}
-    .list{margin-top:8px}
-    .row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;margin-bottom:8px}
-    .notice{margin:12px 0;padding:12px;border-radius:12px;background:linear-gradient(90deg,#f8fbff,#fff);border-left:6px solid var(--brand);color:var(--fg);font-weight:700}
-    .footer{display:flex;flex-direction:column;align-items:center;gap:8px;margin:14px 0;color:var(--muted);font-size:13px}
-    .footer img{height:36px}
-    /* drawer */
-    #drawerOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.32);display:none;z-index:90}
-    .side-drawer{position:fixed;right:0;top:0;height:100vh;width:86%;max-width:320px;background:#fff;box-shadow:-12px 0 30px rgba(0,0,0,0.14);transform:translateX(110%);transition:transform .26s ease;z-index:100;padding:16px;overflow:auto;border-left:1px solid rgba(15,139,214,0.06)}
-    .side-drawer.open{transform:translateX(0)}
-    .drawer-item{display:block;padding:10px 12px;border-radius:8px;color:var(--fg);font-weight:800;text-decoration:none}
-    .drawer-item:hover{background:#f0f8ff;color:var(--brand)}
-    a:focus,button:focus,select:focus{outline:3px solid rgba(15,139,214,0.12);outline-offset:2px}
-    @media(min-width:900px){.logo-small{height:56px}.hero-illustration img{max-width:200px}.big-number{font-size:clamp(36px,6vw,72px)}.wrap{padding:8px}.nav{display:flex}.menu-btn{display:inline-flex}.side-drawer{right:16px;width:280px;transform:translateX(20px);border-radius:12px}#drawerOverlay{display:none}}
-    /* hide potential duplicate buttons visually (safety): show only first menu-btn */
-    .menu-btn:not(:first-of-type){display:none !important}
-  </style>
+  <title>Início — Saúde Bucal Japeri</title>
+
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
 </head>
+
 <body>
-  <div class="wrap">
-    <!-- HEADER -->
-    <header class="topbar">
-      <div class="header-left">
-        <div class="logos">
-          <img src="japeri-logo.png" alt="Japeri" class="logo-small">
-          <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente" class="logo-small">
-        </div>
-        <div>
-          <div class="site-title">Painel de Saúde Bucal — Japeri</div>
-          <div class="muted small">Sistema público de acompanhamento</div>
-        </div>
-      </div>
 
-      <nav class="nav" aria-label="Navegação">
-        <a href="index.html" class="active">Início</a>
-        <a href="avisos.html">Avisos</a>
-        <a href="painel.html">Painel</a>
-      </nav>
-
-      <!-- single menu button (drawer toggle) -->
-      <button id="drawerToggle" class="menu-btn" aria-label="Abrir opções" title="Opções">
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-      </button>
-    </header>
-
-    <!-- MAIN -->
-    <main>
-      <section class="hero-card" aria-labelledby="welcomeTitle">
-        <div class="hero-content">
-          <h2 id="welcomeTitle">Bem-vindo ao Painel de Saúde Bucal</h2>
-          <p class="lead">Acompanhe o total de pacientes em espera e os agendamentos. Em breve será possível entrar na fila pelo site.</p>
-
-          <div style="margin-top:16px; display:flex; gap:18px; align-items:center;">
-            <div>
-              <div class="muted" style="font-size:12px">Em espera — acumulado geral</div>
-              <div id="homeGeral" class="big-number big1">—</div>
-            </div>
-            <div>
-              <div class="muted" style="font-size:12px">Agendados (total)</div>
-              <div id="homeAg" class="big-number big2">—</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hero-illustration" aria-hidden="true">
-          <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente">
-        </div>
-      </section>
-
-      <section class="cards-row">
-        <div class="card">
-          <h3>O que você pode fazer aqui</h3>
-          <ul class="short-list">
-            <li>Consultar o painel completo</li>
-            <li>Acessar avisos e comunicados</li>
-            <li>Acompanhar total de pacientes em espera e agendados</li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <h3>Dúvidas?</h3>
-          <p class="muted small">Entre em contato: <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a></p>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <img src="japeri-logo.png" alt="Japeri">
-      <div class="muted">Prefeitura de Japeri — Saúde Bucal</div>
-    </footer>
+<header class="header">
+  <div class="header-left">
+    <img src="japeri-logo.png">
+    <img src="brasil-sorridente-logo.png" style="height:46px">
+    <div class="header-title">Saúde Bucal — Japeri</div>
   </div>
 
-  <!-- drawer + overlay (shared across pages) -->
-  <div id="drawerOverlay" aria-hidden="true"></div>
-  <aside id="sideDrawer" class="side-drawer" aria-hidden="true" role="dialog" aria-label="Opções do site">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-      <strong>Opções</strong>
-      <button id="drawerClose" style="margin-left:auto;padding:6px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer">Fechar</button>
+  <nav class="nav-links">
+    <a href="index.html" class="active">Início</a>
+    <a href="avisos.html">Avisos</a>
+    <a href="painel.html">Painel</a>
+  </nav>
+
+  <button id="drawerToggle" class="menu-btn">☰</button>
+</header>
+
+<div id="drawerOverlay"></div>
+
+<aside id="sideDrawer">
+  <div class="drawer-title">Opções</div>
+  <div class="drawer-links">
+    <a href="index.html">Início</a>
+    <a href="avisos.html">Avisos</a>
+    <a href="painel.html">Painel</a>
+    <a href="mailto:odontologiajaperi@gmail.com">Contato (e-mail)</a>
+  </div>
+  <button id="drawerClose">Fechar</button>
+</aside>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Bem-vindo ao Painel de Saúde Bucal</h1>
+    <p>Acompanhe o total de pacientes em espera e os agendamentos.</p>
+    <p>Em breve será possível entrar na fila pelo site.</p>
+
+    <div class="metrics" style="margin-top:20px">
+      <div class="metric-box">
+        <div class="metric-title">Em espera — acumulado geral</div>
+        <div class="metric-number" id="filaTotal">—</div>
+      </div>
+
+      <div class="metric-box">
+        <div class="metric-title">Agendados (total)</div>
+        <div class="metric-number" id="agendadosTotal">—</div>
+      </div>
     </div>
-    <nav>
-      <a class="drawer-item" href="index.html">Início</a>
-      <a class="drawer-item" href="avisos.html">Avisos</a>
-      <a class="drawer-item" href="painel.html">Painel</a>
-      <hr>
-      <a class="drawer-item" href="mailto:odontologiajaperi@gmail.com">Contato (e-mail)</a>
-      <a class="drawer-item" href="data.json" download>Baixar data.json</a>
-    </nav>
-  </aside>
+  </div>
 
-  <!-- tiny script to load top numbers from data.json if exists -->
-  <script>
-    (function(){
-      async function loadTop(){
-        try{
-          const res = await fetch('data.json?cb=' + Date.now());
-          if(!res.ok) return;
-          const DATA = await res.json();
-          let geral = 0;
-          for(const p of Object.keys(DATA.postos||{})) {
-            for(const m of Object.keys(DATA.postos[p]||{})) {
-              geral += Number(DATA.postos[p][m].fila || 0);
-            }
-          }
-          document.getElementById('homeGeral').textContent = geral;
-          document.getElementById('homeAg').textContent = Number(DATA.agendados_total || 0);
-        }catch(e){ console.log('top load error', e); }
-      }
-      loadTop();
-    })();
-  </script>
+  <div class="card">
+    <h2>O que você pode fazer aqui</h2>
+    <ul>
+      <li>Consultar o painel completo</li>
+      <li>Acessar avisos e comunicados</li>
+      <li>Acompanhar total de pacientes em espera e agendados</li>
+    </ul>
+  </div>
 
-  <!-- robust drawer script (colei a versão defensiva/sincronizada) -->
-  <script>
-    (function(){
-      const toggleSelectors = ['#drawerToggle', '.menu-btn', '.drawer-toggle', '.hamburger'];
-      const toggles = Array.from(new Set(toggleSelectors.flatMap(s => Array.from(document.querySelectorAll(s)))));
-      const drawer = document.getElementById('sideDrawer') || document.querySelector('.side-drawer');
-      let overlay = document.getElementById('drawerOverlay') || document.querySelector('.drawer-overlay');
-      if(!overlay){
-        overlay = document.createElement('div');
-        overlay.id = 'drawerOverlay';
-        overlay.style.position = 'fixed';
-        overlay.style.inset = '0';
-        overlay.style.background = 'rgba(0,0,0,0.32)';
-        overlay.style.display = 'none';
-        overlay.style.zIndex = '90';
-        document.body.appendChild(overlay);
-      }
-      const internalClose = Array.from(document.querySelectorAll('#drawerClose, [data-drawer-close], .drawer-close-btn'));
-      if(!drawer || toggles.length === 0) return;
-      drawer.setAttribute('role', drawer.getAttribute('role') || 'dialog');
-      drawer.setAttribute('aria-hidden', drawer.classList.contains('open') ? 'false' : 'true');
-      function setExpanded(exp){ toggles.forEach(t => { try{ t.setAttribute('aria-expanded', exp ? 'true' : 'false'); }catch(e){} }); }
-      function openDrawer(){
-        drawer.classList.add('open');
-        drawer.setAttribute('aria-hidden','false');
-        overlay.style.display = 'block';
-        overlay.setAttribute('aria-hidden','false');
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.overflow = 'hidden';
-        setExpanded(true);
-        setTimeout(()=>{ const first = drawer.querySelector('a,button,[tabindex]:not([tabindex="-1"])'); if(first) first.focus(); }, 220);
-      }
-      function closeDrawer(){
-        drawer.classList.remove('open');
-        drawer.setAttribute('aria-hidden','true');
-        overlay.style.display = 'none';
-        overlay.setAttribute('aria-hidden','true');
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
-        setExpanded(false);
-      }
-      toggles.forEach(t=>{
-        if(t._drawerBound) return;
-        t._drawerBound = true;
-        t.style.cursor = 'pointer';
-        t.addEventListener('click', e=>{
-          e.stopPropagation();
-          if(drawer.classList.contains('open')) closeDrawer(); else openDrawer();
-        });
-      });
-      overlay.addEventListener('click', ()=>{ closeDrawer(); });
-      internalClose.forEach(b=>{ if(b._drawerBoundClose) return; b._drawerBoundClose = true; b.addEventListener('click', (e)=>{ e.stopPropagation(); closeDrawer(); }); });
-      drawer.addEventListener('click', function(e){
-        const item = e.target.closest('.drawer-item, [data-drawer-item], a, button');
-        if(!item) return;
-        setTimeout(()=> closeDrawer(), 120);
-      });
-      document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape' && drawer.classList.contains('open')) closeDrawer(); });
-      document.addEventListener('click', function(e){ if(!drawer.classList.contains('open')) return; if(e.target.closest('#sideDrawer') || toggles.some(t => t.contains(e.target) || t === e.target)) return; closeDrawer(); });
-      const hideOtherOverlays = ()=> { Array.from(document.querySelectorAll('.drawer-overlay, #drawerOverlay')).forEach(o=>{ if(o !== overlay) o.style.display = 'none'; }); };
-      const mo = new MutationObserver(()=>{ hideOtherOverlays(); setExpanded(drawer.classList.contains('open')); });
-      mo.observe(drawer, { attributes:true, attributeFilter:['class'] });
-    })();
-  </script>
+  <div class="card">
+    <h2>Dúvidas?</h2>
+    <p>
+      Entre em contato pelo e-mail:
+      <a href="mailto:odontologiajaperi@gmail.com">
+        odontologiajaperi@gmail.com
+      </a>
+    </p>
+  </div>
+
+  <div class="footer">
+    <img src="japeri-logo.png">
+    Prefeitura de Japeri — Saúde Bucal
+  </div>
+</div>
+
 </body>
 </html>
