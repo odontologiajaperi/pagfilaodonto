@@ -266,31 +266,3 @@
       const mo = new MutationObserver(()=>{ hideOtherOverlays(); setExpanded(drawer.classList.contains('open')); });
       mo.observe(drawer, { attributes:true, attributeFilter:['class'] });
     })();
-  </script>
-
-  <script>
-    (function(){
-      const topbar = document.querySelector('.topbar');
-      if(!topbar) return;
-      let lastScrollTop = 0;
-      let ticking = false;
-      function updateHeaderVisibility(){
-        const scrollTop = window.scrollY || document.documentElement.scrollTop;
-        if(scrollTop > lastScrollTop && scrollTop > 100){
-          topbar.classList.add('hide');
-        } else {
-          topbar.classList.remove('hide');
-        }
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        ticking = false;
-      }
-      window.addEventListener('scroll', ()=>{
-        if(!ticking){
-          window.requestAnimationFrame(updateHeaderVisibility);
-          ticking = true;
-        }
-      }, false);
-    })();
-  </script>
-</body>
-</html>

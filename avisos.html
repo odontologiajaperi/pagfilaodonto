@@ -43,7 +43,7 @@
 <body>
   <div class="wrap">
     <header class="topbar">
-      <div c<div class="header-left">
+      <div class="header-left">
         <a href="index.html" class="logos" style="text-decoration:none; cursor:pointer;" title="Voltar para o Início">
           <img src="japeri-logo.png" alt="Japeri" class="logo-small">
           <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente" class="logo-small">
@@ -60,8 +60,8 @@
         <h1>Avisos e Comunicados</h1>
         <div class="avisos-list" id="avisosList">
           <div class="aviso">
-            <div class="aviso-title">Nenhum aviso importante</div>
-            <div class="muted small">Nenhum aviso no momento.</div>
+            <div class="aviso-title">Nenhum aviso cadastrado</div>
+            <div class="muted small">Use esta área futuramente para publicar comunicados.</div>
           </div>
         </div>
       </section>
@@ -117,30 +117,6 @@
     })();
   </script>
 
-  <!-- sticky header script (hide on scroll down, show on scroll up) -->
-  <script>
-    (function(){
-      const topbar = document.querySelector('.topbar');
-      if(!topbar) return;
-      let lastScrollTop = 0;
-      let ticking = false;
-      function updateHeaderVisibility(){
-        const scrollTop = window.scrollY || document.documentElement.scrollTop;
-        if(scrollTop > lastScrollTop && scrollTop > 100){
-          topbar.classList.add('hide');
-        } else {
-          topbar.classList.remove('hide');
-        }
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        ticking = false;
-      }
-      window.addEventListener('scroll', ()=>{
-        if(!ticking){
-          window.requestAnimationFrame(updateHeaderVisibility);
-          ticking = true;
-        }
-      }, false);
-    })();
-  </script>
+  
 </body>
 </html>
