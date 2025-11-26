@@ -11,9 +11,9 @@
     :root{--bg:#EAF5FF;--panel:#FFFFFF;--line:#DDEAF7;--fg:#0F2740;--muted:#6B87A4;--brand:#0F8BD6;--accent:#1DC56F;--warning:#FFF3B0;--chip:#F3FAFF;--r-sm:8px;--r-md:12px;--r-lg:20px;--shadow:0 8px 24px rgba(16,40,80,0.06);--maxw:1100px;--transition:all 0.3s cubic-bezier(0.4,0,0.2,1)}
     *{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;background:linear-gradient(180deg,#fff 0%,var(--bg) 100%);color:var(--fg);padding:12px;transition:var(--transition)}
     .wrap{max-width:var(--maxw);margin:0 auto;transition:var(--transition)}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;position:fixed;top:0;left:0;right:0;background:#fff;z-index:80;padding:10px 12px;box-shadow:0 2px 8px rgba(16,40,80,0.08);transition:transform 0.3s ease;border-bottom:1px solid var(--line);min-height:60px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;position:fixed;top:0;left:0;right:0;background:#fff;z-index:80;padding:10px 12px;box-shadow:0 2px 8px rgba(16,40,80,0.08);border-bottom:1px solid var(--line);min-height:60px;transition:none}
     body{padding-top:80px}
-    .topbar.hide{transform:translateY(-100%)}
+    /* .topbar.hide{transform:translateY(-100%)} - Removido para manter a barra superior visível no mobile */
     .header-left{display:flex;align-items:center;gap:8px;min-width:0;flex:0 1 auto}
     .logos{display:flex;gap:6px;align-items:center;flex-shrink:0}
     .logo-small{height:38px;width:auto;display:block}
@@ -95,15 +95,16 @@
           <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente" class="logo-small">
           </a>
         </div>
+        <button id="drawerToggle" class="menu-btn" aria-label="Abrir menu" title="Abrir menu">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span style="font-size:12px">Menu</span>
+        </button>
 
       </div>
 
       
 
-      <button id="drawerToggle" class="menu-btn" aria-label="Abrir menu" title="Abrir menu">
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        <span style="font-size:12px">Menu</span>
-      </button>
+      
     </header>
 
     <main>
