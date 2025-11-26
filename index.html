@@ -147,7 +147,7 @@
 
         <div class="card">
           <h3>Dúvidas?</h3>
-          <p class="muted">Entre em contato: <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a></p>
+          <p class="muted small">Entre em contato: <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a></p>
         </div>
       </section>
     </main>
@@ -265,4 +265,38 @@
       const hideOtherOverlays = ()=> { Array.from(document.querySelectorAll('.drawer-overlay, #drawerOverlay')).forEach(o=>{ if(o !== overlay) o.style.display = 'none'; }); };
       const mo = new MutationObserver(()=>{ hideOtherOverlays(); setExpanded(drawer.classList.contains('open')); });
       mo.observe(drawer, { attributes:true, attributeFilter:['class'] });
+    })();
+  </script>
+
+  <script>
+    (function(){
+      // 1. Lógica para carregar os números principais (HomeGeral e HomeAg)
+      async function loadTop(){
+        try{
+          const res = await fetch('data.json?cb=' + Date.now());
+          if(!res.ok) return;
+          const DATA = await res.json();
+          let geral = 0;
+          for(const p of Object.keys(DATA.postos||{})) {
+            for(const m of Object.keys(DATA.postos[p]||{})) {
+              geral += Number(DATA.postos[p][m].fila || 0);
+            }
+          }
+          document.getElementById('homeGeral').textContent = geral;
+          document.getElementById('homeAg').textContent = Number(DATA.agendados_total || 0);
+        }catch(e){ console.log('top load error', e); }
+      }
+      loadTop();
+
+      // 2. Lógica para tornar os cards clicáveis (aplicável ao hero-card e highlight-card)
+      document.querySelectorAll('.action-card').forEach(card => {
+        const target = card.dataset.target;
+        if (target) {
+          // Garante que o cursor mude para indicar que é clicável
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', () => {
+            location.href = target;
+          });
+        }
+      });
     })();

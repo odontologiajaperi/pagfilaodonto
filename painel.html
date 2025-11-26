@@ -261,11 +261,11 @@
       const hideOtherOverlays = ()=> { Array.from(document.querySelectorAll('.drawer-overlay, #drawerOverlay')).forEach(o=>{ if(o !== overlay) o.style.display = 'none'; }); };
       const mo = new MutationObserver(()=>{ hideOtherOverlays(); setExpanded(drawer.classList.contains('open')); });
       mo.observe(drawer, { attributes:true, attributeFilter:['class'] });
-
-      // connect drawer refresh button (if present) to window.loadData
-      const refreshDataBtn = document.getElementById('refreshDataBtn');
-      if(refreshDataBtn) refreshDataBtn.addEventListener('click', ()=>{ if(window.loadData) window.loadData(); });
     })();
+
+    // connect drawer refresh button (if present) to window.loadData
+    const refreshDataBtn = document.getElementById('refreshDataBtn');
+    if(refreshDataBtn) refreshDataBtn.addEventListener('click', ()=>{ if(window.loadData) window.loadData(); });
   </script>
 
   
