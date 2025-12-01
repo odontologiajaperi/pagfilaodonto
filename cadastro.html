@@ -519,7 +519,8 @@
         const SUPABASE_URL = 'https://uakhmgoxgyklggsvtwdf.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNjMxMjQsImV4cCI6MjA3OTczOTEyNH0.9wFGaYxyd7aOIEn5XTRUqXcIXQuH5QjItdVpJRnBNT0';
         
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Máscaras de input
         document.querySelector('input[name="celular"]').addEventListener('input', function(e) {
@@ -681,7 +682,7 @@
                 data.cartao_sus = data.cartao_sus.replace(/\D/g, '');
                 
                 // Validar CPF duplicado
-                const { data: cpfCheck, error: cpfError } = await supabase
+                const { data: cpfCheck, error: cpfError } = await supabaseClient
                     .from('pacientes')
                     .select('cpf, nome_completo')
                     .eq('cpf', data.cpf)
@@ -713,7 +714,7 @@
                 data.mes_referencia = new Date().toISOString().slice(0, 7); // YYYY-MM
                 
                 // Calcular posição na fila
-                const { data: filaData, error: filaError } = await supabase
+                const { data: filaData, error: filaError } = await supabaseClient
                     .from('pacientes')
                     .select('posicao_fila')
                     .eq('unidade_preferencia', data.unidade_preferencia)
@@ -725,7 +726,7 @@
                 data.posicao_fila = filaData.length > 0 ? filaData[0].posicao_fila + 1 : 1;
                 
                 // Inserir no banco de dados
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('pacientes')
                     .insert([data]);
                 
