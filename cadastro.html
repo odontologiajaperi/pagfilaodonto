@@ -676,6 +676,9 @@
                     data[key] = value;
                 }
                 
+                // Remover campo que não vai para o banco
+                delete data.aceita_termos;
+                
                 // Limpar máscaras
                 data.celular = data.celular.replace(/\D/g, '');
                 data.cpf = data.cpf.replace(/\D/g, '');
