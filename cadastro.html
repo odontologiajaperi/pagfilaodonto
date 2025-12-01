@@ -399,8 +399,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label>E-mail</label>
-                        <input type="email" name="email" placeholder="seu@email.com">
+                        <label>E-mail <span class="required">*</span></label>
+                        <input type="email" name="email" placeholder="seu@email.com" required>
                     </div>
                 </div>
 
@@ -697,6 +697,26 @@
                     showModal(
                         'CPF Já Cadastrado',
                         `O CPF ${data.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')} já está cadastrado no sistema. Cada pessoa pode se cadastrar apenas uma vez.`,
+                        'error'
+                    );
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Enviar Cadastro';
+                    return;
+                }
+                
+                // Validar Email duplicado
+                const { data: emailCheck, error: emailError } = await supabaseClient
+                    .from('pacientes')
+                    .select('email, nome_completo')
+                    .eq('email', data.email)
+                    .limit(1);
+                
+                if (emailError) throw emailError;
+                
+                if (emailCheck && emailCheck.length > 0) {
+                    showModal(
+                        'E-mail Já Cadastrado',
+                        `O e-mail ${data.email} já está cadastrado no sistema. Cada pessoa pode se cadastrar apenas uma vez.`,
                         'error'
                     );
                     submitBtn.disabled = false;
