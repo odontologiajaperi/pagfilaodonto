@@ -84,6 +84,24 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
+        .form-group input.invalid,
+        .form-group select.invalid,
+        .form-group textarea.invalid {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .form-group .error-message {
+            color: #e74c3c;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-group .error-message.show {
+            display: block;
+        }
+
         .form-group textarea {
             resize: vertical;
             min-height: 100px;
@@ -580,9 +598,70 @@
             modal.classList.add('show');
         }
 
+        // Função para validar campos obrigatórios
+        function validateForm(form) {
+            let isValid = true;
+            let firstInvalidField = null;
+            
+            // Remover marcações anteriores
+            form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+            form.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            
+            // Validar campos obrigatórios
+            const requiredFields = form.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                let isEmpty = false;
+                
+                if (field.type === 'checkbox' || field.type === 'radio') {
+                    const name = field.name;
+                    const checked = form.querySelector(`[name="${name}"]:checked`);
+                    if (!checked) {
+                        isEmpty = true;
+                        // Marcar o container do grupo
+                        const group = field.closest('.form-group');
+                        if (group && !firstInvalidField) {
+                            firstInvalidField = group;
+                        }
+                    }
+                } else {
+                    if (!field.value || field.value.trim() === '') {
+                        isEmpty = true;
+                        field.classList.add('invalid');
+                        if (!firstInvalidField) {
+                            firstInvalidField = field;
+                        }
+                    }
+                }
+                
+                if (isEmpty) {
+                    isValid = false;
+                }
+            });
+            
+            // Scroll para o primeiro campo inválido
+            if (!isValid && firstInvalidField) {
+                firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (firstInvalidField.focus) {
+                    setTimeout(() => firstInvalidField.focus(), 300);
+                }
+            }
+            
+            return isValid;
+        }
+
         // Submissão do formulário
         document.getElementById('cadastroForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // Validar formulário
+            if (!validateForm(e.target)) {
+                showModal(
+                    'Campos Obrigatórios',
+                    'Por favor, preencha todos os campos marcados com asterisco (*) antes de enviar o cadastro.',
+                    'error'
+                );
+                return;
+            }
             
             const submitBtn = e.target.querySelector('.submit-btn');
             submitBtn.disabled = true;
