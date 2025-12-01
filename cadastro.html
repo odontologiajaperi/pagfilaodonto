@@ -114,8 +114,31 @@
             cursor: pointer;
         }
 
+        .cancel-btn {
+            flex: 1;
+            padding: 15px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cancel-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
+        }
+
+        .cancel-btn:active {
+            transform: translateY(0);
+        }
+
         .submit-btn {
-            width: 100%;
+            flex: 2;
             padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -347,7 +370,17 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">Enviar Cadastro</button>
+                <div class="form-group">
+                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="aceita_termos" required style="width: auto; margin-top: 3px;">
+                        <span>Li e aceito os <a href="termos.html" target="_blank" style="color: #667eea; text-decoration: underline;">Termos de Uso e Política de Privacidade</a> <span class="required">*</span></span>
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button type="button" class="cancel-btn" onclick="window.location.href='index.html'">← Voltar</button>
+                    <button type="submit" class="submit-btn">Enviar Cadastro</button>
+                </div>
             </form>
         </div>
     </div>
