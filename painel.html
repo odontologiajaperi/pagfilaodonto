@@ -237,9 +237,6 @@
       loadData();
       setInterval(loadData, 60000);
     })();
-    function mostrarDuvidasDocumentos() {
-    alert("📄 DOCUMENTOS NECESSÁRIOS PARA O ATENDIMENTO\n\nPara ser atendido, você precisará apresentar:\n\n• Documento de identificação com foto (RG, CNH ou Carteira de Trabalho)\n• Cartão do SUS (Cartão Nacional de Saúde)\n• CPF\n• Comprovante de residência atualizado\n\nIMPORTANTE:\n• Todos os documentos devem estar originais ou com cópia autenticada\n• Menores de 18 anos devem estar acompanhados de responsável legal\n\nOBSERVAÇÕES:\n• A falta de qualquer documento pode impedir o atendimento\n• Chegue com 15 minutos de antecedência\n• Em caso de dúvidas: odontologiajaperi@gmail.com");
-  }
 </script>
 
   <!-- drawer script (same robust one) -->
@@ -272,11 +269,9 @@
     // connect drawer refresh button (if present) to window.loadData
     const refreshDataBtn = document.getElementById('refreshDataBtn');
     if(refreshDataBtn) refreshDataBtn.addEventListener('click', ()=>{ if(window.loadData) window.loadData(); });
-    function mostrarDuvidasDocumentos() {
-    alert("📄 DOCUMENTOS NECESSÁRIOS PARA O ATENDIMENTO\n\nPara ser atendido, você precisará apresentar:\n\n• Documento de identificação com foto (RG, CNH ou Carteira de Trabalho)\n• Cartão do SUS (Cartão Nacional de Saúde)\n• CPF\n• Comprovante de residência atualizado\n\nIMPORTANTE:\n• Todos os documentos devem estar originais ou com cópia autenticada\n• Menores de 18 anos devem estar acompanhados de responsável legal\n\nOBSERVAÇÕES:\n• A falta de qualquer documento pode impedir o atendimento\n• Chegue com 15 minutos de antecedência\n• Em caso de dúvidas: odontologiajaperi@gmail.com");
-  }
 </script>
 
   
+  <script src="modal-documentos.js"></script>
 </body>
 </html>

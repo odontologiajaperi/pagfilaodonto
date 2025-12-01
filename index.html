@@ -148,8 +148,14 @@
 
         <div class="card">
           <h3>Dúvidas?</h3>
-          <p class="muted small">Entre em contato: <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a></p>
+          <p class="muted">Entre em contato: <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a></p>
         </div>
+      </section>
+
+      <!-- Card de Destaque: Dúvidas sobre Documentos -->
+      <section class="highlight-card action-card" onclick="mostrarDuvidasDocumentos()" aria-labelledby="duvidasTitle" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); border-color: #ffc107; cursor: pointer; margin-top: 30px;">
+          <h3 id="duvidasTitle" style="color: white;">📄 Dúvidas sobre Documentos?</h3>
+          <p class="lead" style="color: rgba(255,255,255,0.95);">Saiba quais documentos você precisa levar no dia do atendimento. <strong style="color: white;">Clique aqui para ver a lista completa!</strong></p>
       </section>
 
       <!-- Estatísticas -->
@@ -287,9 +293,6 @@
       const mo = new MutationObserver(()=>{ hideOtherOverlays(); setExpanded(drawer.classList.contains('open')); });
       mo.observe(drawer, { attributes:true, attributeFilter:['class'] });
     })();
-    function mostrarDuvidasDocumentos() {
-    alert("📄 DOCUMENTOS NECESSÁRIOS PARA O ATENDIMENTO\n\nPara ser atendido, você precisará apresentar:\n\n• Documento de identificação com foto (RG, CNH ou Carteira de Trabalho)\n• Cartão do SUS (Cartão Nacional de Saúde)\n• CPF\n• Comprovante de residência atualizado\n\nIMPORTANTE:\n• Todos os documentos devem estar originais ou com cópia autenticada\n• Menores de 18 anos devem estar acompanhados de responsável legal\n\nOBSERVAÇÕES:\n• A falta de qualquer documento pode impedir o atendimento\n• Chegue com 15 minutos de antecedência\n• Em caso de dúvidas: odontologiajaperi@gmail.com");
-  }
 </script>
 
   <script>

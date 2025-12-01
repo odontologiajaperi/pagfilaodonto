@@ -477,39 +477,10 @@
             return `${meses[parseInt(mesNum) - 1]} de ${ano}`;
         }
 
-        // Função para mostrar dúvidas sobre documentos
-        function mostrarDuvidasDocumentos() {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.innerHTML = `
-                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; border-left: 4px solid #17a2b8; text-align: left; white-space: pre-line;">
-                    <strong style="font-size: 1.2em;">📄 DOCUMENTOS NECESSÁRIOS PARA O ATENDIMENTO</strong>
-                    
-                    Para ser atendido, você precisará apresentar os seguintes documentos:
-                    
-                    • Documento de identificação com foto (RG, CNH ou Carteira de Trabalho)
-                    • Cartão do SUS (Cartão Nacional de Saúde)
-                    • CPF
-                    • Comprovante de residência atualizado (conta de luz, água ou telefone)
-                    
-                    <strong>IMPORTANTE:</strong>
-                    • Todos os documentos devem estar originais ou com cópia autenticada
-                    • Menores de 18 anos devem estar acompanhados de responsável legal
-                    • O responsável deve apresentar documento de identificação
-                    
-                    <strong>OBSERVAÇÕES:</strong>
-                    • A falta de qualquer documento pode impedir o atendimento
-                    • Chegue com 15 minutos de antecedência
-                    • Em caso de dúvidas, entre em contato: odontologiajaperi@gmail.com
-                    
-                    <button onclick="document.getElementById('errorMessage').classList.remove('show'); document.getElementById('errorMessage').innerHTML = '';" style="margin-top: 15px; background: #17a2b8; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Fechar</button>
-                </div>
-            `;
-            errorMessage.classList.add('show');
-            errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
 
         // Focar no campo CPF ao carregar
         document.getElementById('cpf').focus();
     </script>
+  <script src="modal-documentos.js"></script>
 </body>
 </html>
