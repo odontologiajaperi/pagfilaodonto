@@ -241,6 +241,10 @@
             border-top: 6px solid #dc3545;
         }
 
+        .modal.info {
+            border-top: 6px solid #17a2b8;
+        }
+
         .modal-icon {
             font-size: 4em;
             margin-bottom: 20px;
@@ -509,6 +513,12 @@
                     <button type="button" class="cancel-btn" onclick="window.location.href='index.html'">← Voltar</button>
                     <button type="submit" class="submit-btn">Enviar Cadastro</button>
                 </div>
+                
+                <div style="margin-top: 15px; text-align: center;">
+                    <button type="button" onclick="mostrarDuvidasDocumentos()" style="background: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 0.95em; transition: all 0.3s;" onmouseover="this.style.background='#5a6268'" onmouseout="this.style.background='#6c757d'">
+                        📄 Dúvidas sobre Documentos?
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -578,9 +588,9 @@
                 modal.className = 'modal-overlay';
                 modal.innerHTML = `
                     <div class="modal ${type}">
-                        <div class="modal-icon">${type === 'success' ? '✅' : '❌'}</div>
+                        <div class="modal-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</div>
                         <h2 id="modal-title"></h2>
-                        <p id="modal-message"></p>
+                        <p id="modal-message" style="white-space: pre-line; text-align: left;"></p>
                         <button class="modal-btn ${type}" onclick="document.getElementById('modal-overlay').classList.remove('show')">OK</button>
                     </div>
                 `;
@@ -590,13 +600,39 @@
             // Atualizar conteúdo
             const modalElement = modal.querySelector('.modal');
             modalElement.className = `modal ${type}`;
-            modal.querySelector('.modal-icon').textContent = type === 'success' ? '✅' : '❌';
+            modal.querySelector('.modal-icon').textContent = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
             modal.querySelector('#modal-title').textContent = title;
             modal.querySelector('#modal-message').textContent = message;
             modal.querySelector('.modal-btn').className = `modal-btn ${type}`;
             
             // Mostrar modal
             modal.classList.add('show');
+        }
+
+        // Função para mostrar dúvidas sobre documentos
+        function mostrarDuvidasDocumentos() {
+            const mensagem = `
+📄 DOCUMENTOS NECESSÁRIOS PARA O ATENDIMENTO
+
+Para ser atendido, você precisará apresentar os seguintes documentos:
+
+• Documento de identificação com foto (RG, CNH ou Carteira de Trabalho)
+• Cartão do SUS (Cartão Nacional de Saúde)
+• CPF
+• Comprovante de residência atualizado (conta de luz, água ou telefone)
+
+IMPORTANTE:
+• Todos os documentos devem estar originais ou com cópia autenticada
+• Menores de 18 anos devem estar acompanhados de responsável legal
+• O responsável deve apresentar documento de identificação
+
+OBSERVAÇÕES:
+• A falta de qualquer documento pode impedir o atendimento
+• Chegue com 15 minutos de antecedência
+• Em caso de dúvidas, entre em contato: odontologiajaperi@gmail.com
+            `.trim();
+            
+            showModal('📄 Dúvidas sobre Documentos', mensagem, 'info');
         }
 
         // Função para validar campos obrigatórios
