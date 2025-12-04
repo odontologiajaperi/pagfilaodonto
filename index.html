@@ -84,6 +84,142 @@
       color: #6a4f00; /* Cor escura para melhor contraste com o fundo amarelo */
       font-size: 14px;
     }
+
+    /* ===== HERO CARD MELHORADO ===== */
+    .hero-card-new {
+      background: linear-gradient(135deg, #0F8BD6 0%, #1DC56F 100%);
+      border-radius: 24px;
+      padding: 40px 24px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(15, 139, 214, 0.3);
+      margin-bottom: 24px;
+      animation: slideInDown 0.6s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card-new::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    .hero-emoji {
+      font-size: 64px;
+      margin-bottom: 16px;
+      animation: bounce 2s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .hero-title {
+      font-size: 32px;
+      font-weight: 900;
+      color: white;
+      margin: 0 0 8px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 1;
+    }
+    .hero-subtitle {
+      font-size: 18px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.95);
+      margin: 0 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-divider {
+      width: 80px;
+      height: 4px;
+      background: white;
+      margin: 0 auto 20px;
+      border-radius: 2px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 1;
+    }
+    .hero-text {
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.95);
+      margin: 0 0 24px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-text strong {
+      color: white;
+      font-weight: 800;
+    }
+    .hero-logo {
+      position: relative;
+      z-index: 1;
+    }
+    .hero-logo img {
+      max-width: 140px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
+
+    /* MOBILE OTIMIZADO */
+    @media (max-width: 600px) {
+      .hero-card-new {
+        padding: 32px 20px;
+        margin-bottom: 20px;
+      }
+      .hero-emoji {
+        font-size: 56px;
+      }
+      .hero-title {
+        font-size: 28px;
+      }
+      .hero-subtitle {
+        font-size: 16px;
+      }
+      .hero-text {
+        font-size: 15px;
+      }
+      .hero-logo img {
+        max-width: 120px;
+      }
+    }
+
+    /* TABLET E DESKTOP */
+    @media (min-width: 768px) {
+      .hero-card-new {
+        padding: 50px 40px;
+      }
+      .hero-emoji {
+        font-size: 80px;
+      }
+      .hero-title {
+        font-size: 42px;
+      }
+      .hero-subtitle {
+        font-size: 22px;
+      }
+      .hero-text {
+        font-size: 18px;
+      }
+      .hero-logo img {
+        max-width: 160px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -108,13 +244,16 @@
     </header>
 
     <main>
-      <section class="hero-card" aria-labelledby="welcomeTitle">
-        <div class="hero-content">
-          <h2 id="welcomeTitle">Seja bem-vindo à Saúde Bucal de Japeri 🦷</h2>
-          <p class="lead">Por aqui você pode: consultar nossos endereços, fazer o cadastro para as consultas, consultar sua posição na fila, ficar atento aos nossos avisos e entrar em contato por nosso e-mail.</p>
-        </div>
-
-        <div class="hero-illustration" aria-hidden="true">
+      <!-- Hero Card Melhorado -->
+      <section class="hero-card-new" aria-labelledby="welcomeTitle">
+        <div class="hero-emoji">🦷</div>
+        <h2 id="welcomeTitle" class="hero-title">Seja Bem-Vindo!</h2>
+        <p class="hero-subtitle">Saúde Bucal de Japeri</p>
+        <div class="hero-divider"></div>
+        <p class="hero-text">
+          Aqui você pode <strong>consultar endereços</strong>, <strong>fazer cadastro</strong> para consultas, <strong>verificar sua posição na fila</strong>, ficar atento aos <strong>avisos importantes</strong> e entrar em contato conosco.
+        </p>
+        <div class="hero-logo">
           <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente">
         </div>
       </section>
@@ -188,22 +327,7 @@
           <p class="lead" style="color: rgba(255,255,255,0.95);">Saiba quais documentos você precisa levar no dia do atendimento. <strong style="color: white;">Clique aqui para ver a lista completa!</strong></p>
       </section>
 
-      <!-- Estatísticas -->
-      <section style="margin-top: 40px;">
-        <h3 class="sectionTitle">📊 Estatísticas do Sistema</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-          <div class="bigcard">
-            <div class="bigcard-title">Em Espera</div>
-            <div id="homeGeral" class="big-number big1">—</div>
-            <div class="bigcard-foot">Total acumulado geral</div>
-          </div>
-          <div class="bigcard">
-            <div class="bigcard-title">Agendados</div>
-            <div id="homeAg" class="big-number big2">—</div>
-            <div class="bigcard-foot">Total de agendamentos</div>
-          </div>
-        </div>
-      </section>
+
     </main>
 
     <footer class="footer">
