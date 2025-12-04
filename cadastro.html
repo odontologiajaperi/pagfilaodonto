@@ -408,6 +408,13 @@
         </div>
 
         <div class="form-container">
+            <!-- Aviso quando cadastros estão fechados -->
+            <div id="avisoFechado" style="display:none;background:linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);color:white;padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;box-shadow:0 4px 12px rgba(231,76,60,0.3)">
+                <h2 style="margin:0 0 10px;font-size:1.5em">❌ Cadastros Temporáriamente Fechados</h2>
+                <p id="mensagemFechado" style="margin:0;font-size:1.1em;line-height:1.5"></p>
+                <a href="index.html" style="display:inline-block;margin-top:15px;padding:12px 24px;background:white;color:#e74c3c;border-radius:8px;text-decoration:none;font-weight:700">← Voltar para Início</a>
+            </div>
+            
             <div id="alert" class="alert"></div>
 
             <form id="cadastroForm">
@@ -865,6 +872,46 @@
             }
         });
     </script>
+
+    <!-- Script para verificar status dos cadastros e bloquear formulário se necessário -->
+    <script>
+        (async function verificarStatusCadastros() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('configuracoes')
+                    .select('*')
+                    .in('chave', ['cadastros_abertos', 'mensagem_cadastro_fechado']);
+                
+                if (error) throw error;
+                
+                const statusConfig = data.find(c => c.chave === 'cadastros_abertos');
+                const mensagemConfig = data.find(c => c.chave === 'mensagem_cadastro_fechado');
+                
+                const aberto = statusConfig?.valor === 'true';
+                
+                if (!aberto) {
+                    // Mostrar aviso
+                    document.getElementById('avisoFechado').style.display = 'block';
+                    document.getElementById('mensagemFechado').textContent = mensagemConfig?.valor || 'Os cadastros estão temporariamente fechados. Em breve abriremos novas vagas.';
+                    
+                    // Bloquear formulário
+                    const form = document.getElementById('cadastroForm');
+                    form.style.opacity = '0.5';
+                    form.style.pointerEvents = 'none';
+                    
+                    // Desabilitar todos os campos
+                    const inputs = form.querySelectorAll('input, select, textarea, button');
+                    inputs.forEach(input => input.disabled = true);
+                    
+                    // Scroll para o aviso
+                    document.getElementById('avisoFechado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } catch (error) {
+                console.error('Erro ao verificar status dos cadastros:', error);
+            }
+        })();
+    </script>
+
   <script src="modal-documentos.js"></script>
 </body>
 </html>

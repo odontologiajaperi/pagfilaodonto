@@ -330,6 +330,58 @@
     })();
 
   </script>
+  <!-- Script para verificar status dos cadastros -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (async function(){
+      const SUPABASE_URL = 'https://uakhmgoxgyklggsvtwdf.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTE0NzcsImV4cCI6MjA3OTk1MTQ3N30.6iCUHePtVlmq8De9oBl4Zw5CBU4Zai7P3xLpi7cYkDo';
+      const { createClient } = supabase;
+      const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      
+      try {
+        const { data, error } = await supabaseClient
+          .from('configuracoes')
+          .select('*')
+          .in('chave', ['cadastros_abertos', 'mensagem_cadastro_fechado']);
+        
+        if (error) throw error;
+        
+        const statusConfig = data.find(c => c.chave === 'cadastros_abertos');
+        const mensagemConfig = data.find(c => c.chave === 'mensagem_cadastro_fechado');
+        
+        const aberto = statusConfig?.valor === 'true';
+        
+        if (!aberto) {
+          // Cadastros fechados - modificar o card de cadastro
+          const cadastroCard = document.querySelector('[data-target="cadastro.html"]');
+          
+          if (cadastroCard) {
+            // Remover link
+            cadastroCard.removeAttribute('data-target');
+            cadastroCard.style.cursor = 'default';
+            
+            // Mudar estilo para indicar fechado
+            cadastroCard.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+            cadastroCard.style.borderColor = '#e74c3c';
+            
+            // Mudar conteúdo
+            cadastroCard.innerHTML = `
+              <h3 style="color: white;">❌ Cadastros Temporáriamente Fechados</h3>
+              <p class="lead" style="color: rgba(255,255,255,0.95);">${mensagemConfig?.valor || 'Os cadastros estão temporariamente fechados. Em breve abriremos novas vagas.'}</p>
+            `;
+            
+            // Remover evento de clique se existir
+            const newCard = cadastroCard.cloneNode(true);
+            cadastroCard.parentNode.replaceChild(newCard, cadastroCard);
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao verificar status dos cadastros:', error);
+      }
+    })();
+  </script>
+
   <script src="modal-documentos.js"></script>
 </body>
 </html>
