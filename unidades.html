@@ -157,6 +157,17 @@
           Clique no botão para fazer seu cadastro na unidade desejada.
         </p>
       </section>
+      
+      <!-- Card de Avaliação -->
+      <section class="highlight-card" onclick="abrirModalAvaliacao()" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border: 2px solid #1DC56F; box-shadow: 0 4px 16px rgba(29, 197, 111, 0.3); cursor: pointer; margin-bottom: 20px;" aria-labelledby="avaliacaoTitle">
+        <h3 id="avaliacaoTitle" style="color: #2e7d32; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 28px;">⭐</span>
+          Já foi atendido?
+        </h3>
+        <p class="lead" style="color: #1b5e20; font-size: 15px;">
+          <strong>Sua opinião é muito importante!</strong> Avalie seu atendimento e nos ajude a melhorar nossos serviços. Leva apenas 2 minutos! <strong>Clique aqui para avaliar!</strong>
+        </p>
+      </section>
 
       <!-- Equipe Alecrim -->
       <div class="unidade-card">
@@ -348,5 +359,19 @@
   </script>
 
   <script src="modal-documentos.js?v=2"></script>
+  <!-- Componente de Avaliação -->
+  <script>
+    // Incluir componente de avaliação
+    fetch("avaliacao-component.html")
+      .then(response => response.text())
+      .then(html => {
+        const div = document.createElement("div");
+        div.innerHTML = html;
+        document.body.appendChild(div);
+        // Esconder botão flutuante (só mostrar o card)
+        const floatBtn = document.getElementById("avaliacaoFloatBtn");
+        if (floatBtn) floatBtn.style.display = "none";
+      });
+  </script>
 </body>
 </html>

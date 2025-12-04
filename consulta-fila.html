@@ -481,6 +481,17 @@
         // Focar no campo CPF ao carregar
         document.getElementById('cpf').focus();
     </script>
+  <!-- Componente de Avaliação -->
+  <script>
+    // Incluir componente de avaliação
+    fetch("avaliacao-component.html")
+      .then(response => response.text())
+      .then(html => {
+        const div = document.createElement("div");
+        div.innerHTML = html;
+        document.body.appendChild(div);
+      });
+  </script>
   <script src="modal-documentos.js?v=2"></script>
 </body>
 </html>
