@@ -61,7 +61,7 @@ function mostrarDuvidasDocumentos() {
                             <li>A falta de qualquer documento pode <strong>impedir o atendimento</strong></li>
                             <li>Chegue com <strong>15 minutos de antecedência</strong></li>
                             <li><strong>Mantenha seu número de contato sempre atualizado</strong> para eventuais remarcações ou imprevistos</li>
-                            <li>Caso não consiga comparecer, <strong>remarque a consulta com o mínimo de 24 horas de antecedência</strong>. A sua vaga pode ajudar outro munícipe!</li>
+                            <li>Caso não consiga comparecer, <strong>remarque a consulta com o mínimo de 24 horas de antecedência</strong>. A sua vaga pode ajudar outro munícipio!</li>
                             <li>Em caso de dúvidas, entre em contato: <a href="mailto:odontologiajaperi@gmail.com" style="color: #0c5460; font-weight: 600;">odontologiajaperi@gmail.com</a></li>
                         </ul>
                     </div>
