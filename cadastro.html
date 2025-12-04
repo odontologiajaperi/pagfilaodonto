@@ -1341,7 +1341,12 @@
                         // Marcar automaticamente o checkbox de gestante
                         const checkboxGestante = document.getElementById('checkbox_gestante');
                         checkboxGestante.checked = true;
-                        checkboxGestante.dispatchEvent(new Event('change'));
+                        
+                        // Mostrar campos de gestante manualmente (sem disparar evento change)
+                        const camposGestante = document.getElementById('campos_gestante');
+                        if (camposGestante) {
+                            camposGestante.style.display = 'block';
+                        }
                         
                         // Scroll para o formulário
                         form.scrollIntoView({ behavior: 'smooth', block: 'start' });
