@@ -1,16 +1,17 @@
 # 🎛️ Guia Rápido: Controle de Cadastros
 
-## 📋 O que foi criado?
+## 📋 O que é?
 
-Um sistema simples para você **abrir** ou **fechar** os cadastros da fila de espera quando precisar.
+Um sistema simples para você **abrir** ou **fechar** os cadastros da fila de espera diretamente pelo Supabase.
 
 ---
 
 ## 🚀 Como Usar (Passo a Passo)
 
-### **Passo 1: Criar a Tabela no Supabase** (FAZER APENAS UMA VEZ)
+### **PASSO 1: Criar a Tabela** (FAZER APENAS UMA VEZ)
 
-1. Acesse: https://supabase.com/dashboard/project/uakhmgoxgyklggsvtwdf/sql/new
+1. Acesse o SQL Editor do Supabase:
+   🔗 https://supabase.com/dashboard/project/uakhmgoxgyklggsvtwdf/sql/new
 
 2. Copie todo o conteúdo do arquivo **`criar_tabela_configuracoes.sql`**
 
@@ -24,66 +25,65 @@ Um sistema simples para você **abrir** ou **fechar** os cadastros da fila de es
 
 ---
 
-### **Passo 2: Controlar os Cadastros**
+### **PASSO 2: Abrir ou Fechar os Cadastros**
 
-#### **Opção A: Pelo Painel Administrativo** (MAIS FÁCIL) ⭐
-
-1. Acesse: https://odontologiajaperi.github.io/pagfilaodonto/painel.html
-
-2. Role até a seção **"🎛️ Controle de Cadastros"**
-
-3. Veja o status atual (ABERTO ou FECHADO)
-
-4. Clique no botão desejado:
-   - **✅ Abrir Cadastros** → Libera o formulário
-   - **❌ Fechar Cadastros** → Bloqueia o formulário
-
-5. (Opcional) Edite a mensagem que aparece quando fechado
-
-6. Clique em **💾 Salvar Mensagem**
-
-**As mudanças são instantâneas!** Não precisa recarregar nada.
-
----
-
-#### **Opção B: Pelo Supabase Table Editor**
-
-1. Acesse: https://supabase.com/dashboard/project/uakhmgoxgyklggsvtwdf/editor
+1. Acesse o Table Editor do Supabase:
+   🔗 https://supabase.com/dashboard/project/uakhmgoxgyklggsvtwdf/editor
 
 2. Clique na tabela **`configuracoes`**
 
-3. Encontre a linha com `chave` = **`cadastros_abertos`**
+3. Encontre a linha onde `chave` = **`cadastros_abertos`**
 
-4. Edite o campo `valor`:
-   - **`true`** = Cadastros ABERTOS ✅
-   - **`false`** = Cadastros FECHADOS ❌
+4. Clique para editar o campo **`valor`**:
+   - **`true`** = Cadastros ABERTOS ✅ (formulário funcionando)
+   - **`false`** = Cadastros FECHADOS ❌ (formulário bloqueado)
 
-5. Salve a alteração
+5. Salve a alteração (ícone de ✓ ou Enter)
+
+**As mudanças são instantâneas!** O site já reflete imediatamente.
 
 ---
 
-## 🎨 O que acontece quando você FECHA os cadastros?
+### **PASSO 3: Personalizar a Mensagem (Opcional)**
+
+Se quiser mudar a mensagem que aparece quando os cadastros estão fechados:
+
+1. Na mesma tabela **`configuracoes`**
+
+2. Encontre a linha onde `chave` = **`mensagem_cadastro_fechado`**
+
+3. Edite o campo **`valor`** com sua mensagem personalizada
+
+4. Salve a alteração
+
+**Mensagem padrão atual:**
+> "No momento, os cadastros para a fila de espera estão temporáriamente suspensos. Em breve, abriremos novas vagas. Agradecemos pela compreensão e pedimos que acompanhe nossos canais de comunicação para informações sobre a reabertura."
+
+---
+
+## 🎨 O que Acontece Quando Você Fecha os Cadastros?
 
 ### **Na Página Inicial (index.html):**
-- O card roxo "📋 Faça seu Cadastro" vira vermelho
-- Muda para "❌ Cadastros Temporariamente Fechados"
+- ❌ Card muda de roxo para vermelho
+- Título: "❌ Cadastros Temporariamente Fechados"
 - Mostra sua mensagem personalizada
 - Não é mais clicável
 
 ### **Na Página de Cadastro (cadastro.html):**
-- Aparece um aviso vermelho grande no topo
-- O formulário fica cinza e bloqueado
-- Todos os campos ficam desabilitados
-- Não é possível enviar cadastros
+- ❌ Aviso vermelho grande no topo
+- Formulário fica cinza e bloqueado
+- Todos os campos desabilitados
+- Impossível enviar cadastros
+- Botão "Voltar para Início" disponível
 
 ---
 
-## ✅ O que acontece quando você ABRE os cadastros?
+## ✅ O que Acontece Quando Você Abre os Cadastros?
 
-Tudo volta ao normal:
-- Card roxo clicável na página inicial
-- Formulário funcionando normalmente
-- Pessoas podem se cadastrar
+Tudo volta ao normal automaticamente:
+- ✅ Card roxo clicável na página inicial
+- ✅ Formulário funcionando normalmente
+- ✅ Pessoas podem se cadastrar
 
 ---
 
@@ -91,64 +91,89 @@ Tudo volta ao normal:
 
 ### **Fechar cadastros quando:**
 - A fila está muito grande
-- Período de férias/manutenção
+- Período de férias/recesso
+- Manutenção do sistema
 - Reorganização das unidades
-- Falta de profissionais temporária
+- Falta temporária de profissionais
+- Capacidade máxima atingida
 
 ### **Reabrir cadastros quando:**
 - Processar parte da fila
 - Voltar do período de férias
 - Contratar novos profissionais
 - Início de novo período
+- Capacidade disponível novamente
 
 ---
 
-## 🔧 Personalizar a Mensagem
+## 📊 Exemplo Visual do Supabase
 
-**Exemplos de mensagens:**
+Quando você acessar a tabela `configuracoes`, verá algo assim:
 
-```
-Os cadastros estão temporariamente fechados. Voltaremos em breve!
-```
+| id | chave | valor | descricao | atualizado_em |
+|----|-------|-------|-----------|---------------|
+| 1 | cadastros_abertos | **true** | Define se os cadastros... | 2025-12-04 10:30:00 |
+| 2 | mensagem_cadastro_fechado | No momento, os cadastros... | Mensagem exibida... | 2025-12-04 10:30:00 |
 
-```
-Cadastros fechados para reorganização da fila. 
-Previsão de reabertura: 15 de janeiro de 2026.
-```
-
-```
-No momento não estamos aceitando novos cadastros. 
-Acompanhe nossos avisos para saber quando reabriremos.
-```
-
-```
-Cadastros fechados devido ao grande volume de pacientes. 
-Estamos trabalhando para atender todos na fila atual.
-```
+**Para fechar:** Mude `true` para `false` na primeira linha  
+**Para abrir:** Mude `false` para `true` na primeira linha
 
 ---
 
 ## ⚡ Dicas Importantes
 
-1. **As mudanças são instantâneas** - Assim que você altera no painel ou Supabase, o site já reflete
+1. **Mudanças instantâneas** - Assim que você salva no Supabase, o site já reflete (não precisa esperar)
 
-2. **Teste em aba anônima** - Depois de fazer mudanças, abra o site em modo anônimo (Ctrl+Shift+N) para ver sem cache
+2. **Teste em aba anônima** - Depois de fazer mudanças, abra o site em modo anônimo (Ctrl+Shift+N) para ver sem cache do navegador
 
-3. **Não precisa fazer deploy** - Tudo funciona automaticamente
+3. **Não precisa fazer deploy** - Tudo funciona automaticamente, sem precisar publicar nada no GitHub
 
-4. **Histórico de mudanças** - O Supabase registra quando você alterou (campo `atualizado_em`)
+4. **Histórico automático** - O campo `atualizado_em` registra quando você fez a última alteração
+
+5. **Segurança** - Apenas quem tem acesso ao Supabase pode controlar (não aparece no site)
+
+---
+
+## 🔒 Segurança
+
+✅ **Vantagens deste método:**
+- Apenas administradores com acesso ao Supabase podem controlar
+- Não há botões públicos no site que qualquer um possa clicar
+- Controle centralizado e seguro
+- Auditoria automática de mudanças (campo `atualizado_em`)
+
+---
+
+## 🧪 Testando
+
+1. **Feche os cadastros** no Supabase (valor = `false`)
+
+2. **Abra o site em aba anônima:**
+   - https://odontologiajaperi.github.io/pagfilaodonto/
+
+3. **Veja o card vermelho** na página inicial
+
+4. **Tente acessar a página de cadastro:**
+   - https://odontologiajaperi.github.io/pagfilaodonto/cadastro.html
+   - Verá o formulário bloqueado
+
+5. **Reabra os cadastros** no Supabase (valor = `true`)
+
+6. **Recarregue o site** - Tudo volta ao normal
 
 ---
 
 ## 📞 Precisa de Ajuda?
 
 Se tiver dúvidas ou problemas:
-- Verifique se a tabela foi criada corretamente no Supabase
-- Teste em aba anônima para evitar cache
-- Verifique o console do navegador (F12) para erros
+
+1. Verifique se a tabela `configuracoes` foi criada corretamente
+2. Confirme que o valor está exatamente como `true` ou `false` (minúsculas)
+3. Teste em aba anônima para evitar cache
+4. Verifique o console do navegador (F12) para erros
 
 ---
 
 **Criado em:** 04/12/2025  
-**Versão:** 1.0  
+**Versão:** 2.0 (Controle apenas pelo Supabase)  
 **Status:** ✅ Funcionando
