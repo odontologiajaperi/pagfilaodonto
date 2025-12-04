@@ -1313,7 +1313,7 @@
                                     </div>
                                 </div>
                                 
-                                <button onclick="this.closest('[style*=\'position:fixed\']').remove()" style="width:100%;padding:18px;background:linear-gradient(135deg, #ff6b9d 0%, #c41e3a 100%);color:white;border:none;border-radius:12px;font-size:1.2em;font-weight:900;cursor:pointer;box-shadow:0 4px 15px rgba(255,107,157,0.4);transition:all 0.3s">
+                                <button id="btnContinuarGestante" style="width:100%;padding:18px;background:linear-gradient(135deg, #ff6b9d 0%, #c41e3a 100%);color:white;border:none;border-radius:12px;font-size:1.2em;font-weight:900;cursor:pointer;box-shadow:0 4px 15px rgba(255,107,157,0.4);transition:all 0.3s">
                                     ✨ Continuar para o Cadastro
                                 </button>
                             </div>
@@ -1322,8 +1322,8 @@
                         modalOverlay.appendChild(modalBox);
                         document.body.appendChild(modalOverlay);
                         
-                        // Adicionar hover effect no botão
-                        const btn = modalBox.querySelector('button');
+                        // Adicionar hover effect e evento de clique no botão
+                        const btn = modalBox.querySelector('#btnContinuarGestante');
                         btn.addEventListener('mouseenter', () => {
                             btn.style.transform = 'translateY(-2px)';
                             btn.style.boxShadow = '0 6px 20px rgba(255,107,157,0.6)';
@@ -1331,6 +1331,9 @@
                         btn.addEventListener('mouseleave', () => {
                             btn.style.transform = 'translateY(0)';
                             btn.style.boxShadow = '0 4px 15px rgba(255,107,157,0.4)';
+                        });
+                        btn.addEventListener('click', () => {
+                            modalOverlay.remove();
                         });
                         
                         // Habilitar o formulário
