@@ -146,7 +146,7 @@
       <a class="drawer-item" href="avisos.html">Avisos</a>
       <a class="drawer-item" href="painel.html">Fila</a>
       <a class="drawer-item" href="consulta-fila.html">🔍 Consultar Fila</a>
-      <a class="drawer-item" href="cadastro.html" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 800;">📋 Cadastro na Fila</a>
+      <a class="drawer-item" id="menuCadastro" href="cadastro.html" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 800;">📋 Cadastro na Fila</a>
 
       <a class="drawer-item" href="#" onclick="event.preventDefault(); mostrarDuvidasDocumentos(); document.getElementById('sideDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('show');">📄 Dúvidas sobre Documentos</a>
       <a class="drawer-item" href="mailto:odontologiajaperi@gmail.com">Contato (e-mail)</a>
@@ -273,6 +273,43 @@
 </script>
 
   
+
+  <!-- Script para mudar cor do menu baseado no status dos cadastros -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (async function(){
+      const SUPABASE_URL = 'https://uakhmgoxgyklggsvtwdf.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTE0NzcsImV4cCI6MjA3OTk1MTQ3N30.6iCUHePtVlmq8De9oBl4Zw5CBU4Zai7P3xLpi7cYkDo';
+      const { createClient } = supabase;
+      const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      
+      try {
+        const { data, error } = await supabaseClient
+          .from('configuracoes')
+          .select('*')
+          .in('chave', ['cadastros_abertos']);
+        
+        if (error) throw error;
+        
+        const statusConfig = data.find(c => c.chave === 'cadastros_abertos');
+        const aberto = statusConfig?.valor === 'true';
+        
+        // Mudar cor do item do menu
+        const menuCadastro = document.getElementById('menuCadastro');
+        if (menuCadastro) {
+          if (aberto) {
+            // Cadastros abertos - roxo
+            menuCadastro.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+          } else {
+            // Cadastros fechados - vermelho
+            menuCadastro.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao verificar status dos cadastros:', error);
+      }
+    })();
+  </script>
 
   <script src="modal-documentos.js"></script>
 </body>
