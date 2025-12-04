@@ -143,6 +143,14 @@
           <strong>Você está grávida?</strong> Faça seu cadastro e receba a <strong>Cartilha da Gestante</strong> com informações importantes sobre saúde bucal durante a gestação. <strong>Clique aqui para se cadastrar!</strong>
         </p>
       </section>
+
+      <!-- Card de Avaliação -->
+      <section class="highlight-card" onclick="window.location.href='avaliacao.html'" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border: 2px solid #1DC56F; box-shadow: 0 4px 16px rgba(29, 197, 111, 0.2);" aria-labelledby="avaliacaoTitle">
+        <h3 id="avaliacaoTitle" style="color: #2e7d32;">⭐ Já foi atendido?</h3>
+        <p class="lead" style="color: #1b5e20;">
+          <strong>Sua opinião é muito importante!</strong> Avalie seu atendimento e nos ajude a melhorar nossos serviços. <strong>Clique aqui para avaliar!</strong>
+        </p>
+      </section>
       
       
       <section class="cards-row">
@@ -217,6 +225,7 @@
       <a class="drawer-item" href="consulta-fila.html">🔍 Consultar Fila</a>
       <a class="drawer-item" id="menuCadastro" href="cadastro.html" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 800;">📋 Cadastro na Fila</a>
       <a class="drawer-item" href="cadastro.html" style="background: linear-gradient(135deg, #ff6b9d 0%, #c41e3a 100%); color: white; font-weight: 800;">🤰 Gestantes: Cadastro e Cartilha</a>
+      <a class="drawer-item" href="avaliacao.html" style="background: linear-gradient(135deg, #1DC56F 0%, #0F8BD6 100%); color: white; font-weight: 800;">⭐ Avalie seu Atendimento</a>
       <a class="drawer-item" href="fluxograma.html">📊 Fluxograma</a>
       <a class="drawer-item" href="unidades.html">📍 Unidades</a>
       <a class="drawer-item" href="#" onclick="event.preventDefault(); mostrarDuvidasDocumentos(); document.getElementById('sideDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('show');">📄 Dúvidas sobre Documentos</a>
@@ -421,12 +430,19 @@
   <!-- Pop-up de Avaliação -->
   <script>
     fetch("avaliacao-popup.html")
-      .then(response => response.text())
+      .then(response => {
+        if (!response.ok) throw new Error('Erro ao carregar pop-up');
+        return response.text();
+      })
       .then(html => {
-        const div = document.createElement("div");
-        div.innerHTML = html;
-        document.body.appendChild(div);
-      });
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = html;
+        // Adicionar cada elemento filho ao body
+        while (tempDiv.firstChild) {
+          document.body.appendChild(tempDiv.firstChild);
+        }
+      })
+      .catch(error => console.error('Erro ao carregar pop-up de avaliação:', error));
   </script>
 </body>
 </html>
