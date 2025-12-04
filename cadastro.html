@@ -503,6 +503,39 @@
                     </div>
                 </div>
 
+                <!-- Checkbox Gestante -->
+                <div class="form-group" style="background: #fff3f3; padding: 20px; border-radius: 12px; border: 2px solid #ff6b9d;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 1.1em; font-weight: 700; color: #c41e3a;">
+                        <input type="checkbox" id="checkbox_gestante" name="e_gestante" style="width: 20px; height: 20px; cursor: pointer;">
+                        <span>🤰 Você é gestante?</span>
+                    </label>
+                    <p style="margin: 10px 0 0 30px; font-size: 0.9em; color: #666;">
+                        Marque esta opção se você estiver grávida. Gestantes têm atendimento diferenciado.
+                    </p>
+                </div>
+
+                <!-- Campos condicionais para gestantes (inicialmente ocultos) -->
+                <div id="campos_gestante" style="display: none;">
+                    <div class="form-group" style="background: #fff8f0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff6b9d;">
+                        <label>Data Prevista do Parto <span class="required">*</span></label>
+                        <input type="date" id="data_prevista_parto" name="data_prevista_parto" min="" style="width: 100%;">
+                    </div>
+
+                    <div class="form-group" style="background: #fff8f0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff6b9d;">
+                        <label>Você deseja ou tem necessidade de ser atendida durante a gestação? <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" id="deseja_atendimento_sim" name="deseja_atendimento" value="true">
+                                Sim, desejo ser atendida
+                            </label>
+                            <label>
+                                <input type="radio" id="deseja_atendimento_nao" name="deseja_atendimento" value="false">
+                                Não, não tenho necessidade no momento
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>Principal Queixa de Saúde Bucal <span class="required">*</span></label>
                     <textarea name="queixa_principal" required></textarea>
@@ -822,37 +855,120 @@
                 // Converter probabilidade_recomendacao para número
                 data.probabilidade_recomendacao = parseInt(data.probabilidade_recomendacao) || 0;
                 
-                // Adicionar campos automáticos
-                data.created_at = new Date().toISOString();
-                data.submitted_at = new Date().toISOString();
-                data.status = 'aguardando';
-                data.mes_referencia = new Date().toISOString().slice(0, 7); // YYYY-MM
+                // Verificar se é gestante
+                const eGestante = document.getElementById('checkbox_gestante').checked;
                 
-                // Calcular posição na fila
-                const { data: filaData, error: filaError } = await supabaseClient
-                    .from('pacientes')
-                    .select('posicao_fila')
-                    .eq('unidade_preferencia', data.unidade_preferencia)
-                    .order('posicao_fila', { ascending: false })
-                    .limit(1);
-                
-                if (filaError) throw filaError;
-                
-                data.posicao_fila = filaData.length > 0 ? filaData[0].posicao_fila + 1 : 1;
-                
-                // Inserir no banco de dados
-                const { error } = await supabaseClient
-                    .from('pacientes')
-                    .insert([data]);
-                
-                if (error) throw error;
-                
-                showModal(
-                    'Cadastro Realizado com Sucesso!',
-                    `Parabéns! Você foi cadastrado na fila de espera.\n\nVocê é o número ${data.posicao_fila} na fila da unidade ${data.unidade_preferencia}.\n\nEm breve entraremos em contato pelo telefone ${data.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')}.`,
-                    'success'
-                );
-                e.target.reset();
+                if (eGestante) {
+                    // ========== FLUXO PARA GESTANTES ==========
+                    
+                    // Validar se o termo foi aceito
+                    if (!termoGestanteAceito) {
+                        showModal(
+                            'Termo Não Aceito',
+                            'Você precisa aceitar o termo de declaração de gestante para continuar.',
+                            'error'
+                        );
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Enviar Cadastro';
+                        return;
+                    }
+                    
+                    // Converter deseja_atendimento para boolean
+                    data.deseja_atendimento = data.deseja_atendimento === 'true';
+                    data.termo_gestante_aceito = true;
+                    
+                    // Remover campo e_gestante (não existe na tabela)
+                    delete data.e_gestante;
+                    
+                    // Validar CPF duplicado na tabela de gestantes
+                    const { data: cpfCheckGestante, error: cpfErrorGestante } = await supabaseClient
+                        .from('gestantes')
+                        .select('cpf, nome_completo')
+                        .eq('cpf', data.cpf)
+                        .limit(1);
+                    
+                    if (cpfErrorGestante) throw cpfErrorGestante;
+                    
+                    if (cpfCheckGestante && cpfCheckGestante.length > 0) {
+                        showModal(
+                            'CPF Já Cadastrado',
+                            `O CPF ${data.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')} já está cadastrado como gestante no sistema.`,
+                            'error'
+                        );
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Enviar Cadastro';
+                        return;
+                    }
+                    
+                    // Inserir na tabela de gestantes
+                    const { error: errorGestante } = await supabaseClient
+                        .from('gestantes')
+                        .insert([data]);
+                    
+                    if (errorGestante) throw errorGestante;
+                    
+                    // Mensagem personalizada baseada na escolha
+                    let mensagemGestante = '';
+                    
+                    if (data.deseja_atendimento) {
+                        // DESEJA ATENDIMENTO
+                        mensagemGestante = `Parabéns! Seu cadastro como gestante foi realizado com sucesso!\n\n🤰 ATENDIMENTO PRIORITÁRIO\n\nVocê será atendida com prioridade. Entraremos em contato em breve pelo telefone ${data.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')} para prosseguir com o agendamento.\n\n📌 Data prevista do parto: ${new Date(data.data_prevista_parto).toLocaleDateString('pt-BR')}\n\n📝 Importante: Mantenha seu telefone atualizado e atenda nossas ligações.`;
+                    } else {
+                        // NÃO DESEJA ATENDIMENTO
+                        mensagemGestante = `Cadastro realizado com sucesso!\n\n🤰 Seu cadastro como gestante foi registrado.\n\nVocê informou que não tem necessidade de atendimento no momento. Caso mude de ideia, entre em contato conosco.\n\n📌 Data prevista do parto: ${new Date(data.data_prevista_parto).toLocaleDateString('pt-BR')}\n\nObrigado pelo cadastro!`;
+                    }
+                    
+                    showModal(
+                        'Cadastro de Gestante Realizado!',
+                        mensagemGestante,
+                        'success'
+                    );
+                    
+                    e.target.reset();
+                    document.getElementById('checkbox_gestante').checked = false;
+                    document.getElementById('campos_gestante').style.display = 'none';
+                    termoGestanteAceito = false;
+                    
+                } else {
+                    // ========== FLUXO NORMAL (NÃO GESTANTE) ==========
+                    
+                    // Remover campos de gestante se existirem
+                    delete data.e_gestante;
+                    delete data.data_prevista_parto;
+                    delete data.deseja_atendimento;
+                    
+                    // Adicionar campos automáticos
+                    data.created_at = new Date().toISOString();
+                    data.submitted_at = new Date().toISOString();
+                    data.status = 'aguardando';
+                    data.mes_referencia = new Date().toISOString().slice(0, 7); // YYYY-MM
+                    
+                    // Calcular posição na fila
+                    const { data: filaData, error: filaError } = await supabaseClient
+                        .from('pacientes')
+                        .select('posicao_fila')
+                        .eq('unidade_preferencia', data.unidade_preferencia)
+                        .order('posicao_fila', { ascending: false })
+                        .limit(1);
+                    
+                    if (filaError) throw filaError;
+                    
+                    data.posicao_fila = filaData.length > 0 ? filaData[0].posicao_fila + 1 : 1;
+                    
+                    // Inserir no banco de dados
+                    const { error } = await supabaseClient
+                        .from('pacientes')
+                        .insert([data]);
+                    
+                    if (error) throw error;
+                    
+                    showModal(
+                        'Cadastro Realizado com Sucesso!',
+                        `Parabéns! Você foi cadastrado na fila de espera.\n\nVocê é o número ${data.posicao_fila} na fila da unidade ${data.unidade_preferencia}.\n\nEm breve entraremos em contato pelo telefone ${data.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')}.`,
+                        'success'
+                    );
+                    e.target.reset();
+                }
                 
             } catch (error) {
                 console.error('Erro:', error);
@@ -870,6 +986,144 @@
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Enviar Cadastro';
+            }
+        });
+    </script>
+
+    <!-- Script para gerenciar checkbox de gestante e modal de termo -->
+    <script>
+        let termoGestanteAceito = false;
+        
+        // Configurar data mínima (hoje) para data prevista de parto
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('data_prevista_parto').min = hoje;
+        
+        // Função para mostrar modal de termo de gestante
+        function mostrarTermoGestante() {
+            const modal = document.createElement('div');
+            modal.id = 'modal-termo-gestante';
+            modal.style.cssText = `
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 16px;
+                    padding: 30px;
+                    max-width: 600px;
+                    width: 90%;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+                    animation: slideUp 0.3s ease;
+                    border-top: 6px solid #ff6b9d;
+                ">
+                    <div style="text-align: center; font-size: 4em; margin-bottom: 15px;">🤰</div>
+                    <h2 style="margin: 0 0 20px; color: #c41e3a; text-align: center; font-size: 1.6em;">
+                        Termo de Declaração - Gestante
+                    </h2>
+                    
+                    <div style="text-align: left; color: #555; line-height: 1.8; margin-bottom: 25px;">
+                        <p style="margin-bottom: 15px; font-size: 1.05em;">
+                            <strong>Você confirma que está gestante?</strong>
+                        </p>
+                        
+                        <div style="background: #fff3f3; border-left: 4px solid #ff6b9d; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                            <p style="margin: 0 0 10px; font-weight: 600; color: #c41e3a;">⚠️ IMPORTANTE:</p>
+                            <ul style="margin: 0; padding-left: 20px; color: #c41e3a;">
+                                <li>Gestantes têm <strong>atendimento diferenciado</strong></li>
+                                <li>Seu cadastro será <strong>processado separadamente</strong></li>
+                                <li>Não haverá sistema de fila para gestantes</li>
+                                <li>O atendimento será <strong>priorizado</strong> conforme disponibilidade</li>
+                            </ul>
+                        </div>
+                        
+                        <p style="margin-top: 15px; font-size: 0.95em; color: #666;">
+                            Ao confirmar, você declara estar ciente das informações acima e que os dados fornecidos são verdadeiros.
+                        </p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button id="btn-confirmar-gestante" style="
+                            flex: 1;
+                            min-width: 120px;
+                            padding: 14px 20px;
+                            border: none;
+                            border-radius: 8px;
+                            font-size: 1em;
+                            font-weight: 700;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                            background: linear-gradient(135deg, #ff6b9d 0%, #c41e3a 100%);
+                            color: white;
+                        ">✔️ Sim, Confirmo</button>
+                        
+                        <button id="btn-cancelar-gestante" style="
+                            flex: 1;
+                            min-width: 120px;
+                            padding: 14px 20px;
+                            border: 2px solid #ddd;
+                            border-radius: 8px;
+                            font-size: 1em;
+                            font-weight: 700;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                            background: white;
+                            color: #666;
+                        ">❌ Cancelar</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Botão confirmar
+            document.getElementById('btn-confirmar-gestante').addEventListener('click', function() {
+                termoGestanteAceito = true;
+                modal.remove();
+                
+                // Mostrar campos de gestante
+                document.getElementById('campos_gestante').style.display = 'block';
+                
+                // Tornar campos obrigatórios
+                document.getElementById('data_prevista_parto').required = true;
+                document.getElementById('deseja_atendimento_sim').required = true;
+                document.getElementById('deseja_atendimento_nao').required = true;
+                
+                // Scroll suave até os campos
+                setTimeout(() => {
+                    document.getElementById('campos_gestante').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            });
+            
+            // Botão cancelar
+            document.getElementById('btn-cancelar-gestante').addEventListener('click', function() {
+                modal.remove();
+                document.getElementById('checkbox_gestante').checked = false;
+                termoGestanteAceito = false;
+            });
+        }
+        
+        // Evento do checkbox de gestante
+        document.getElementById('checkbox_gestante').addEventListener('change', function() {
+            if (this.checked) {
+                // Mostrar modal de termo
+                mostrarTermoGestante();
+            } else {
+                // Ocultar campos e remover obrigatoriedade
+                document.getElementById('campos_gestante').style.display = 'none';
+                document.getElementById('data_prevista_parto').required = false;
+                document.getElementById('deseja_atendimento_sim').required = false;
+                document.getElementById('deseja_atendimento_nao').required = false;
+                termoGestanteAceito = false;
             }
         });
     </script>
