@@ -349,6 +349,34 @@
             transform: scale(1.1);
         }
 
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #667eea;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: #f8f9fa;
+        }
+
+        .back-button:active {
+            transform: translateY(0);
+        }
+
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -363,8 +391,16 @@
             }
         }
     </style>
+    
+    <!-- Google reCAPTCHA Script -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
+    <a href="index.html" class="back-button">
+        <span>←</span>
+        <span>Voltar</span>
+    </a>
+    
     <div class="container">
         <div class="header">
             <h1>📋 Cadastro na Fila de Espera</h1>
@@ -507,6 +543,12 @@
                         <input type="checkbox" name="aceita_termos" required style="width: auto; margin-top: 3px;">
                         <span>Li e aceito os <a href="termos.html" target="_blank" style="color: #667eea; text-decoration: underline;">Termos de Uso e Política de Privacidade</a> <span class="required">*</span></span>
                     </label>
+                </div>
+
+                <!-- Google reCAPTCHA -->
+                <div class="form-group" style="margin-top: 30px;">
+                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" style="display: flex; justify-content: center;"></div>
+                    <div id="recaptcha-error" style="color: #e74c3c; font-size: 0.85em; margin-top: 10px; text-align: center; display: none;">Por favor, confirme que você não é um robô</div>
                 </div>
 
                 <div style="display: flex; gap: 15px; margin-top: 30px;">
@@ -664,6 +706,17 @@
         // Submissão do formulário
         document.getElementById('cadastroForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // Validar reCAPTCHA
+            const recaptchaResponse = grecaptcha.getResponse();
+            const recaptchaError = document.getElementById('recaptcha-error');
+            
+            if (!recaptchaResponse) {
+                recaptchaError.style.display = 'block';
+                recaptchaError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            recaptchaError.style.display = 'none';
             
             // Validar formulário
             if (!validateForm(e.target)) {
