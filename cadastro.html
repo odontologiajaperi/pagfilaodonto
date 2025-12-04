@@ -426,7 +426,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Sexo <span class="required">*</span></label>
-                        <select name="sexo" required>
+                        <select name="sexo" id="campo_sexo" required>
                             <option value="">Selecione...</option>
                             <option value="Masculino">Masculino</option>
                             <option value="Feminino">Feminino</option>
@@ -504,13 +504,16 @@
                 </div>
 
                 <!-- Checkbox Gestante -->
-                <div class="form-group" style="background: #fff3f3; padding: 20px; border-radius: 12px; border: 2px solid #ff6b9d;">
+                <div class="form-group" id="container_gestante" style="background: #fff3f3; padding: 20px; border-radius: 12px; border: 2px solid #ff6b9d; opacity: 0.5; pointer-events: none;">
                     <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 1.1em; font-weight: 700; color: #c41e3a;">
-                        <input type="checkbox" id="checkbox_gestante" name="e_gestante" style="width: 20px; height: 20px; cursor: pointer;">
+                        <input type="checkbox" id="checkbox_gestante" name="e_gestante" style="width: 20px; height: 20px; cursor: pointer;" disabled>
                         <span>🤰 Você é gestante?</span>
                     </label>
                     <p style="margin: 10px 0 0 30px; font-size: 0.9em; color: #666;">
                         Marque esta opção se você estiver grávida. Gestantes têm atendimento diferenciado.
+                    </p>
+                    <p style="margin: 10px 0 0 30px; font-size: 0.85em; color: #999; font-style: italic;">
+                        ⚠️ Selecione o sexo acima para habilitar esta opção
                     </p>
                 </div>
 
@@ -662,7 +665,7 @@
         });
 
         // Função para mostrar modal
-        function showModal(title, message, type) {
+        function showModal(title, message, type, extraButton = null) {
             // Criar modal se não existir
             let modal = document.getElementById('modal-overlay');
             if (!modal) {
@@ -687,6 +690,21 @@
             modal.querySelector('#modal-title').textContent = title;
             modal.querySelector('#modal-message').textContent = message;
             modal.querySelector('.modal-btn').className = `modal-btn ${type}`;
+            
+            // Adicionar botão extra se fornecido
+            const existingExtraBtn = modal.querySelector('.extra-btn');
+            if (existingExtraBtn) existingExtraBtn.remove();
+            
+            if (extraButton) {
+                const btnContainer = modal.querySelector('.modal');
+                const extraBtn = document.createElement('a');
+                extraBtn.href = extraButton.url || '#';
+                extraBtn.target = '_blank';
+                extraBtn.className = 'modal-btn success extra-btn';
+                extraBtn.style.cssText = 'background: #ff6b9d; margin-top: 10px; display: inline-block; text-decoration: none;';
+                extraBtn.textContent = extraButton.text || 'Download';
+                btnContainer.insertBefore(extraBtn, modal.querySelector('.modal-btn'));
+            }
             
             // Mostrar modal
             modal.classList.add('show');
@@ -914,16 +932,20 @@
                     
                     if (data.deseja_atendimento) {
                         // DESEJA ATENDIMENTO
-                        mensagemGestante = `Parabéns! Seu cadastro como gestante foi realizado com sucesso!\n\n🤰 ATENDIMENTO PRIORITÁRIO\n\nVocê será atendida com prioridade. Entraremos em contato em breve pelo telefone ${data.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')} para prosseguir com o agendamento.\n\n📌 Data prevista do parto: ${new Date(data.data_prevista_parto).toLocaleDateString('pt-BR')}\n\n📝 Importante: Mantenha seu telefone atualizado e atenda nossas ligações.`;
+                        mensagemGestante = `Parabéns! Seu cadastro como gestante foi realizado com sucesso!\n\n🤰 ATENDIMENTO PRIORITÁRIO\n\nVocê será atendida com prioridade. Entraremos em contato em breve pelo telefone ${data.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')} para prosseguir com o agendamento.\n\n📋 Data prevista do parto: ${new Date(data.data_prevista_parto).toLocaleDateString('pt-BR')}\n\n📚 CARTILHA DA GESTANTE\nClique no botão abaixo para baixar a Cartilha da Gestante com informações importantes sobre saúde bucal durante a gestação.\n\n📝 Importante: Mantenha seu telefone atualizado e atenda nossas ligações.`;
                     } else {
                         // NÃO DESEJA ATENDIMENTO
-                        mensagemGestante = `Cadastro realizado com sucesso!\n\n🤰 Seu cadastro como gestante foi registrado.\n\nVocê informou que não tem necessidade de atendimento no momento. Caso mude de ideia, entre em contato conosco.\n\n📌 Data prevista do parto: ${new Date(data.data_prevista_parto).toLocaleDateString('pt-BR')}\n\nObrigado pelo cadastro!`;
+                        mensagemGestante = `Cadastro realizado com sucesso!\n\n🤰 Seu cadastro como gestante foi registrado.\n\nVocê informou que não tem necessidade de atendimento no momento. Caso mude de ideia, entre em contato conosco.\n\n📋 Data prevista do parto: ${new Date(data.data_prevista_parto).toLocaleDateString('pt-BR')}\n\n📚 CARTILHA DA GESTANTE\nClique no botão abaixo para baixar a Cartilha da Gestante com informações importantes sobre saúde bucal durante a gestação.\n\nObrigado pelo cadastro!`;
                     }
                     
                     showModal(
                         'Cadastro de Gestante Realizado!',
                         mensagemGestante,
-                        'success'
+                        'success',
+                        {
+                            text: '📚 Baixar Cartilha da Gestante',
+                            url: 'cartilha-gestante.pdf' // Placeholder - será substituído quando o usuário enviar o arquivo
+                        }
                     );
                     
                     e.target.reset();
@@ -995,9 +1017,11 @@
     <script>
         let termoGestanteAceito = false;
         
-        // Configurar data mínima (hoje) para data prevista de parto
-        const hoje = new Date().toISOString().split('T')[0];
-        document.getElementById('data_prevista_parto').min = hoje;
+        // Configurar data mínima (amanhã) para data prevista de parto
+        const amanha = new Date();
+        amanha.setDate(amanha.getDate() + 1);
+        const dataMinima = amanha.toISOString().split('T')[0];
+        document.getElementById('data_prevista_parto').min = dataMinima;
         
         // Função para mostrar modal de termo de gestante
         function mostrarTermoGestante() {
@@ -1112,6 +1136,35 @@
                 termoGestanteAceito = false;
             });
         }
+        
+        // Bloquear checkbox de gestante para sexo masculino
+        document.getElementById('campo_sexo').addEventListener('change', function() {
+            const checkboxGestante = document.getElementById('checkbox_gestante');
+            const containerGestante = checkboxGestante.closest('.form-group');
+            
+            if (this.value === 'Masculino') {
+                // Desabilitar e desmarcar checkbox
+                checkboxGestante.checked = false;
+                checkboxGestante.disabled = true;
+                containerGestante.style.opacity = '0.5';
+                containerGestante.style.pointerEvents = 'none';
+                
+                // Ocultar campos de gestante se estiverem visíveis
+                document.getElementById('campos_gestante').style.display = 'none';
+                termoGestanteAceito = false;
+            } else if (this.value === 'Feminino') {
+                // Habilitar checkbox
+                checkboxGestante.disabled = false;
+                containerGestante.style.opacity = '1';
+                containerGestante.style.pointerEvents = 'auto';
+            } else {
+                // Se não selecionou nada, desabilitar
+                checkboxGestante.checked = false;
+                checkboxGestante.disabled = true;
+                containerGestante.style.opacity = '0.5';
+                containerGestante.style.pointerEvents = 'none';
+            }
+        });
         
         // Evento do checkbox de gestante
         document.getElementById('checkbox_gestante').addEventListener('change', function() {
