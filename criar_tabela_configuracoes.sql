@@ -22,7 +22,7 @@ VALUES (
 INSERT INTO configuracoes (chave, valor, descricao) 
 VALUES (
     'mensagem_cadastro_fechado',
-    'No momento, os cadastros para a fila de espera estão temporáriamente suspensos. Em breve, abriremos novas vagas. Agradecemos pela compreensão e pedimos que acompanhe nossos canais de comunicação para informações sobre a reabertura.',
+    'No momento, os cadastros para a fila de espera estão temporariamente suspensos. Em breve, abriremos novas vagas. Agradecemos pela compreensão e pedimos que acompanhe nossos canais de comunicação para informações sobre a reabertura.',
     'Mensagem exibida quando os cadastros estão fechados'
 ) ON CONFLICT (chave) DO NOTHING;
 

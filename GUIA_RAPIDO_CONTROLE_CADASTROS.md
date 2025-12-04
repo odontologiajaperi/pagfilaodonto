@@ -57,7 +57,7 @@ Se quiser mudar a mensagem que aparece quando os cadastros estão fechados:
 4. Salve a alteração
 
 **Mensagem padrão atual:**
-> "No momento, os cadastros para a fila de espera estão temporáriamente suspensos. Em breve, abriremos novas vagas. Agradecemos pela compreensão e pedimos que acompanhe nossos canais de comunicação para informações sobre a reabertura."
+> "No momento, os cadastros para a fila de espera estão temporariamente suspensos. Em breve, abriremos novas vagas. Agradecemos pela compreensão e pedimos que acompanhe nossos canais de comunicação para informações sobre a reabertura."
 
 ---
 

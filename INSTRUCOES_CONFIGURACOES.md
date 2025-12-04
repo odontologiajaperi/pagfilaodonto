@@ -95,7 +95,7 @@ Este sistema permite que você abra ou feche os cadastros da fila de espera de f
 
 ### Mensagem Padrão:
 
-> "No momento, os cadastros para a fila de espera estão temporáriamente suspensos. Em breve, abriremos novas vagas. Agradecemos pela compreensão e pedimos que acompanhe nossos canais de comunicação para informações sobre a reabertura."
+> "No momento, os cadastros para a fila de espera estão temporariamente suspensos. Em breve, abriremos novas vagas. Agradecemos pela compreensão e pedimos que acompanhe nossos canais de comunicação para informações sobre a reabertura."
 
 ### Como Personalizar:
 
