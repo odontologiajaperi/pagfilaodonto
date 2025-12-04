@@ -279,8 +279,11 @@
             if (popup) {
                 popup.classList.remove('show');
                 
-                // Marcar como dispensado na sessão atual
-                sessionStorage.setItem(POPUP_DISMISSED_KEY, 'true');
+                // Registrar quando foi fechado para reaparecer em 5 minutos
+                localStorage.setItem(POPUP_KEY, Date.now().toString());
+                
+                // Agendar reaparecimento em 5 minutos (300000ms)
+                setTimeout(mostrarPopupAvaliacao, 300000);
             }
         };
         
@@ -298,11 +301,6 @@
                 return;
             }
             
-            // Verificar se foi dispensado na sessão atual
-            if (sessionStorage.getItem(POPUP_DISMISSED_KEY) === 'true') {
-                return;
-            }
-            
             const lastShown = localStorage.getItem(POPUP_KEY);
             const now = Date.now();
             
@@ -312,13 +310,17 @@
                 return;
             }
             
-            // Se já foi mostrado, verificar se passaram 2 minutos (120000ms)
+            // Se já foi mostrado/fechado, verificar se passaram 5 minutos (300000ms)
             const timeSinceLastShown = now - parseInt(lastShown);
-            const twoMinutes = 120000;
+            const fiveMinutes = 300000;
             
-            if (timeSinceLastShown >= twoMinutes) {
-                // Mostrar após 2 minutos de navegação
-                setTimeout(mostrarPopupAvaliacao, twoMinutes);
+            if (timeSinceLastShown >= fiveMinutes) {
+                // Mostrar imediatamente se já passaram 5 minutos
+                setTimeout(mostrarPopupAvaliacao, 3000);
+            } else {
+                // Agendar para mostrar quando completar 5 minutos
+                const timeRemaining = fiveMinutes - timeSinceLastShown;
+                setTimeout(mostrarPopupAvaliacao, timeRemaining);
             }
         }
         
