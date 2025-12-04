@@ -1,0 +1,350 @@
+<!-- ============================================================================ -->
+<!-- POP-UP DE AVALIAÇÃO COM BALÃO ESTILO HQ -->
+<!-- ============================================================================ -->
+<!-- Este componente deve ser incluído em todas as páginas -->
+<!-- Versão: 2.0.0 -->
+<!-- ============================================================================ -->
+
+<style>
+    /* Pop-up Overlay */
+    .avaliacao-popup-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .avaliacao-popup-overlay.show {
+        display: flex;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Container do Pop-up */
+    .avaliacao-popup-container {
+        background: white;
+        border-radius: 25px;
+        padding: 0;
+        max-width: 450px;
+        width: 90%;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+        animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        overflow: hidden;
+    }
+
+    @keyframes popIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.5) rotate(-5deg);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+    }
+
+    /* Botão Fechar (X) */
+    .avaliacao-popup-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.1);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        z-index: 10;
+    }
+
+    .avaliacao-popup-close:hover {
+        background: rgba(0, 0, 0, 0.3);
+        transform: rotate(90deg);
+    }
+
+    /* Header com Estrela */
+    .avaliacao-popup-header {
+        background: linear-gradient(135deg, #1DC56F 0%, #0F8BD6 100%);
+        padding: 40px 30px 30px;
+        text-align: center;
+        position: relative;
+    }
+
+    .avaliacao-popup-star {
+        font-size: 70px;
+        display: block;
+        margin-bottom: 15px;
+        animation: starBounce 1.5s infinite;
+        filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+    }
+
+    @keyframes starBounce {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+        }
+        25% {
+            transform: translateY(-15px) rotate(-5deg);
+        }
+        50% {
+            transform: translateY(0) rotate(0deg);
+        }
+        75% {
+            transform: translateY(-10px) rotate(5deg);
+        }
+    }
+
+    /* Balão de Diálogo Estilo HQ */
+    .avaliacao-popup-balloon {
+        position: relative;
+        background: white;
+        color: #333;
+        padding: 20px 25px;
+        border-radius: 20px;
+        border: 4px solid #333;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        margin: -20px 30px 0;
+        font-size: 1.3em;
+        font-weight: 900;
+        text-align: center;
+        line-height: 1.4;
+        z-index: 5;
+    }
+
+    /* Seta do Balão (apontando para cima) */
+    .avaliacao-popup-balloon::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-bottom: 20px solid #333;
+    }
+
+    .avaliacao-popup-balloon::after {
+        content: '';
+        position: absolute;
+        top: -13px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 17px solid transparent;
+        border-right: 17px solid transparent;
+        border-bottom: 17px solid white;
+    }
+
+    /* Conteúdo do Pop-up */
+    .avaliacao-popup-content {
+        padding: 30px;
+        text-align: center;
+    }
+
+    .avaliacao-popup-content p {
+        font-size: 1.05em;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    /* Botão de Ação */
+    .avaliacao-popup-btn {
+        display: inline-block;
+        padding: 16px 40px;
+        background: linear-gradient(135deg, #1DC56F 0%, #0F8BD6 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-size: 1.1em;
+        font-weight: 800;
+        transition: all 0.3s;
+        box-shadow: 0 5px 20px rgba(29, 197, 111, 0.3);
+    }
+
+    .avaliacao-popup-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(29, 197, 111, 0.5);
+    }
+
+    /* Link "Agora não" */
+    .avaliacao-popup-skip {
+        display: block;
+        margin-top: 15px;
+        color: #999;
+        font-size: 0.9em;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .avaliacao-popup-skip:hover {
+        color: #666;
+    }
+
+    /* Responsivo */
+    @media (max-width: 600px) {
+        .avaliacao-popup-container {
+            width: 95%;
+            border-radius: 20px;
+        }
+
+        .avaliacao-popup-star {
+            font-size: 60px;
+        }
+
+        .avaliacao-popup-balloon {
+            font-size: 1.1em;
+            padding: 15px 20px;
+            margin: -15px 20px 0;
+        }
+
+        .avaliacao-popup-content {
+            padding: 25px 20px;
+        }
+
+        .avaliacao-popup-btn {
+            padding: 14px 30px;
+            font-size: 1em;
+        }
+    }
+</style>
+
+<!-- Pop-up de Avaliação -->
+<div class="avaliacao-popup-overlay" id="avaliacaoPopupOverlay">
+    <div class="avaliacao-popup-container">
+        <button class="avaliacao-popup-close" onclick="fecharPopupAvaliacao()" aria-label="Fechar">✕</button>
+        
+        <div class="avaliacao-popup-header">
+            <span class="avaliacao-popup-star">⭐</span>
+        </div>
+        
+        <div class="avaliacao-popup-balloon">
+            AVALIE SEU ATENDIMENTO!
+        </div>
+        
+        <div class="avaliacao-popup-content">
+            <p>
+                <strong>Já foi atendido?</strong><br>
+                Sua opinião é muito importante para melhorarmos nossos serviços!
+            </p>
+            
+            <a href="avaliacao.html" class="avaliacao-popup-btn">
+                ⭐ Avaliar Agora
+            </a>
+            
+            <a href="#" class="avaliacao-popup-skip" onclick="fecharPopupAvaliacao(); return false;">
+                Agora não
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // Chave para localStorage
+        const POPUP_KEY = 'avaliacaoPopupLastShown';
+        const POPUP_DISMISSED_KEY = 'avaliacaoPopupDismissed';
+        
+        // Função para mostrar o pop-up
+        function mostrarPopupAvaliacao() {
+            // Verificar se foi dispensado na sessão atual
+            if (sessionStorage.getItem(POPUP_DISMISSED_KEY) === 'true') {
+                return;
+            }
+            
+            const overlay = document.getElementById('avaliacaoPopupOverlay');
+            if (overlay) {
+                overlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                
+                // Registrar quando foi mostrado
+                localStorage.setItem(POPUP_KEY, Date.now().toString());
+            }
+        }
+        
+        // Função para fechar o pop-up
+        window.fecharPopupAvaliacao = function() {
+            const overlay = document.getElementById('avaliacaoPopupOverlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+                
+                // Marcar como dispensado na sessão atual
+                sessionStorage.setItem(POPUP_DISMISSED_KEY, 'true');
+            }
+        };
+        
+        // Fechar ao clicar fora
+        document.getElementById('avaliacaoPopupOverlay')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharPopupAvaliacao();
+            }
+        });
+        
+        // Fechar com tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                fecharPopupAvaliacao();
+            }
+        });
+        
+        // Lógica de exibição automática
+        function verificarExibicaoAutomatica() {
+            // Não mostrar na página de avaliação
+            if (window.location.pathname.includes('avaliacao.html')) {
+                return;
+            }
+            
+            // Verificar se foi dispensado na sessão atual
+            if (sessionStorage.getItem(POPUP_DISMISSED_KEY) === 'true') {
+                return;
+            }
+            
+            const lastShown = localStorage.getItem(POPUP_KEY);
+            const now = Date.now();
+            
+            // Se nunca foi mostrado, mostrar após 3 segundos
+            if (!lastShown) {
+                setTimeout(mostrarPopupAvaliacao, 3000);
+                return;
+            }
+            
+            // Se já foi mostrado, verificar se passaram 2 minutos (120000ms)
+            const timeSinceLastShown = now - parseInt(lastShown);
+            const twoMinutes = 120000;
+            
+            if (timeSinceLastShown >= twoMinutes) {
+                // Mostrar após 2 minutos de navegação
+                setTimeout(mostrarPopupAvaliacao, twoMinutes);
+            }
+        }
+        
+        // Iniciar verificação quando a página carregar
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', verificarExibicaoAutomatica);
+        } else {
+            verificarExibicaoAutomatica();
+        }
+    })();
+</script>

@@ -1267,10 +1267,10 @@
         })();
     </script>
 
-  <!-- Componente de Avaliação -->
+  <script src="modal-documentos.js?v=2"></script>
+  <!-- Pop-up de Avaliação -->
   <script>
-    // Incluir componente de avaliação
-    fetch("avaliacao-component.html")
+    fetch("avaliacao-popup.html")
       .then(response => response.text())
       .then(html => {
         const div = document.createElement("div");
@@ -1278,6 +1278,5 @@
         document.body.appendChild(div);
       });
   </script>
-  <script src="modal-documentos.js?v=2"></script>
 </body>
 </html>

@@ -165,5 +165,15 @@
 
         <a href="cadastro.html" class="back-btn">← Voltar para o Cadastro</a>
     </div>
+  <!-- Pop-up de Avaliação -->
+  <script>
+    fetch("avaliacao-popup.html")
+      .then(response => response.text())
+      .then(html => {
+        const div = document.createElement("div");
+        div.innerHTML = html;
+        document.body.appendChild(div);
+      });
+  </script>
 </body>
 </html>

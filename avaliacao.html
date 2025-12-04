@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avalie seu Atendimento - Odontologia Japeri</title>
+    <link rel="icon" href="brasil-sorridente-logo222.png?v=2" type="image/png">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1DC56F 0%, #0F8BD6 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1DC56F 0%, #0F8BD6 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '⭐';
+            font-size: 60px;
+            display: block;
+            margin-bottom: 15px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: 900;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .form-container {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+
+        .form-group label .required {
+            color: #e74c3c;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1DC56F;
+            box-shadow: 0 0 0 3px rgba(29, 197, 111, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Rating Scale (0-10) */
+        .rating-scale {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .rating-scale input[type="radio"] {
+            display: none;
+        }
+
+        .rating-scale label {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+            color: #666;
+        }
+
+        .rating-scale label:hover {
+            border-color: #1DC56F;
+            transform: scale(1.1);
+        }
+
+        .rating-scale input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #1DC56F 0%, #0F8BD6 100%);
+            color: white;
+            border-color: #1DC56F;
+            transform: scale(1.15);
+        }
+
+        .rating-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #1DC56F 0%, #0F8BD6 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 197, 111, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            color: #1DC56F;
+        }
+
+        /* Modal de Sucesso */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal.success {
+            border-top: 6px solid #1DC56F;
+        }
+
+        .modal.error {
+            border-top: 6px solid #e74c3c;
+        }
+
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .modal h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal p {
+            font-size: 1.1em;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.success {
+            background: #1DC56F;
+            color: white;
+        }
+
+        .modal-btn.error {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsivo */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .form-container {
+                padding: 30px 20px;
+            }
+
+            .rating-scale label {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Avalie seu Atendimento</h1>
+            <p>Sua opinião é muito importante para nós!</p>
+        </div>
+
+        <div class="form-container">
+            <form id="avaliacaoForm">
+                <!-- CPF -->
+                <div class="form-group">
+                    <label for="cpf">CPF <span class="required">*</span></label>
+                    <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+                </div>
+
+                <!-- Data do Atendimento -->
+                <div class="form-group">
+                    <label for="data_atendimento">Data do Atendimento <span class="required">*</span></label>
+                    <input type="date" id="data_atendimento" name="data_atendimento" required>
+                </div>
+
+                <!-- Unidade -->
+                <div class="form-group">
+                    <label for="unidade">Unidade <span class="required">*</span></label>
+                    <select id="unidade" name="unidade" required>
+                        <option value="">Selecione a unidade...</option>
+                        <option value="Marabá">Marabá</option>
+                        <option value="Alecrim">Alecrim</option>
+                        <option value="Vila Central">Vila Central</option>
+                        <option value="Japeri Centro">Japeri Centro</option>
+                        <option value="Chacrinha">Chacrinha</option>
+                        <option value="CEO">CEO - Centro de Especialidades Odontológicas</option>
+                        <option value="Unidade Odontológica móvel do Rio D'ouro">Unidade Odontológica móvel do Rio D'ouro</option>
+                        <option value="Unidade Odontológica móvel do Laranjal">Unidade Odontológica móvel do Laranjal</option>
+                        <option value="Unidade Odontológica móvel do Marajoara">Unidade Odontológica móvel do Marajoara</option>
+                    </select>
+                </div>
+
+                <!-- Cirurgião-Dentista -->
+                <div class="form-group">
+                    <label for="cirurgiao_dentista">Cirurgião-Dentista <span class="required">*</span></label>
+                    <select id="cirurgiao_dentista" name="cirurgiao_dentista" required>
+                        <option value="">Selecione o dentista...</option>
+                        <option value="Dr. João Silva">Dr. João Silva</option>
+                        <option value="Dra. Maria Santos">Dra. Maria Santos</option>
+                        <option value="Dr. Pedro Oliveira">Dr. Pedro Oliveira</option>
+                        <option value="Dra. Ana Costa">Dra. Ana Costa</option>
+                        <option value="Dr. Carlos Souza">Dr. Carlos Souza</option>
+                        <option value="Dra. Juliana Lima">Dra. Juliana Lima</option>
+                        <option value="Dr. Ricardo Alves">Dr. Ricardo Alves</option>
+                        <option value="Dra. Fernanda Rocha">Dra. Fernanda Rocha</option>
+                        <option value="Dr. Paulo Mendes">Dr. Paulo Mendes</option>
+                        <option value="Dra. Beatriz Cardoso">Dra. Beatriz Cardoso</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+
+                <!-- Avaliação (0-10) -->
+                <div class="form-group">
+                    <label>Avaliação do atendimento (0 - 10) <span class="required">*</span></label>
+                    <div class="rating-scale">
+                        <input type="radio" name="nota" id="nota0" value="0" required>
+                        <label for="nota0">0</label>
+                        <input type="radio" name="nota" id="nota1" value="1">
+                        <label for="nota1">1</label>
+                        <input type="radio" name="nota" id="nota2" value="2">
+                        <label for="nota2">2</label>
+                        <input type="radio" name="nota" id="nota3" value="3">
+                        <label for="nota3">3</label>
+                        <input type="radio" name="nota" id="nota4" value="4">
+                        <label for="nota4">4</label>
+                        <input type="radio" name="nota" id="nota5" value="5">
+                        <label for="nota5">5</label>
+                        <input type="radio" name="nota" id="nota6" value="6">
+                        <label for="nota6">6</label>
+                        <input type="radio" name="nota" id="nota7" value="7">
+                        <label for="nota7">7</label>
+                        <input type="radio" name="nota" id="nota8" value="8">
+                        <label for="nota8">8</label>
+                        <input type="radio" name="nota" id="nota9" value="9">
+                        <label for="nota9">9</label>
+                        <input type="radio" name="nota" id="nota10" value="10">
+                        <label for="nota10">10</label>
+                    </div>
+                    <div class="rating-labels">
+                        <span>Péssimo</span>
+                        <span>Excelente</span>
+                    </div>
+                </div>
+
+                <!-- Comentário -->
+                <div class="form-group">
+                    <label for="comentario">Deseja deixar algum comentário sobre a consulta?</label>
+                    <textarea id="comentario" name="comentario" placeholder="Conte-nos sobre sua experiência..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Enviar Avaliação</button>
+                <a href="index.html" class="back-link">← Voltar para o início</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Sucesso/Erro -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal success" id="modal">
+            <div class="modal-icon">✅</div>
+            <h2 id="modalTitle">Avaliação Enviada!</h2>
+            <p id="modalMessage">Muito obrigado pelo seu feedback! Sua opinião é muito importante para melhorarmos nossos serviços.</p>
+            <button class="modal-btn success" onclick="fecharModal()">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Máscara para CPF
+        document.getElementById('cpf').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            e.target.value = value;
+        });
+
+        // Configurar data máxima (hoje)
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('data_atendimento').max = hoje;
+
+        // Função para fechar modal
+        function fecharModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+            // Redirecionar para index após 500ms
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 500);
+        }
+
+        // Função para mostrar modal
+        function mostrarModal(titulo, mensagem, tipo) {
+            const modal = document.getElementById('modal');
+            const modalIcon = modal.querySelector('.modal-icon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalBtn = modal.querySelector('.modal-btn');
+
+            modal.className = `modal ${tipo}`;
+            modalIcon.textContent = tipo === 'success' ? '✅' : '❌';
+            modalTitle.textContent = titulo;
+            modalMessage.textContent = mensagem;
+            modalBtn.className = `modal-btn ${tipo}`;
+
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        // Submissão do formulário
+        document.getElementById('avaliacaoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = e.target.querySelector('.submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            try {
+                const formData = new FormData(e.target);
+                const data = {};
+
+                for (let [key, value] of formData.entries()) {
+                    data[key] = value;
+                }
+
+                // Limpar máscara do CPF
+                data.cpf = data.cpf.replace(/\D/g, '');
+
+                // Converter nota para inteiro
+                data.nota = parseInt(data.nota);
+
+                // Inserir no Supabase
+                const { error } = await supabaseClient
+                    .from('avaliacoes')
+                    .insert([data]);
+
+                if (error) throw error;
+
+                // Sucesso
+                mostrarModal(
+                    'Avaliação Enviada!',
+                    'Muito obrigado pelo seu feedback! Sua opinião é muito importante para melhorarmos nossos serviços.',
+                    'success'
+                );
+
+                e.target.reset();
+
+            } catch (error) {
+                console.error('Erro ao enviar avaliação:', error);
+                mostrarModal(
+                    'Erro ao Enviar',
+                    'Ocorreu um erro ao enviar sua avaliação. Por favor, tente novamente.',
+                    'error'
+                );
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar Avaliação';
+            }
+        });
+
+        // Fechar modal ao clicar fora
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharModal();
+            }
+        });
+    </script>
+</body>
+</html>
