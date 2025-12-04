@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <title>Fluxograma — Saúde Bucal Japeri</title>
+  <title>Unidades de Atendimento — Saúde Bucal Japeri</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <link rel="icon" href="brasil-sorridente-logo222.png?v=2" type="image/png">
   <style>
@@ -37,111 +37,100 @@
     @media(min-width:900px){.logo-small{height:56px}.wrap{padding:8px}.menu-btn{display:inline-flex;padding:10px 14px;font-size:13px}.side-drawer{right:16px;width:280px;transform:translateX(20px);border-radius:12px}#drawerOverlay{display:none}.card{margin-bottom:16px}.topbar{padding:12px 20px}}
     .menu-btn:not(:first-of-type){display:none !important} .nav{display:none !important}
     
-    /* Estilos específicos para a página de fluxograma */
-    .fluxograma-container {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-      margin-top: 20px;
-    }
-    
-    @media(min-width: 768px) {
-      .fluxograma-container {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    
-    .fluxograma-item {
+    /* Estilos específicos para a página de unidades */
+    .unidade-card {
       background: white;
       border-radius: 16px;
-      padding: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
       box-shadow: 0 4px 12px rgba(16,40,80,0.08);
       border: 2px solid var(--line);
       transition: all 0.3s ease;
-      cursor: pointer;
     }
     
-    .fluxograma-item:hover {
-      transform: translateY(-4px);
+    .unidade-card:hover {
       box-shadow: 0 8px 24px rgba(15,139,214,0.15);
       border-color: var(--brand);
+      transform: translateY(-2px);
     }
     
-    .fluxograma-item img {
-      width: 100%;
-      height: auto;
-      border-radius: 12px;
-      display: block;
-      transition: transform 0.3s ease;
-    }
-    
-    .fluxograma-item:hover img {
-      transform: scale(1.02);
-    }
-    
-    .fluxograma-title {
-      text-align: center;
+    .unidade-titulo {
+      font-size: 1.4em;
       font-weight: 800;
-      font-size: 14px;
       color: var(--brand);
-      margin-top: 12px;
-      margin-bottom: 0;
-    }
-    
-    /* Modal para visualização ampliada */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      display: none;
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    
-    .modal-overlay.show {
+      margin: 0 0 12px 0;
       display: flex;
-      opacity: 1;
+      align-items: center;
+      gap: 8px;
     }
     
-    .modal-content {
-      max-width: 90vw;
-      max-height: 90vh;
-      position: relative;
+    .unidade-endereco {
+      font-size: 1.05em;
+      color: var(--fg);
+      margin: 0 0 16px 0;
+      line-height: 1.6;
     }
     
-    .modal-content img {
-      max-width: 100%;
-      max-height: 90vh;
+    .unidade-detalhes {
+      background: #f8fbff;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      border-left: 4px solid var(--brand);
+    }
+    
+    .unidade-detalhes p {
+      margin: 6px 0;
+      font-size: 0.95em;
+      color: var(--muted);
+    }
+    
+    .btn-cadastro {
+      display: inline-block;
+      padding: 14px 28px;
       border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    }
-    
-    .modal-close {
-      position: absolute;
-      top: -40px;
-      right: 0;
-      background: white;
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      font-size: 24px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      transition: all 0.3s ease;
-    }
-    
-    .modal-close:hover {
-      transform: scale(1.1);
-      background: var(--brand);
+      font-weight: 800;
+      font-size: 1em;
+      text-decoration: none;
       color: white;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      width: 100%;
+    }
+    
+    .btn-cadastro:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(102,126,234,0.4);
+    }
+    
+    .btn-cadastro:active {
+      transform: translateY(0);
+    }
+    
+    .btn-cadastro.fechado {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+      box-shadow: 0 4px 12px rgba(231,76,60,0.3);
+      cursor: not-allowed;
+      opacity: 0.8;
+    }
+    
+    .btn-cadastro.fechado:hover {
+      transform: none;
+      box-shadow: 0 4px 12px rgba(231,76,60,0.3);
+    }
+    
+    .ceo-card {
+      background: linear-gradient(135deg, #f8fbff 0%, #fff 100%);
+      border: 2px solid #1DC56F;
+    }
+    
+    .movel-card {
+      background: linear-gradient(135deg, #fffbf0 0%, #fff 100%);
+      border: 2px solid #ffc107;
     }
   </style>
 </head>
@@ -162,52 +151,95 @@
 
     <main>
       <section class="card">
-        <h1 style="font-size: 2em; margin-bottom: 10px; color: var(--brand);">📊 Fluxograma do Atendimento</h1>
+        <h1 style="font-size: 2em; margin-bottom: 10px; color: var(--brand);">📍 Endereços das Equipes de Saúde Bucal</h1>
         <p style="color: var(--muted); font-size: 1.1em; line-height: 1.6;">
-          Confira abaixo o fluxograma completo do processo de atendimento odontológico. 
-          Clique em qualquer imagem para visualizar em tamanho maior.
+          Confira abaixo os endereços de todas as unidades de atendimento odontológico em Japeri. 
+          Clique no botão para fazer seu cadastro na unidade desejada.
         </p>
-        
-        <div class="fluxograma-container">
-          <div class="fluxograma-item" onclick="openModal('fx1.png')">
-            <img src="fx1.png" alt="Fluxograma 1">
-            <p class="fluxograma-title">Fluxograma 1</p>
-          </div>
-          
-          <div class="fluxograma-item" onclick="openModal('fx2.png')">
-            <img src="fx2.png" alt="Fluxograma 2">
-            <p class="fluxograma-title">Fluxograma 2</p>
-          </div>
-          
-          <div class="fluxograma-item" onclick="openModal('fx3.png')">
-            <img src="fx3.png" alt="Fluxograma 3">
-            <p class="fluxograma-title">Fluxograma 3</p>
-          </div>
-          
-          <div class="fluxograma-item" onclick="openModal('fx4.png')">
-            <img src="fx4.png" alt="Fluxograma 4">
-            <p class="fluxograma-title">Fluxograma 4</p>
-          </div>
-        </div>
-        
-        <div class="notice" style="margin-top: 30px;">
-          💡 <strong>Dica:</strong> Clique em qualquer imagem para ampliar e ver os detalhes do fluxograma.
-        </div>
       </section>
+
+      <!-- Equipe Alecrim -->
+      <div class="unidade-card">
+        <h2 class="unidade-titulo">🏥 Equipe Alecrim</h2>
+        <p class="unidade-endereco">📍 Rua Maria Alice, 532 – Alecrim</p>
+        <a href="cadastro.html?unidade=Alecrim" class="btn-cadastro" data-unidade="Alecrim">
+          📋 Faça o Cadastro Nesta Unidade
+        </a>
+      </div>
+
+      <!-- Equipe CEMES Japeri -->
+      <div class="unidade-card">
+        <h2 class="unidade-titulo">🏥 Equipe CEMES Japeri</h2>
+        <p class="unidade-endereco">📍 Av. Dr. Arruda Negreiros, 48 – Centro</p>
+        <a href="cadastro.html?unidade=CEMES%20Japeri" class="btn-cadastro" data-unidade="CEMES Japeri">
+          📋 Faça o Cadastro Nesta Unidade
+        </a>
+      </div>
+
+      <!-- Equipe Chacrinha -->
+      <div class="unidade-card">
+        <h2 class="unidade-titulo">🏥 Equipe Chacrinha</h2>
+        <p class="unidade-endereco">📍 Rua João Salgado dos Santos, s/n – Chacrinha</p>
+        <a href="cadastro.html?unidade=Chacrinha" class="btn-cadastro" data-unidade="Chacrinha">
+          📋 Faça o Cadastro Nesta Unidade
+        </a>
+      </div>
+
+      <!-- Equipe Marabá -->
+      <div class="unidade-card">
+        <h2 class="unidade-titulo">🏥 Equipe Marabá</h2>
+        <p class="unidade-endereco">📍 Avenida Tancredo Neves, 2342 – Parque Guandu</p>
+        <a href="cadastro.html?unidade=Marab%C3%A1" class="btn-cadastro" data-unidade="Marabá">
+          📋 Faça o Cadastro Nesta Unidade
+        </a>
+      </div>
+
+      <!-- Equipe Vila Central -->
+      <div class="unidade-card">
+        <h2 class="unidade-titulo">🏥 Equipe Vila Central</h2>
+        <p class="unidade-endereco">📍 Rua Clair Antunes, s/n – Vila Central</p>
+        <a href="cadastro.html?unidade=Vila%20Central" class="btn-cadastro" data-unidade="Vila Central">
+          📋 Faça o Cadastro Nesta Unidade
+        </a>
+      </div>
+
+      <!-- Centro de Especialidades Odontológicas -->
+      <div class="unidade-card ceo-card">
+        <h2 class="unidade-titulo">⭐ Centro de Especialidades Odontológicas de Japeri</h2>
+        <div class="unidade-detalhes">
+          <p><strong>Localização:</strong> CEMES Engenheiro Pedreira (posto do Mucajá)</p>
+          <p><strong>Endereço:</strong> Avenida Tancredo Neves, s/n - Parque Mucajá, Japeri - RJ, 26420-243</p>
+        </div>
+        <a href="cadastro.html?unidade=CEO%20Japeri" class="btn-cadastro" data-unidade="CEO Japeri">
+          📋 Faça o Cadastro Nesta Unidade
+        </a>
+      </div>
+
+      <!-- Unidade Odontológica Móvel -->
+      <div class="unidade-card movel-card">
+        <h2 class="unidade-titulo">🚐 Unidade Odontológica Móvel</h2>
+        <div class="unidade-detalhes">
+          <p><strong>Bairros em atendimento:</strong></p>
+          <p>• <strong>Rio D'Ouro:</strong> em frente à unidade de Saúde da Família do Rio D'Ouro</p>
+          <p>• <strong>Laranjal:</strong> ao lado da escola</p>
+          <p>• <strong>Pedra Lisa:</strong> ao lado da escola</p>
+          <p>• <strong>Marajoara:</strong> na rua da Granado</p>
+          <p>• <strong>Beira Rio:</strong> ao lado da escola</p>
+        </div>
+        <a href="cadastro.html?unidade=Unidade%20M%C3%B3vel" class="btn-cadastro" data-unidade="Unidade Móvel">
+          📋 Faça o Cadastro Nesta Unidade
+        </a>
+      </div>
+
+      <div class="notice" style="margin-top: 30px;">
+        💡 <strong>Dica:</strong> Escolha a unidade mais próxima de você para facilitar o atendimento. Os botões mudam de cor automaticamente: <strong style="color:#667eea">roxo quando os cadastros estão abertos</strong> e <strong style="color:#e74c3c">vermelho quando estão fechados</strong>.
+      </div>
     </main>
 
     <footer class="footer">
       <img src="japeri-logo.png" alt="Japeri">
       <div class="muted">Prefeitura de Japeri — Saúde Bucal</div>
     </footer>
-  </div>
-
-  <!-- Modal para visualização ampliada -->
-  <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <button class="modal-close" onclick="closeModal()">×</button>
-      <img id="modalImage" src="" alt="Fluxograma ampliado">
-    </div>
   </div>
 
   <div id="drawerOverlay" aria-hidden="true"></div>
@@ -228,30 +260,6 @@
       <a class="drawer-item" href="mailto:odontologiajaperi@gmail.com">Contato (e-mail)</a>
     </nav>
   </aside>
-
-  <!-- Script do modal -->
-  <script>
-    function openModal(imageSrc) {
-      const modal = document.getElementById('modalOverlay');
-      const modalImage = document.getElementById('modalImage');
-      modalImage.src = imageSrc;
-      modal.classList.add('show');
-      document.body.style.overflow = 'hidden';
-    }
-    
-    function closeModal() {
-      const modal = document.getElementById('modalOverlay');
-      modal.classList.remove('show');
-      document.body.style.overflow = '';
-    }
-    
-    // Fechar modal com ESC
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeModal();
-      }
-    });
-  </script>
 
   <!-- drawer script -->
   <script>
@@ -282,7 +290,7 @@
     })();
   </script>
 
-  <!-- Script para mudar cor do menu baseado no status dos cadastros -->
+  <!-- Script para mudar cor dos botões e menu baseado no status dos cadastros -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     (async function(){
@@ -306,13 +314,34 @@
         const menuCadastro = document.getElementById('menuCadastro');
         if (menuCadastro) {
           if (aberto) {
-            // Cadastros abertos - roxo
             menuCadastro.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
           } else {
-            // Cadastros fechados - vermelho
             menuCadastro.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
           }
         }
+        
+        // Mudar cor de todos os botões de cadastro
+        const botoesCadastro = document.querySelectorAll('.btn-cadastro');
+        botoesCadastro.forEach(btn => {
+          if (!aberto) {
+            // Cadastros fechados - vermelho e desabilitar
+            btn.classList.add('fechado');
+            btn.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+            btn.style.boxShadow = '0 4px 12px rgba(231,76,60,0.3)';
+            btn.textContent = '❌ Cadastros Temporariamente Fechados';
+            btn.onclick = function(e) {
+              e.preventDefault();
+              alert('Os cadastros estão temporariamente fechados. Aguarde a reabertura.');
+              return false;
+            };
+          } else {
+            // Cadastros abertos - roxo
+            btn.classList.remove('fechado');
+            btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            btn.style.boxShadow = '0 4px 12px rgba(102,126,234,0.3)';
+          }
+        });
+        
       } catch (error) {
         console.error('Erro ao verificar status dos cadastros:', error);
       }

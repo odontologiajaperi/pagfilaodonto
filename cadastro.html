@@ -873,6 +873,35 @@
         });
     </script>
 
+    <!-- Script para pré-selecionar unidade baseado na URL -->
+    <script>
+        // Verificar se há parâmetro de unidade na URL
+        (function preencherUnidade() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const unidadeParam = urlParams.get('unidade');
+            
+            if (unidadeParam) {
+                const selectUnidade = document.querySelector('select[name="unidade_preferencia"]');
+                if (selectUnidade) {
+                    // Tentar encontrar a opção correspondente
+                    const opcoes = Array.from(selectUnidade.options);
+                    const opcaoEncontrada = opcoes.find(opt => 
+                        opt.value.toLowerCase().includes(unidadeParam.toLowerCase()) ||
+                        unidadeParam.toLowerCase().includes(opt.value.toLowerCase())
+                    );
+                    
+                    if (opcaoEncontrada) {
+                        selectUnidade.value = opcaoEncontrada.value;
+                        // Scroll suave até o formulário
+                        setTimeout(() => {
+                            selectUnidade.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 500);
+                    }
+                }
+            }
+        })();
+    </script>
+
     <!-- Script para verificar status dos cadastros e bloquear formulário se necessário -->
     <script>
         (async function verificarStatusCadastros() {
