@@ -777,13 +777,14 @@
                 const formData = new FormData(e.target);
                 const data = {};
                 
+                // Versão: 2.0.1 - Correção reCAPTCHA e campos inválidos
                 for (let [key, value] of formData.entries()) {
+                    // Ignorar campos que não devem ir para o banco
+                    if (key === 'aceita_termos' || key === 'g-recaptcha-response' || key === 'e_gestante') {
+                        continue; // Pular esses campos completamente
+                    }
                     data[key] = value;
                 }
-                
-                // Remover campos que não vão para o banco
-                delete data.aceita_termos;
-                delete data['g-recaptcha-response'];
                 
                 // Limpar máscaras
                 data.celular = data.celular.replace(/\D/g, '');
@@ -880,9 +881,6 @@
                 
                 // Adicionar campos automáticos
                 data.submitted_at = new Date().toISOString();
-                
-                // Remover campo e_gestante (não existe na tabela)
-                delete data.e_gestante;
                     
                     // Validar CPF duplicado na tabela de gestantes
                     const { data: cpfCheckGestante, error: cpfErrorGestante } = await supabaseClient
@@ -936,8 +934,7 @@
                 } else {
                     // ========== FLUXO NORMAL (NÃO GESTANTE) ==========
                     
-                    // Remover campos de gestante se existirem
-                    delete data.e_gestante;
+                    // Remover campos específicos de gestante (se existirem)
                     delete data.data_prevista_parto;
                     delete data.deseja_atendimento;
                     
