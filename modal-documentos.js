@@ -50,6 +50,8 @@ function mostrarDuvidasDocumentos() {
                             <li>Todos os documentos devem estar <strong>originais</strong> ou com <strong>cópia autenticada</strong></li>
                             <li>Menores de 18 anos devem estar acompanhados de <strong>responsável legal</strong></li>
                             <li>O responsável deve apresentar documento de identificação</li>
+                            <li><strong>A falta não justificada por documento legal</strong> para pacientes que iniciarão o plano de tratamento <strong>acarreta na perda da vaga</strong></li>
+                            <li>Pacientes que já estão em tratamento devem se <strong>comprometer com a assiduidade</strong>, a fim de que seu plano de tratamento não seja suspenso</li>
                         </ul>
                     </div>
                     
@@ -58,6 +60,8 @@ function mostrarDuvidasDocumentos() {
                         <ul style="margin: 0; padding-left: 20px; color: #0c5460;">
                             <li>A falta de qualquer documento pode <strong>impedir o atendimento</strong></li>
                             <li>Chegue com <strong>15 minutos de antecedência</strong></li>
+                            <li><strong>Mantenha seu número de contato sempre atualizado</strong> para eventuais remarcações ou imprevistos</li>
+                            <li>Caso não consiga comparecer, <strong>remarque a consulta com o mínimo de 24 horas de antecedência</strong>. A sua vaga pode ajudar outro munícipe!</li>
                             <li>Em caso de dúvidas, entre em contato: <a href="mailto:odontologiajaperi@gmail.com" style="color: #0c5460; font-weight: 600;">odontologiajaperi@gmail.com</a></li>
                         </ul>
                     </div>
