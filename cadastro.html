@@ -482,6 +482,7 @@
                         <option value="Vila Central">Vila Central</option>
                         <option value="Japeri Centro">Japeri Centro</option>
                         <option value="Chacrinha">Chacrinha</option>
+                        <option value="CEO">CEO - Centro de Especialidades Odontológicas</option>
                         <option value="Unidade Odontológica móvel do Rio D'ouro">Unidade Odontológica móvel do Rio D'ouro</option>
                         <option value="Unidade Odontológica móvel do Laranjal">Unidade Odontológica móvel do Laranjal</option>
                         <option value="Unidade Odontológica móvel do Marajoara">Unidade Odontológica móvel do Marajoara</option>
@@ -883,19 +884,36 @@
             if (unidadeParam) {
                 const selectUnidade = document.querySelector('select[name="unidade_preferencia"]');
                 if (selectUnidade) {
+                    // Normalizar o parâmetro da URL
+                    const unidadeNormalizada = unidadeParam.toLowerCase().trim();
+                    
                     // Tentar encontrar a opção correspondente
                     const opcoes = Array.from(selectUnidade.options);
-                    const opcaoEncontrada = opcoes.find(opt => 
-                        opt.value.toLowerCase().includes(unidadeParam.toLowerCase()) ||
-                        unidadeParam.toLowerCase().includes(opt.value.toLowerCase())
+                    let opcaoEncontrada = null;
+                    
+                    // 1. Tentar correspondência exata
+                    opcaoEncontrada = opcoes.find(opt => 
+                        opt.value.toLowerCase() === unidadeNormalizada
                     );
+                    
+                    // 2. Se não encontrou, tentar correspondência parcial
+                    if (!opcaoEncontrada) {
+                        opcaoEncontrada = opcoes.find(opt => 
+                            opt.value.toLowerCase().includes(unidadeNormalizada) ||
+                            unidadeNormalizada.includes(opt.value.toLowerCase())
+                        );
+                    }
                     
                     if (opcaoEncontrada) {
                         selectUnidade.value = opcaoEncontrada.value;
+                        console.log('Unidade pré-selecionada:', opcaoEncontrada.value);
+                        
                         // Scroll suave até o formulário
                         setTimeout(() => {
                             selectUnidade.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }, 500);
+                    } else {
+                        console.warn('Unidade não encontrada:', unidadeParam);
                     }
                 }
             }
