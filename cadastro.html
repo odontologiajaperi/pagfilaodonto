@@ -781,8 +781,9 @@
                     data[key] = value;
                 }
                 
-                // Remover campo que não vai para o banco
+                // Remover campos que não vão para o banco
                 delete data.aceita_termos;
+                delete data['g-recaptcha-response'];
                 
                 // Limpar máscaras
                 data.celular = data.celular.replace(/\D/g, '');
@@ -873,12 +874,15 @@
                         return;
                     }
                     
-                    // Converter deseja_atendimento para boolean
-                    data.deseja_atendimento = data.deseja_atendimento === 'true';
-                    data.termo_gestante_aceito = true;
-                    
-                    // Remover campo e_gestante (não existe na tabela)
-                    delete data.e_gestante;
+                // Converter deseja_atendimento para boolean
+                data.deseja_atendimento = data.deseja_atendimento === 'true';
+                data.termo_gestante_aceito = true;
+                
+                // Adicionar campos automáticos
+                data.submitted_at = new Date().toISOString();
+                
+                // Remover campo e_gestante (não existe na tabela)
+                delete data.e_gestante;
                     
                     // Validar CPF duplicado na tabela de gestantes
                     const { data: cpfCheckGestante, error: cpfErrorGestante } = await supabaseClient
