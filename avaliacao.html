@@ -48,6 +48,30 @@
             }
         }
 
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
         .header {
             background: linear-gradient(135deg, #1DC56F 0%, #0F8BD6 100%);
             color: white;
@@ -323,6 +347,9 @@
     </style>
 </head>
 <body>
+    <!-- Botão Voltar -->
+    <button class="back-btn" onclick="window.location.href='index.html'" aria-label="Voltar">←</button>
+    
     <div class="container">
         <div class="header">
             <h1>Avalie seu Atendimento</h1>

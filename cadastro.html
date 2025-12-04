@@ -944,7 +944,7 @@
                         'success',
                         {
                             text: '📚 Baixar Cartilha da Gestante',
-                            url: 'cartilha-gestante.pdf' // Placeholder - será substituído quando o usuário enviar o arquivo
+                            url: 'pno.pdf'
                         }
                     );
                     
@@ -1247,16 +1247,39 @@
                 if (!aberto) {
                     // Mostrar aviso
                     document.getElementById('avisoFechado').style.display = 'block';
-                    document.getElementById('mensagemFechado').textContent = mensagemConfig?.valor || 'Os cadastros estão temporariamente fechados. Em breve abriremos novas vagas.';
+                    document.getElementById('mensagemFechado').innerHTML = (mensagemConfig?.valor || 'Os cadastros estão temporariamente fechados. Em breve abriremos novas vagas.') + '<br><br><strong style="color: #c41e3a;">🤰 ATENÇÃO GESTANTES:</strong> O cadastro para gestantes continua <strong>ABERTO</strong>! Marque a opção "Você é gestante?" abaixo para se cadastrar.';
                     
-                    // Bloquear formulário
+                    // Bloquear formulário EXCETO campos de gestante
                     const form = document.getElementById('cadastroForm');
                     form.style.opacity = '0.5';
-                    form.style.pointerEvents = 'none';
                     
-                    // Desabilitar todos os campos
-                    const inputs = form.querySelectorAll('input, select, textarea, button');
+                    // Desabilitar todos os campos EXCETO os relacionados a gestante
+                    const inputs = form.querySelectorAll('input:not(#checkbox_gestante):not([name="data_prevista_parto"]):not([name="deseja_atendimento"]):not(#termo_gestante_aceito), select, textarea, button[type="submit"]');
                     inputs.forEach(input => input.disabled = true);
+                    
+                    // Adicionar listener no checkbox de gestante para habilitar/desabilitar campos
+                    const checkboxGestante = document.getElementById('checkbox_gestante');
+                    const camposGestante = document.getElementById('campos_gestante');
+                    
+                    checkboxGestante.disabled = false;
+                    checkboxGestante.style.opacity = '1';
+                    checkboxGestante.parentElement.style.opacity = '1';
+                    checkboxGestante.parentElement.style.pointerEvents = 'auto';
+                    
+                    checkboxGestante.addEventListener('change', function() {
+                        if (this.checked) {
+                            // Habilitar todos os campos quando marcar gestante
+                            form.style.opacity = '1';
+                            form.style.pointerEvents = 'auto';
+                            const todosInputs = form.querySelectorAll('input, select, textarea, button');
+                            todosInputs.forEach(input => input.disabled = false);
+                        } else {
+                            // Desabilitar novamente se desmarcar
+                            form.style.opacity = '0.5';
+                            const inputs = form.querySelectorAll('input:not(#checkbox_gestante), select, textarea, button[type="submit"]');
+                            inputs.forEach(input => input.disabled = true);
+                        }
+                    });
                     
                     // Scroll para o aviso
                     document.getElementById('avisoFechado').scrollIntoView({ behavior: 'smooth', block: 'start' });

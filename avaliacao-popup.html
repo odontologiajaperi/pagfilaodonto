@@ -1,72 +1,69 @@
 <!-- ============================================================================ -->
-<!-- POP-UP DE AVALIAÇÃO COM BALÃO ESTILO HQ -->
+<!-- POP-UP DE AVALIAÇÃO - CANTINHO INFERIOR DIREITO -->
 <!-- ============================================================================ -->
-<!-- Este componente deve ser incluído em todas as páginas -->
-<!-- Versão: 2.0.0 -->
+<!-- Versão: 3.0.0 - Pop-up fixo no cantinho com animação -->
 <!-- ============================================================================ -->
 
 <style>
-    /* Pop-up Overlay */
-    .avaliacao-popup-overlay {
+    /* Pop-up Flutuante no Cantinho */
+    .avaliacao-popup-float {
         position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.6);
-        display: none;
-        align-items: center;
-        justify-content: center;
+        bottom: 20px;
+        right: 20px;
         z-index: 99999;
-        animation: fadeIn 0.4s ease;
+        display: none;
+        animation: slideInRight 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 
-    .avaliacao-popup-overlay.show {
-        display: flex;
+    .avaliacao-popup-float.show {
+        display: block;
     }
 
-    @keyframes fadeIn {
+    @keyframes slideInRight {
         from {
             opacity: 0;
+            transform: translateX(100px) scale(0.8);
         }
         to {
             opacity: 1;
+            transform: translateX(0) scale(1);
         }
     }
 
     /* Container do Pop-up */
-    .avaliacao-popup-container {
+    .avaliacao-popup-box {
         background: white;
-        border-radius: 25px;
+        border-radius: 20px;
         padding: 0;
-        max-width: 450px;
-        width: 90%;
-        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
-        animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        width: 320px;
+        max-width: calc(100vw - 40px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         position: relative;
         overflow: hidden;
+        animation: pulse 2s ease-in-out infinite;
     }
 
-    @keyframes popIn {
-        0% {
-            opacity: 0;
-            transform: scale(0.5) rotate(-5deg);
+    @keyframes pulse {
+        0%, 100% {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
-        100% {
-            opacity: 1;
-            transform: scale(1) rotate(0deg);
+        50% {
+            box-shadow: 0 12px 40px rgba(29, 197, 111, 0.5);
         }
     }
 
     /* Botão Fechar (X) */
-    .avaliacao-popup-close {
+    .avaliacao-popup-x {
         position: absolute;
-        top: 15px;
-        right: 15px;
-        width: 40px;
-        height: 40px;
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
         background: rgba(0, 0, 0, 0.1);
         border: none;
         border-radius: 50%;
         cursor: pointer;
-        font-size: 24px;
+        font-size: 20px;
         font-weight: bold;
         color: white;
         display: flex;
@@ -76,23 +73,23 @@
         z-index: 10;
     }
 
-    .avaliacao-popup-close:hover {
+    .avaliacao-popup-x:hover {
         background: rgba(0, 0, 0, 0.3);
         transform: rotate(90deg);
     }
 
     /* Header com Estrela */
-    .avaliacao-popup-header {
+    .avaliacao-popup-top {
         background: linear-gradient(135deg, #1DC56F 0%, #0F8BD6 100%);
-        padding: 40px 30px 30px;
+        padding: 30px 20px 20px;
         text-align: center;
         position: relative;
     }
 
-    .avaliacao-popup-star {
-        font-size: 70px;
+    .avaliacao-popup-star-big {
+        font-size: 60px;
         display: block;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         animation: starBounce 1.5s infinite;
         filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
     }
@@ -102,158 +99,152 @@
             transform: translateY(0) rotate(0deg);
         }
         25% {
-            transform: translateY(-15px) rotate(-5deg);
+            transform: translateY(-12px) rotate(-5deg);
         }
         50% {
             transform: translateY(0) rotate(0deg);
         }
         75% {
-            transform: translateY(-10px) rotate(5deg);
+            transform: translateY(-8px) rotate(5deg);
         }
     }
 
     /* Balão de Diálogo Estilo HQ */
-    .avaliacao-popup-balloon {
+    .avaliacao-popup-speech {
         position: relative;
         background: white;
         color: #333;
-        padding: 20px 25px;
-        border-radius: 20px;
-        border: 4px solid #333;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        margin: -20px 30px 0;
-        font-size: 1.3em;
+        padding: 16px 18px;
+        border-radius: 16px;
+        border: 3px solid #333;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        margin: -15px 15px 0;
+        font-size: 1.15em;
         font-weight: 900;
         text-align: center;
-        line-height: 1.4;
+        line-height: 1.3;
         z-index: 5;
     }
 
     /* Seta do Balão (apontando para cima) */
-    .avaliacao-popup-balloon::before {
+    .avaliacao-popup-speech::before {
         content: '';
         position: absolute;
-        top: -20px;
+        top: -16px;
         left: 50%;
         transform: translateX(-50%);
         width: 0;
         height: 0;
-        border-left: 20px solid transparent;
-        border-right: 20px solid transparent;
-        border-bottom: 20px solid #333;
+        border-left: 16px solid transparent;
+        border-right: 16px solid transparent;
+        border-bottom: 16px solid #333;
     }
 
-    .avaliacao-popup-balloon::after {
+    .avaliacao-popup-speech::after {
         content: '';
         position: absolute;
-        top: -13px;
+        top: -10px;
         left: 50%;
         transform: translateX(-50%);
         width: 0;
         height: 0;
-        border-left: 17px solid transparent;
-        border-right: 17px solid transparent;
-        border-bottom: 17px solid white;
+        border-left: 13px solid transparent;
+        border-right: 13px solid transparent;
+        border-bottom: 13px solid white;
     }
 
     /* Conteúdo do Pop-up */
-    .avaliacao-popup-content {
-        padding: 30px;
+    .avaliacao-popup-body {
+        padding: 20px;
         text-align: center;
     }
 
-    .avaliacao-popup-content p {
-        font-size: 1.05em;
+    .avaliacao-popup-body p {
+        font-size: 0.95em;
         color: #666;
-        line-height: 1.6;
-        margin-bottom: 25px;
+        line-height: 1.5;
+        margin-bottom: 18px;
     }
 
     /* Botão de Ação */
-    .avaliacao-popup-btn {
+    .avaliacao-popup-action {
         display: inline-block;
-        padding: 16px 40px;
+        padding: 14px 32px;
         background: linear-gradient(135deg, #1DC56F 0%, #0F8BD6 100%);
         color: white;
         text-decoration: none;
         border-radius: 50px;
-        font-size: 1.1em;
+        font-size: 1em;
         font-weight: 800;
         transition: all 0.3s;
-        box-shadow: 0 5px 20px rgba(29, 197, 111, 0.3);
+        box-shadow: 0 4px 16px rgba(29, 197, 111, 0.3);
     }
 
-    .avaliacao-popup-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 30px rgba(29, 197, 111, 0.5);
+    .avaliacao-popup-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(29, 197, 111, 0.5);
     }
 
     /* Link "Agora não" */
-    .avaliacao-popup-skip {
+    .avaliacao-popup-later {
         display: block;
-        margin-top: 15px;
+        margin-top: 12px;
         color: #999;
-        font-size: 0.9em;
+        font-size: 0.85em;
         text-decoration: none;
         transition: all 0.3s;
     }
 
-    .avaliacao-popup-skip:hover {
+    .avaliacao-popup-later:hover {
         color: #666;
     }
 
     /* Responsivo */
     @media (max-width: 600px) {
-        .avaliacao-popup-container {
-            width: 95%;
-            border-radius: 20px;
+        .avaliacao-popup-box {
+            width: 300px;
         }
 
-        .avaliacao-popup-star {
-            font-size: 60px;
+        .avaliacao-popup-star-big {
+            font-size: 50px;
         }
 
-        .avaliacao-popup-balloon {
-            font-size: 1.1em;
-            padding: 15px 20px;
-            margin: -15px 20px 0;
-        }
-
-        .avaliacao-popup-content {
-            padding: 25px 20px;
-        }
-
-        .avaliacao-popup-btn {
-            padding: 14px 30px;
+        .avaliacao-popup-speech {
             font-size: 1em;
+            padding: 14px 16px;
+        }
+
+        .avaliacao-popup-action {
+            padding: 12px 28px;
+            font-size: 0.95em;
         }
     }
 </style>
 
 <!-- Pop-up de Avaliação -->
-<div class="avaliacao-popup-overlay" id="avaliacaoPopupOverlay">
-    <div class="avaliacao-popup-container">
-        <button class="avaliacao-popup-close" onclick="fecharPopupAvaliacao()" aria-label="Fechar">✕</button>
+<div class="avaliacao-popup-float" id="avaliacaoPopupFloat">
+    <div class="avaliacao-popup-box">
+        <button class="avaliacao-popup-x" onclick="fecharPopupAvaliacao()" aria-label="Fechar">✕</button>
         
-        <div class="avaliacao-popup-header">
-            <span class="avaliacao-popup-star">⭐</span>
+        <div class="avaliacao-popup-top">
+            <span class="avaliacao-popup-star-big">⭐</span>
         </div>
         
-        <div class="avaliacao-popup-balloon">
+        <div class="avaliacao-popup-speech">
             AVALIE SEU ATENDIMENTO!
         </div>
         
-        <div class="avaliacao-popup-content">
+        <div class="avaliacao-popup-body">
             <p>
                 <strong>Já foi atendido?</strong><br>
-                Sua opinião é muito importante para melhorarmos nossos serviços!
+                Sua opinião é muito importante!
             </p>
             
-            <a href="avaliacao.html" class="avaliacao-popup-btn">
+            <a href="avaliacao.html" class="avaliacao-popup-action">
                 ⭐ Avaliar Agora
             </a>
             
-            <a href="#" class="avaliacao-popup-skip" onclick="fecharPopupAvaliacao(); return false;">
+            <a href="#" class="avaliacao-popup-later" onclick="fecharPopupAvaliacao(); return false;">
                 Agora não
             </a>
         </div>
@@ -273,10 +264,9 @@
                 return;
             }
             
-            const overlay = document.getElementById('avaliacaoPopupOverlay');
-            if (overlay) {
-                overlay.classList.add('show');
-                document.body.style.overflow = 'hidden';
+            const popup = document.getElementById('avaliacaoPopupFloat');
+            if (popup) {
+                popup.classList.add('show');
                 
                 // Registrar quando foi mostrado
                 localStorage.setItem(POPUP_KEY, Date.now().toString());
@@ -285,22 +275,14 @@
         
         // Função para fechar o pop-up
         window.fecharPopupAvaliacao = function() {
-            const overlay = document.getElementById('avaliacaoPopupOverlay');
-            if (overlay) {
-                overlay.classList.remove('show');
-                document.body.style.overflow = '';
+            const popup = document.getElementById('avaliacaoPopupFloat');
+            if (popup) {
+                popup.classList.remove('show');
                 
                 // Marcar como dispensado na sessão atual
                 sessionStorage.setItem(POPUP_DISMISSED_KEY, 'true');
             }
         };
-        
-        // Fechar ao clicar fora
-        document.getElementById('avaliacaoPopupOverlay')?.addEventListener('click', function(e) {
-            if (e.target === this) {
-                fecharPopupAvaliacao();
-            }
-        });
         
         // Fechar com tecla ESC
         document.addEventListener('keydown', function(e) {
