@@ -414,7 +414,7 @@
                 <p id="mensagemFechado" style="margin:0;font-size:1.1em;line-height:1.5"></p>
                 <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap">
                     <a href="index.html" style="display:inline-block;padding:12px 24px;background:white;color:#e74c3c;border-radius:8px;text-decoration:none;font-weight:700;transition:all 0.3s">← Voltar para Início</a>
-                    <button id="btnSouGestante" style="padding:12px 24px;background:#ff6b9d;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 2px 8px rgba(0,0,0,0.2)">🤰 Sou Gestante</button>
+                    <button id="btnSouGestante" style="padding:18px 40px;background:linear-gradient(135deg, #ff6b9d 0%, #c41e3a 100%);color:white;border:none;border-radius:12px;font-weight:900;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 16px rgba(255,107,157,0.4);font-size:1.15em">🤰 Sou Gestante</button>
                 </div>
             </div>
             
@@ -438,7 +438,30 @@
 
                     <div class="form-group">
                         <label>Data de Nascimento <span class="required">*</span></label>
-                        <input type="date" name="data_nascimento" required>
+                        <div style="display: grid; grid-template-columns: 1fr 2fr 1.5fr; gap: 10px;">
+                            <select id="dia_nascimento" required style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;">
+                                <option value="">Dia</option>
+                            </select>
+                            <select id="mes_nascimento" required style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;">
+                                <option value="">Mês</option>
+                                <option value="01">Janeiro</option>
+                                <option value="02">Fevereiro</option>
+                                <option value="03">Março</option>
+                                <option value="04">Abril</option>
+                                <option value="05">Maio</option>
+                                <option value="06">Junho</option>
+                                <option value="07">Julho</option>
+                                <option value="08">Agosto</option>
+                                <option value="09">Setembro</option>
+                                <option value="10">Outubro</option>
+                                <option value="11">Novembro</option>
+                                <option value="12">Dezembro</option>
+                            </select>
+                            <select id="ano_nascimento" required style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;">
+                                <option value="">Ano</option>
+                            </select>
+                        </div>
+                        <input type="hidden" name="data_nascimento" id="data_nascimento_hidden" required>
                     </div>
                 </div>
 
@@ -666,6 +689,46 @@
             
             e.target.value = value;
         });
+
+        // Popular dropdowns de data de nascimento
+        const diaSelect = document.getElementById('dia_nascimento');
+        const mesSelect = document.getElementById('mes_nascimento');
+        const anoSelect = document.getElementById('ano_nascimento');
+        const dataHidden = document.getElementById('data_nascimento_hidden');
+
+        // Popular dias (1-31)
+        for (let i = 1; i <= 31; i++) {
+            const option = document.createElement('option');
+            option.value = i.toString().padStart(2, '0');
+            option.textContent = i;
+            diaSelect.appendChild(option);
+        }
+
+        // Popular anos (1900 até ano atual)
+        const anoAtual = new Date().getFullYear();
+        for (let i = anoAtual; i >= 1900; i--) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            anoSelect.appendChild(option);
+        }
+
+        // Atualizar campo hidden quando selecionar dia/mês/ano
+        function atualizarDataNascimento() {
+            const dia = diaSelect.value;
+            const mes = mesSelect.value;
+            const ano = anoSelect.value;
+            
+            if (dia && mes && ano) {
+                dataHidden.value = `${ano}-${mes}-${dia}`;
+            } else {
+                dataHidden.value = '';
+            }
+        }
+
+        diaSelect.addEventListener('change', atualizarDataNascimento);
+        mesSelect.addEventListener('change', atualizarDataNascimento);
+        anoSelect.addEventListener('change', atualizarDataNascimento);
 
         // Função para mostrar modal
         function showModal(title, message, type, extraButton = null) {
@@ -1263,6 +1326,17 @@
                     
                     // Adicionar listener no botão "Sou Gestante"
                     const btnSouGestante = document.getElementById('btnSouGestante');
+                    
+                    // Adicionar hover effects
+                    btnSouGestante.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-2px)';
+                        this.style.boxShadow = '0 6px 24px rgba(255,107,157,0.6)';
+                    });
+                    btnSouGestante.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = '0 4px 16px rgba(255,107,157,0.4)';
+                    });
+                    
                     btnSouGestante.addEventListener('click', function() {
                         // Mostrar aviso especial para gestantes com estilização customizada
                         const modalOverlay = document.createElement('div');
