@@ -324,17 +324,7 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTE0NzcsImV4cCI6MjA3OTk1MTQ3N30.6iCUHePtVlmq8De9oBl4Zw5CBU4Zai7P3xLpi7cYkDo';
         
         const { createClient } = supabase;
-        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            db: {
-                schema: 'public'
-            },
-            global: {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            }
-        });
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Máscara de CPF
         document.getElementById('cpf').addEventListener('input', function(e) {
@@ -411,41 +401,35 @@
                 const { data, error } = await supabaseClient
                     .from('pacientes')
                     .select('*')
-                    .eq('cpf', cpf);
+                    .eq('cpf', cpf)
+                    .single();
 
                 if (error) {
-                    console.error('Erro Supabase:', error);
-                    errorMessage.textContent = '❌ Erro ao consultar: ' + error.message;
+                    if (error.code === 'PGRST116') {
+                        errorMessage.textContent = '❌ CPF não encontrado. Você ainda não está cadastrado na fila.';
+                    } else {
+                        errorMessage.textContent = '❌ Erro ao consultar: ' + error.message;
+                    }
                     errorMessage.classList.add('show');
                     return;
                 }
-
-                // Verificar se encontrou algum resultado
-                if (!data || data.length === 0) {
-                    errorMessage.textContent = '❌ CPF não encontrado. Você ainda não está cadastrado na fila.';
-                    errorMessage.classList.add('show');
-                    return;
-                }
-
-                // Pegar o primeiro resultado
-                const paciente = data[0];
 
                 // Exibir resultado
-                document.getElementById('positionBadge').textContent = paciente.posicao_fila || '-';
-                document.getElementById('nome').textContent = paciente.nome_completo;
-                document.getElementById('unidade').textContent = paciente.unidade_preferencia;
-                document.getElementById('celular').textContent = formatarCelular(paciente.celular);
-                document.getElementById('mesReferencia').textContent = formatarMes(paciente.mes_referencia);
+                document.getElementById('positionBadge').textContent = data.posicao_fila || '-';
+                document.getElementById('nome').textContent = data.nome_completo;
+                document.getElementById('unidade').textContent = data.unidade_preferencia;
+                document.getElementById('celular').textContent = formatarCelular(data.celular);
+                document.getElementById('mesReferencia').textContent = formatarMes(data.mes_referencia);
 
                 // Status
                 const statusElement = document.getElementById('status');
-                statusElement.textContent = paciente.status.charAt(0).toUpperCase() + paciente.status.slice(1);
-                statusElement.className = 'status-badge status-' + paciente.status;
+                statusElement.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+                statusElement.className = 'status-badge status-' + data.status;
 
                 // Data de agendamento (se houver)
                 const agendamentoItem = document.getElementById('agendamentoItem');
-                if (paciente.data_agendamento) {
-                    document.getElementById('dataAgendamento').textContent = formatarData(paciente.data_agendamento);
+                if (data.data_agendamento) {
+                    document.getElementById('dataAgendamento').textContent = formatarData(data.data_agendamento);
                     agendamentoItem.style.display = 'block';
                 } else {
                     agendamentoItem.style.display = 'none';
