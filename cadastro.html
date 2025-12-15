@@ -1415,18 +1415,25 @@
                         form.style.pointerEvents = 'auto';
                         todosInputs.forEach(input => input.disabled = false);
                         
-                        // Marcar automaticamente o checkbox de gestante
-                        const checkboxGestante = document.getElementById('checkbox_gestante');
-                        checkboxGestante.checked = true;
+                        // Garantir que o campo sexo está como Feminino para habilitar checkbox
+                        const campoSexo = document.getElementById('campo_sexo');
+                        campoSexo.value = 'Feminino';
                         
-                        // Mostrar campos de gestante manualmente (sem disparar evento change)
-                        const camposGestante = document.getElementById('campos_gestante');
-                        if (camposGestante) {
-                            camposGestante.style.display = 'block';
-                        }
+                        // Habilitar o checkbox de gestante
+                        const checkboxGestante = document.getElementById('checkbox_gestante');
+                        const containerGestante = checkboxGestante.closest('.form-group');
+                        checkboxGestante.disabled = false;
+                        containerGestante.style.opacity = '1';
+                        containerGestante.style.pointerEvents = 'auto';
+                        
+                        // Marcar o checkbox e disparar o evento change para mostrar o modal de termo
+                        checkboxGestante.checked = true;
+                        checkboxGestante.dispatchEvent(new Event('change'));
                         
                         // Scroll para o formulário
-                        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        setTimeout(() => {
+                            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 500);
                     });
                     
                     // Scroll para o aviso
