@@ -858,6 +858,28 @@
             submitBtn.textContent = 'Enviando...';
             
             try {
+                // Verificar se a fila está aberta no momento do envio
+                const { data: configData, error: configError } = await supabaseClient
+                    .from('configuracoes')
+                    .select('valor')
+                    .eq('chave', 'cadastros_abertos')
+                    .single();
+                
+                const filaAberta = configData?.valor === 'true';
+                const eGestante = document.getElementById('checkbox_gestante').checked;
+
+                // Se a fila estiver fechada e NÃO for gestante, bloquear envio
+                if (!filaAberta && !eGestante) {
+                    showModal(
+                        'Fila Fechada',
+                        'Os cadastros foram fechados enquanto você preenchia o formulário. Apenas gestantes podem se cadastrar no momento.',
+                        'error'
+                    );
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Enviar Cadastro';
+                    return;
+                }
+
                 const formData = new FormData(e.target);
                 const data = {};
                 
@@ -1032,17 +1054,9 @@
                     data.status = 'aguardando';
                     data.mes_referencia = new Date().toISOString().slice(0, 7); // YYYY-MM
                     
-                    // Calcular posição na fila
-                    const { data: filaData, error: filaError } = await supabaseClient
-                        .from('pacientes')
-                        .select('posicao_fila')
-                        .eq('unidade_preferencia', data.unidade_preferencia)
-                        .order('posicao_fila', { ascending: false })
-                        .limit(1);
-                    
-                    if (filaError) throw filaError;
-                    
-                    data.posicao_fila = filaData.length > 0 ? filaData[0].posicao_fila + 1 : 1;
+                    // A posição na fila será atribuída automaticamente pelo banco de dados (Trigger)
+                    // Removido cálculo manual no JavaScript para evitar erros de concorrência e garantir ordem correta
+                    delete data.posicao_fila;
                     
                     // Inserir no banco de dados
                     const { error } = await supabaseClient
