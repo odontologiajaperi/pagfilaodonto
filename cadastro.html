@@ -981,12 +981,12 @@
                         return;
                     }
                     
-                // Converter deseja_atendimento para boolean
-                data.deseja_atendimento = data.deseja_atendimento === 'true';
-                data.termo_gestante_aceito = true;
-                
-                // Adicionar campos automáticos
-                data.submitted_at = new Date().toISOString();
+                    // Converter deseja_atendimento para boolean
+                    data.deseja_atendimento = data.deseja_atendimento === 'true';
+                    data.termo_gestante_aceito = true;
+                    
+                    // Adicionar campos automáticos
+                    data.submitted_at = new Date().toISOString();
                     
                     // Validar CPF duplicado na tabela de gestantes
                     const { data: cpfCheckGestante, error: cpfErrorGestante } = await supabaseClient
