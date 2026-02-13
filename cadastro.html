@@ -865,11 +865,11 @@
                     .eq('chave', 'cadastros_abertos')
                     .single();
                 
-                const filaAberta = configData?.valor === 'true';
-                const eGestante = document.getElementById('checkbox_gestante').checked;
-
-                // Se a fila estiver fechada e NÃO for gestante, bloquear envio
-                if (!filaAberta && !eGestante) {
+	                const filaAberta = configData?.valor === 'true';
+	                const isGestante = document.getElementById('checkbox_gestante').checked;
+	
+	                // Se a fila estiver fechada e NÃO for gestante, bloquear envio
+	                if (!filaAberta && !isGestante) {
                     showModal(
                         'Fila Fechada',
                         'Os cadastros foram fechados enquanto você preenchia o formulário. Apenas gestantes podem se cadastrar no momento.',
