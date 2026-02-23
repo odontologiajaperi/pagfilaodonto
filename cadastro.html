@@ -632,29 +632,32 @@
         
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        // Função para carregar as unidades dinamicamente
+        // Carregar unidades dinamicamente
         async function carregarUnidadesAtivas() {
-            const select = document.getElementById("select_unidade");
+            const select = document.getElementById('select_unidade');
+            if(!select) return;
             try {
                 const { data, error } = await supabaseClient
-                    .from("postos")
-                    .select("id, nome")
-                    .eq("ativo", true)
-                    .order("nome");
+                    .from('postos')
+                    .select('id, nome')
+                    .eq('ativo', true)
+                    .order('nome');
                 if (error) throw error;
-                select.innerHTML = "<option value="">Selecione...</option>";
-                data.forEach(p => {
-                    const opt = document.createElement("option");
-                    opt.value = p.id;
-                    opt.textContent = p.nome;
-                    select.appendChild(opt);
-                });
+                select.innerHTML = '<option value="">Selecione...</option>';
+                if(data) {
+                    data.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.id;
+                        opt.textContent = p.nome;
+                        select.appendChild(opt);
+                    });
+                }
             } catch (e) {
                 console.error(e);
-                select.innerHTML = "<option value="">Erro ao carregar unidades</option>";
+                select.innerHTML = '<option value="">Erro ao carregar unidades</option>';
             }
         }
-        document.addEventListener("DOMContentLoaded", carregarUnidadesAtivas);
+        document.addEventListener('DOMContentLoaded', carregarUnidadesAtivas);
 
 
         // Máscaras de input
