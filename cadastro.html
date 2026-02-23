@@ -632,7 +632,7 @@
         
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        // Carregar unidades dinamicamente
+        // Carregar unidades dinamicamente salvando o NOME como valor
         async function carregarUnidadesAtivas() {
             const select = document.getElementById('select_unidade');
             if(!select) return;
@@ -647,7 +647,10 @@
                 if(data) {
                     data.forEach(p => {
                         const opt = document.createElement('option');
-                        opt.value = p.id;
+                        // Usamos o NOME como value para salvar texto no banco
+                        // Mas guardamos o ID em um atributo data para o trigger funcionar se necessário
+                        opt.value = p.nome; 
+                        opt.setAttribute('data-id', p.id);
                         opt.textContent = p.nome;
                         select.appendChild(opt);
                     });
