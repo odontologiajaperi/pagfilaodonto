@@ -502,17 +502,7 @@
                 <div class="form-group">
                     <label>Unidade de Preferência <span class="required">*</span></label>
                     <select name="unidade_preferencia" required>
-                        <option value="">Selecione...</option>
-                        <option value="Marabá">Marabá</option>
-                        <option value="Alecrim">Alecrim</option>
-                        <option value="Vila Central">Vila Central</option>
-                        <option value="Japeri Centro">Japeri Centro</option>
-                        <option value="Chacrinha">Chacrinha</option>
-                        <option value="CEO">CEO - Centro de Especialidades Odontológicas</option>
-                        <option value="Unidade Odontológica móvel do Rio D'ouro">Unidade Odontológica móvel do Rio D'ouro</option>
-                        <option value="Unidade Odontológica móvel do Laranjal">Unidade Odontológica móvel do Laranjal</option>
-                        <option value="Unidade Odontológica móvel do Marajoara">Unidade Odontológica móvel do Marajoara</option>
-                    </select>
+                        <option value="">Carregando unidades...</option>
                 </div>
 
                 <div class="form-group">
@@ -643,6 +633,36 @@
         
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Função para carregar os postos ativos do Supabase
+        async function carregarPostosAtivos() {
+            const selectUnidade = document.querySelector("select[name=\"unidade_preferencia\"]");
+            try {
+                const { data: postos, error } = await supabaseClient
+                    .from("postos")
+                    .select("id, nome")
+                    .eq("ativo", true)
+                    .order("nome");
+
+                if (error) throw error;
+
+                selectUnidade.innerHTML = "<option value=\"\">Selecione...</option>";
+                if (postos && postos.length > 0) {
+                    postos.forEach(posto => {
+                        const option = document.createElement("option");
+                        option.value = posto.id;
+                        option.textContent = posto.nome;
+                        selectUnidade.appendChild(option);
+                    });
+                } else {
+                    selectUnidade.innerHTML = "<option value=\"\">Nenhuma unidade disponível</option>";
+                }
+            } catch (error) {
+                console.error("Erro ao carregar postos:", error);
+                selectUnidade.innerHTML = "<option value=\"\">Erro ao carregar unidades</option>";
+            }
+        }
+        document.addEventListener("DOMContentLoaded", carregarPostosAtivos);
 
         // Máscaras de input
         document.querySelector('input[name="celular"]').addEventListener('input', function(e) {
