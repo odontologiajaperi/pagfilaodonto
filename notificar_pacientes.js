@@ -11,19 +11,21 @@ const whatsappApiUrl = process.env.WHATSAPP_API_URL;
 const whatsappApiKey = process.env.WHATSAPP_API_KEY;
 
 async function enviarNotificacoes() {
-    console.log('Iniciando busca de agendamentos para amanhã...');
+    console.log('Iniciando busca de agendamentos para daqui a 3 dias...');
 
-    // 1. Calcular a data de amanhã
-    const amanha = new Date();
-    amanha.setDate(amanha.getDate() + 1);
-    const dataAmanhaStr = amanha.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    // 1. Calcular a data para daqui a 3 dias
+    const dataAlvo = new Date();
+    dataAlvo.setDate(dataAlvo.getDate() + 3);
+    const dataAlvoStr = dataAlvo.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
-    // 2. Buscar pacientes agendados para amanhã
+    console.log(`Buscando agendamentos para a data: ${dataAlvoStr}`);
+
+    // 2. Buscar pacientes agendados para daqui a 3 dias
     const { data: pacientes, error } = await supabase
         .from('pacientes')
         .select('*')
         .eq('status', 'agendado')
-        .eq('data_agendamento', dataAmanhaStr);
+        .eq('data_agendamento', dataAlvoStr);
 
     if (error) {
         console.error('Erro ao buscar pacientes:', error);
@@ -31,7 +33,7 @@ async function enviarNotificacoes() {
     }
 
     if (!pacientes || pacientes.length === 0) {
-        console.log('Nenhum paciente agendado para amanhã.');
+        console.log(`Nenhum paciente agendado para ${dataAlvoStr}.`);
         return;
     }
 
@@ -48,14 +50,14 @@ async function enviarNotificacoes() {
             }
 
             // Formatar a data para exibição (DD/MM/YYYY)
-            const dataFormatada = dataAmanhaStr.split('-').reverse().join('/');
+            const dataFormatada = dataAlvoStr.split('-').reverse().join('/');
             
             // Montar a mensagem conforme o modelo do usuário
             const mensagem = `📅 *AGENDAMENTO DE CONSULTA ODONTOLÓGICA - PREFEITURA DE JAPERI*
 
 Olá, *${paciente.nome_completo}*,
 
-Sua consulta está agendada:
+Sua consulta está agendada para daqui a 3 dias:
 
 🗓 *Data:* ${dataFormatada}
 ⏰ *Horário:* ${paciente.hora_agendamento || 'A confirmar'}
