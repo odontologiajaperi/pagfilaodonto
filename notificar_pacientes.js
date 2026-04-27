@@ -52,36 +52,28 @@ async function enviarNotificacoes() {
             // Formatar a data para exibição (DD/MM/YYYY)
             const dataFormatada = dataAlvoStr.split('-').reverse().join('/');
             
-            // Montar a mensagem conforme o modelo do usuário
-            const mensagem = `📅 *AGENDAMENTO DE CONSULTA ODONTOLÓGICA - PREFEITURA DE JAPERI*
+            // Montar a mensagem conforme o novo modelo do usuário
+            const mensagem = `Prezada *${paciente.nome_completo}*,
 
-Olá, *${paciente.nome_completo}*,
+Sua consulta odontológica está agendada para o dia *${dataFormatada}, às ${paciente.hora_agendamento || 'horário a confirmar'}*, na *${paciente.unidade_preferencia}*.
 
-Sua consulta está agendada para daqui a 3 dias:
+*Podemos confirmar?*
+Reforçamos que o agendamento da consulta é feito através do WhatsApp e e-mail.
 
-🗓 *Data:* ${dataFormatada}
-⏰ *Horário:* ${paciente.hora_agendamento || 'A confirmar'}
-📍 *Local:* ${paciente.unidade_preferencia}
-📌 *Endereço:* (Endereço a definir)
-🦷 *Especialidade:* (Especialidade a definir)
+ORIENTAÇÕES IMPORTANTES
+* Traga seus documentos em todas as consultas: identidade, CPF, comprovante de residência e Cartão Nacional de Saúde (SUS) atualizado;
+* A tolerância é de 15 minutos. Não se atrase!
+* A falta não justificada por documento legal para pacientes que iniciarão o plano de tratamento acarreta na perda da vaga;
+* Pacientes que já estão em tratamento devem se comprometer com a assiduidade, a fim de que seu plano de tratamento não seja suspenso. Em caso de dúvidas, pergunte à técnica de saúde bucal;
+* É fundamental manter seu número de contato sempre atualizado para eventuais remarcações ou imprevistos;
+* Caso não consiga comparecer, remarque a consulta com antecedência. A sua vaga pode ajudar outro munícipe!
 
-👉 *Responda a esta mensagem com:*
+Em caso de dúvidas, fale conosco através do e-mail odontologiajaperi@gmail.com
 
-✔️ *SIM* – para confirmar presença
-❌ *NÃO* – se não puder comparecer (entraremos em contato para remarcação)
-
-⚠️ *ORIENTAÇÕES IMPORTANTES*
-
-* Leve: RG, CPF, comprovante de residência e Cartão SUS atualizado;
-* Tolerância máxima: 15 minutos de atraso;
-* Falta sem justificativa gera a perda da vaga;
-* Já está em tratamento? Mantenha assiduidade para que não haja a suspensão do plano de tratamento;
-* Não poderá comparecer? Avise com antecedência! Sua vaga pode ajudar outro munícipe.
-
-📩 Este não é um canal interativo! Dúvidas: odontologiajaperi@gmail.com
+*Não respondemos mensagens por este WhatsApp*
 
 Atenciosamente,
-Equipe de agendamento da Coordenação de Saúde Bucal de Japeri`;
+Coordenação de Saúde Bucal de Japeri.`;
 
             // 3. Enviar via API do WhatsApp (Exemplo genérico para Evolution API / Z-API)
             // Nota: O formato do JSON pode variar levemente dependendo da API escolhida
