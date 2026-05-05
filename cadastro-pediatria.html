@@ -45,6 +45,9 @@
             </div>
 
             <form id="cadastroForm">
+                <div style="background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9em; text-align: center;">
+                    ⚠️ <strong>Atenção:</strong> Esta fila é exclusiva para crianças de <strong>0 a 10 anos</strong>. Pacientes com 11 anos ou mais devem se cadastrar na Fila Geral.
+                </div>
                 <div class="form-group">
                     <label>Nome Completo da Criança <span class="required">*</span></label>
                     <input type="text" name="nome_completo" required>
@@ -146,11 +149,30 @@
             e.target.value = v;
         });
 
+        // Função para calcular idade
+        function calcularIdade(dataNascimento) {
+            const hoje = new Date();
+            const nascimento = new Date(dataNascimento);
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const m = hoje.getMonth() - nascimento.getMonth();
+            if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+                idade--;
+            }
+            return idade;
+        }
+
         // Envio do formulário
         document.getElementById('cadastroForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
             const dados = Object.fromEntries(formData.entries());
+
+            // Validação de idade
+            const idade = calcularIdade(dados.data_nascimento);
+            if (idade > 10) {
+                alert('Desculpe, esta fila é exclusiva para crianças de até 10 anos. Por favor, realize o cadastro na Fila Geral.');
+                return;
+            }
             
             const recaptchaResponse = grecaptcha.getResponse();
             if (!recaptchaResponse) {
