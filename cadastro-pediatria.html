@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro Odontopediatria - Japeri</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #ff9a9e 0%, #f78fb3 100%); color: white; padding: 40px 30px; text-align: center; }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .form-container { padding: 40px 30px; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 0.95em; }
+        .form-group label .required { color: #e74c3c; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em; transition: all 0.3s; font-family: inherit; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #ff9a9e; box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .submit-btn { flex: 2; padding: 15px; background: linear-gradient(135deg, #ff9a9e 0%, #f78fb3 100%); color: white; border: none; border-radius: 8px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 154, 158, 0.3); }
+        .cancel-btn { flex: 1; padding: 15px; background: #6c757d; color: white; border: none; border-radius: 8px; font-size: 1.1em; font-weight: 600; cursor: pointer; }
+        .alert { padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: none; }
+        .alert.error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; display: block; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { background: white; border-radius: 16px; padding: 30px; max-width: 500px; width: 90%; text-align: center; }
+        .modal-btn { padding: 12px 30px; border: none; border-radius: 8px; font-size: 1em; font-weight: 600; cursor: pointer; background: #ff9a9e; color: white; }
+        @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } }
+    </style>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧒 Cadastro Odontopediatria</h1>
+            <p>Fila única para atendimento infantil especializado</p>
+        </div>
+
+        <div class="form-container">
+            <div id="avisoFechado" style="display:none;background:linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);color:white;padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;">
+                <h2 style="margin:0 0 10px;font-size:1.5em">❌ Cadastros Temporariamente Fechados</h2>
+                <p id="mensagemFechado" style="margin:0;font-size:1.1em;line-height:1.5"></p>
+                <a href="index.html" style="display:inline-block;margin-top:15px;padding:12px 24px;background:white;color:#e74c3c;border-radius:8px;text-decoration:none;font-weight:700;">Voltar para Início</a>
+            </div>
+
+            <form id="cadastroForm">
+                <div class="form-group">
+                    <label>Nome Completo da Criança <span class="required">*</span></label>
+                    <input type="text" name="nome_completo" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nome da Mãe/Responsável <span class="required">*</span></label>
+                    <input type="text" name="nome_mae" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>CPF da Criança (ou Responsável) <span class="required">*</span></label>
+                        <input type="text" name="cpf" placeholder="000.000.000-00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Celular (WhatsApp) <span class="required">*</span></label>
+                        <input type="text" name="celular" placeholder="(00) 00000-0000" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Data de Nascimento <span class="required">*</span></label>
+                        <input type="date" name="data_nascimento" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Sexo <span class="required">*</span></label>
+                        <select name="sexo" required>
+                            <option value="">Selecione...</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Cartão SUS <span class="required">*</span></label>
+                    <input type="text" name="cartao_sus" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Bairro <span class="required">*</span></label>
+                    <input type="text" name="bairro" required>
+                </div>
+
+                <div class="form-group">
+                    <div class="g-recaptcha" data-sitekey="6LegHiEsAAAAALVoosndWQ5OUOi4rQtgsgyfy0YE" style="display: flex; justify-content: center;"></div>
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <button type="button" class="cancel-btn" onclick="window.location.href='index.html'">Cancelar</button>
+                    <button type="submit" class="submit-btn">Enviar Cadastro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <h2 id="modal-title"></h2>
+            <p id="modal-message" style="margin: 20px 0;"></p>
+            <button class="modal-btn" onclick="window.location.href='index.html'">OK</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://uakhmgoxgyklggsvtwdf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTE0NzcsImV4cCI6MjA3OTk1MTQ3N30.6iCUHePtVlmq8De9oBl4Zw5CBU4Zai7P3xLpi7cYkDo';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Verificar se cadastros estão abertos
+        async function verificarAbertura() {
+            const { data } = await supabaseClient.from('configuracoes').select('valor').eq('chave', 'cadastros_pediatria_abertos').single();
+            if (data && data.valor === 'false') {
+                document.getElementById('cadastroForm').style.display = 'none';
+                document.getElementById('avisoFechado').style.display = 'block';
+                document.getElementById('mensagemFechado').innerText = 'A fila de Odontopediatria está temporariamente fechada para novos cadastros.';
+            }
+        }
+        verificarAbertura();
+
+        // Máscaras
+        document.querySelector('input[name="cpf"]').addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.slice(0, 11);
+            if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{3})/, "$1.$2.$3");
+            else if (v.length > 3) v = v.replace(/(\d{3})(\d{3})/, "$1.$2");
+            e.target.value = v;
+        });
+
+        document.querySelector('input[name="celular"]').addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.slice(0, 11);
+            if (v.length > 6) v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+            else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,5})/, "($1) $2");
+            e.target.value = v;
+        });
+
+        // Envio do formulário
+        document.getElementById('cadastroForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const dados = Object.fromEntries(formData.entries());
+            
+            const recaptchaResponse = grecaptcha.getResponse();
+            if (!recaptchaResponse) {
+                alert('Por favor, confirme o reCAPTCHA');
+                return;
+            }
+
+            // Limpar máscaras antes de salvar
+            dados.cpf = dados.cpf.replace(/\D/g, '');
+            dados.celular = dados.celular.replace(/\D/g, '');
+
+            try {
+                const { error } = await supabaseClient.from('pacientes_pediatria').insert([dados]);
+                if (error) {
+                    if (error.code === '23505') throw new Error('Este CPF já está cadastrado na fila de pediatria.');
+                    throw error;
+                }
+                
+                document.getElementById('modal-title').innerText = 'Sucesso! ✅';
+                document.getElementById('modal-message').innerText = 'Cadastro realizado com sucesso na fila de Odontopediatria.';
+                document.getElementById('modal-overlay').style.display = 'flex';
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+    </script>
+</body>
+</html>
