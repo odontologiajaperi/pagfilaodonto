@@ -513,14 +513,16 @@
         const { data, error } = await supabaseClient
           .from('configuracoes')
           .select('*')
-          .in('chave', ['cadastros_abertos', 'mensagem_cadastro_fechado']);
+          .in('chave', ['cadastros_abertos', 'mensagem_cadastro_fechado', 'cadastros_pediatria_abertos']);
         
         if (error) throw error;
         
         const statusConfig = data.find(c => c.chave === 'cadastros_abertos');
+        const statusPediatriaConfig = data.find(c => c.chave === 'cadastros_pediatria_abertos');
         const mensagemConfig = data.find(c => c.chave === 'mensagem_cadastro_fechado');
         
         const aberto = statusConfig?.valor === 'true';
+        const pediatriaAberta = statusPediatriaConfig?.valor === 'true';
         
         // Mudar cor do item do menu
         const menuCadastro = document.getElementById('menuCadastro');
@@ -556,6 +558,23 @@
             // Remover evento de clique se existir
             const newCard = cadastroCard.cloneNode(true);
             cadastroCard.parentNode.replaceChild(newCard, cadastroCard);
+          }
+        }
+
+        // Lógica para Pediatria
+        if (!pediatriaAberta) {
+          const pediatriaCard = document.querySelector('[data-target="cadastro-pediatria.html"]');
+          if (pediatriaCard) {
+            pediatriaCard.removeAttribute('data-target');
+            pediatriaCard.style.cursor = 'default';
+            pediatriaCard.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+            pediatriaCard.style.borderColor = '#e74c3c';
+            pediatriaCard.innerHTML = `
+              <h3 style="color: white;">❌ Pediatria: Cadastros Fechados</h3>
+              <p class="lead" style="color: rgba(255,255,255,0.95);">A fila de Odontopediatria está temporariamente fechada para novos cadastros.</p>
+            `;
+            const newPedCard = pediatriaCard.cloneNode(true);
+            pediatriaCard.parentNode.replaceChild(newPedCard, pediatriaCard);
           }
         }
       } catch (error) {
