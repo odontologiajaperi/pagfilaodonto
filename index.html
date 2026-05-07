@@ -513,7 +513,7 @@
         const { data, error } = await supabaseClient
           .from('configuracoes')
           .select('*')
-          .in('chave', ['cadastros_abertos', 'mensagem_cadastro_fechado', 'cadastros_pediatria_abertos']);
+          .in('chave', ['cadastros_abertos', 'mensagem_cadastro_fechado', 'cadastros_Odontopediatria_abertos']);
         
         if (error) throw error;
         
