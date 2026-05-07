@@ -513,7 +513,7 @@
         const { data, error } = await supabaseClient
           .from('configuracoes')
           .select('*')
-          .in('chave', ['cadastros_abertos', 'mensagem_cadastro_fechado', 'cadastros_Odontopediatria_abertos']);
+          .in('chave', ['cadastros_abertos', 'mensagem_cadastro_fechado', 'cadastros_pediatria_abertos']);
         
         if (error) throw error;
         
@@ -570,7 +570,7 @@
             pediatriaCard.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
             pediatriaCard.style.borderColor = '#e74c3c';
             pediatriaCard.innerHTML = `
-              <h3 style="color: white;">❌ Pediatria: Cadastros Fechados</h3>
+              <h3 style="color: white;">❌ Odontopediatria: Cadastros Fechados</h3>
               <p class="lead" style="color: rgba(255,255,255,0.95);">A fila de Odontopediatria está temporariamente fechada para novos cadastros.</p>
             `;
             const newPedCard = pediatriaCard.cloneNode(true);
