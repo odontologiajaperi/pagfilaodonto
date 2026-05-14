@@ -214,10 +214,10 @@
         document.getElementById('cadastroForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
-            const dados = Object.fromEntries(formData.entries());
+            const rawData = Object.fromEntries(formData.entries());
 
             // Validação de idade
-            const idade = calcularIdade(dados.data_nascimento);
+            const idade = calcularIdade(rawData.data_nascimento);
             if (idade > 10) {
                 alert('Desculpe, esta fila é exclusiva para crianças de até 10 anos. Por favor, realize o cadastro na Fila Geral.');
                 return;
@@ -229,12 +229,22 @@
                 return;
             }
 
-            // Limpar máscaras antes de salvar
-            dados.cpf = dados.cpf.replace(/\D/g, '');
-            dados.celular = dados.celular.replace(/\D/g, '');
+            // Criar objeto limpo apenas com as colunas do banco
+            const dadosParaSalvar = {
+                cpf: rawData.cpf.replace(/\D/g, ''),
+                nome_completo: rawData.nome_completo,
+                nome_mae: rawData.nome_mae,
+                data_nascimento: rawData.data_nascimento,
+                celular: rawData.celular.replace(/\D/g, ''),
+                endereco: rawData.endereco,
+                bairro: rawData.bairro,
+                cep: rawData.cep.replace(/\D/g, ''),
+                cartao_sus: rawData.cartao_sus.replace(/\D/g, ''),
+                status: 'aguardando'
+            };
 
             try {
-                const { error } = await supabaseClient.from('pacientes_pediatria').insert([dados]);
+                const { error } = await supabaseClient.from('pacientes_pediatria').insert([dadosParaSalvar]);
                 if (error) {
                     if (error.code === '23505') throw new Error('Este CPF já está cadastrado na fila de pediatria.');
                     throw error;
