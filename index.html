@@ -6,19 +6,18 @@
     <title>Saúde Bucal de Japeri - Início</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=s    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
         body { font-family: 'Inter', sans-serif; }
         .bg-japeri-blue { background-color: #0F4C81; }
         .text-japeri-blue { color: #0F4C81; }
         .bg-japeri-green { background-color: #1DC56F; }
-        .hero-section { 
-            background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('hero-bg.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
+        .hero-gradient { background: linear-gradient(135deg, #EAF5FF 0%, #FFFFFF 100%); }
         .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
-    </style>ead>
+        @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .animate-bounce-slow { animation: bounce-slow 4s ease-in-out infinite; }
+    </style>
+</head>
 <body class="bg-white text-gray-800">
 
     <!-- Top Info Bar -->
@@ -75,13 +74,13 @@
     </div>
 
     <!-- Hero Section -->
-    <section class="hero-section pt-12 pb-24 overflow-hidden">
+    <section class="hero-gradient pt-12 pb-24 overflow-hidden">
         <div class="container mx-auto px-4 flex flex-col lg:flex-row items-center">
-            <div class="lg:w-1/2 text-center lg:text-left z-10 py-12">
+            <div class="lg:w-1/2 text-center lg:text-left z-10">
                 <h1 class="text-4xl lg:text-6xl font-extrabold text-japeri-blue leading-tight mb-6">
                     Cuidar do seu <span class="text-japeri-green">sorriso</span> é cuidar da sua saúde!
                 </h1>
-                <p class="text-lg text-gray-600 mb-10 max-w-xl mx-auto lg:mx-0 font-medium">
+                <p class="text-lg text-gray-600 mb-10 max-w-xl mx-auto lg:mx-0">
                     A Saúde Bucal de Japeri oferece atendimento humanizado, organizado e gratuito pelo SUS para todos os munícipes.
                 </p>
                 
@@ -98,8 +97,10 @@
 
                 <!-- Card Pediatria Destaque -->
                 <div class="mt-8">
-                    <a id="btnCadastroPediatria" href="cadastro-pediatria.html" class="inline-flex items-center bg-white/80 backdrop-blur-sm border-2 border-pink-100 p-4 rounded-2xl hover:border-pink-300 transition-all group shadow-lg">
-                        <div class="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center text-2xl mr-4">🧒</div>
+                    <a id="btnCadastroPediatria" href="cadastro-pediatria.html" class="inline-flex items-center bg-pink-50 border-2 border-pink-100 p-4 rounded-2xl hover:border-pink-300 transition-all group">
+                        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-pink-500 text-xl shadow-sm mr-4">
+                            <i class="fas fa-child"></i>
+                        </div>
                         <div class="text-left">
                             <p class="text-xs font-bold text-pink-400 uppercase tracking-widest">Exclusivo 0-10 anos</p>
                             <h3 class="text-pink-600 font-extrabold">Fila de Odontopediatria</h3>
@@ -109,8 +110,9 @@
                 </div>
             </div>
             
-            <div class="lg:w-1/2 mt-12 lg:mt-0">
-                <!-- Espaço vazio para deixar a imagem de fundo brilhar no desktop -->
+            <div class="lg:w-1/2 mt-12 lg:mt-0 relative">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-100/50 rounded-full blur-3xl -z-10"></div>
+                <img src="mascote-dente.png" alt="Mascote" class="w-full max-w-lg mx-auto drop-shadow-2xl animate-bounce-slow">
             </div>
         </div>
     </section>
