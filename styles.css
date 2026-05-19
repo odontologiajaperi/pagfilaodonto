@@ -43,7 +43,7 @@ body{
 .menu-btn .dot{width:6px;height:6px;background:var(--muted);border-radius:50%}
 
 /* hero */
-.hero-card{display:flex;gap:12px;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#fff,#f7fbff);border-radius:12px;padding:12px;border:1px solid var(--line);box-shadow:var(--shadow);margin-bottom:12px}
+.hero-card{display:flex;gap:12px;align-items:center;justify-content:space-between;background:transparent;border-radius:12px;padding:12px;border:1px solid var(--line);box-shadow:var(--shadow);margin-bottom:12px}
 .hero-content h2{margin:0 0 6px;font-size:18px}
 .lead{margin:0;color:var(--muted);font-size:14px}
 .hero-illustration img{max-width:120px;height:auto;display:block;margin-left:auto}
