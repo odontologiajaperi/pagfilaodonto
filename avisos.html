@@ -1,183 +1,143 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <title>Avisos — Saúde Bucal Japeri</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-  <link rel="icon" href="brasil-sorridente-logo222.png?v=2" type="image/png">
-  <style>
-    /* same styles as index (keeps pages visually consistent) */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-    :root{--bg:#EAF5FF;--panel:#FFFFFF;--line:#DDEAF7;--fg:#0F2740;--muted:#6B87A4;--brand:#0F8BD6;--accent:#1DC56F;--warning:#FFF3B0;--chip:#F3FAFF;--r-sm:8px;--r-md:12px;--r-lg:20px;--shadow:0 8px 24px rgba(16,40,80,0.06);--maxw:1100px;--transition:all 0.3s cubic-bezier(0.4,0,0.2,1)}
-    *{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;background:linear-gradient(180deg,#fff 0%,var(--bg) 100%);color:var(--fg);padding:12px;transition:var(--transition)}
-    .wrap{max-width:var(--maxw);margin:0 auto}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;position:fixed;top:0;left:0;right:0;background:#fff;z-index:80;padding:10px 12px;box-shadow:0 2px 8px rgba(16,40,80,0.08);border-bottom:1px solid var(--line);min-height:60px;transition:none}
-    body{padding-top:80px}
-    /* .topbar.hide{transform:translateY(-100%)} - Removido para manter a barra superior visível no mobile */
-    .header-left{display:flex;align-items:center;gap:8px;min-width:0;flex:0 1 auto}
-    .logos{display:flex;gap:6px;align-items:center;flex-shrink:0}
-    .logo-small{height:38px;width:auto;display:block}
-    .site-title{font-weight:800;font-size:14px;line-height:1.2;max-width:calc(100vw - 180px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .muted.small{font-size:11px;color:var(--muted);display:none}@media(min-width:600px){.muted.small{display:block}}
-    .nav{display:flex;gap:8px;align-items:center}
-    .nav a{padding:8px 10px;border-radius:10px;color:var(--muted);text-decoration:none;font-weight:700}
-    .nav a.active{color:var(--brand);background:rgba(15,139,214,0.06);border-radius:10px}
-    .menu-btn{background:var(--brand);border:none;padding:8px 12px;border-radius:10px;cursor:pointer;display:flex;gap:5px;align-items:center;transition:var(--transition);flex-shrink:0;color:#fff;font-weight:700;font-size:12px;box-shadow:0 2px 8px rgba(15,139,214,0.2);white-space:nowrap}.menu-btn:hover{background:linear-gradient(135deg,var(--brand),#0a6ba8);transform:translateY(-2px);box-shadow:0 4px 12px rgba(15,139,214,0.3)}.menu-btn:active{transform:translateY(0)}
-    .menu-btn .dot{width:5px;height:5px;background:#fff;border-radius:50%}
-    .card{background:var(--panel);border-radius:14px;padding:16px;border:1px solid var(--line);box-shadow:var(--shadow);margin-bottom:14px;transition:var(--transition)}.card:hover{box-shadow:0 12px 32px rgba(16,40,80,0.12);border-color:var(--brand)}
-    .sectionTitle{font-weight:800;color:var(--muted);margin:12px 0 8px;font-size:14px}
-    .notice{margin:12px 0;padding:12px;border-radius:12px;background:linear-gradient(90deg,#f8fbff,#fff);border-left:6px solid var(--brand);color:var(--fg);font-weight:700;transition:var(--transition)}.notice:hover{box-shadow:0 4px 12px rgba(15,139,214,0.12)}
-    .footer{display:flex;flex-direction:column;align-items:center;gap:8px;margin:14px 0;color:var(--muted);font-size:13px}
-    .footer img{height:36px}
-    #drawerOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.32);display:none;z-index:90;opacity:0;transition:opacity 0.26s ease}#drawerOverlay.open{opacity:1}
-    .side-drawer{position:fixed;right:0;top:0;height:100vh;width:86%;max-width:320px;background:#fff;box-shadow:-12px 0 30px rgba(0,0,0,0.14);transform:translateX(110%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);z-index:100;padding:16px;overflow:auto;border-left:1px solid rgba(15,139,214,0.06)} .side-drawer:not(.open){transform:translateX(110%)}
-    .side-drawer.open{transform:translateX(0)}
-    .drawer-item{display:block;padding:12px 14px;border-radius:10px;color:var(--fg);font-weight:700;text-decoration:none;transition:var(--transition);font-size:15px}
-    .drawer-item:hover{background:#f0f8ff;color:var(--brand);transform:translateX(4px)}
-    a:focus,button:focus,select:focus{outline:3px solid rgba(15,139,214,0.12);outline-offset:2px}a,button,select{transition:var(--transition)}
-    @media(min-width:600px){.logo-small{height:44px}.topbar{padding:12px 16px;gap:12px}.wrap{padding:12px}}
-    @media(min-width:900px){.logo-small{height:56px}.wrap{padding:8px}.menu-btn{display:inline-flex;padding:10px 14px;font-size:13px}.side-drawer{right:16px;width:280px;transform:translateX(20px);border-radius:12px}#drawerOverlay{display:none}.card{margin-bottom:16px}.topbar{padding:12px 20px}}
-    .menu-btn:not(:first-of-type){display:none !important} .nav{display:none !important}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avisos - Saúde Bucal Japeri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-japeri-blue { background-color: #0F4C81; }
+        .text-japeri-blue { color: #0F4C81; }
+        .bg-japeri-green { background-color: #1DC56F; }
+        .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+    </style>
 </head>
-<body>
-  <div class="wrap">
-    <header class="topbar">
-      <div class="header-left">
-        <a href="index.html" class="logos" style="text-decoration:none; cursor:pointer;" title="Voltar para o Início">
-          <img src="japeri-logo.png" alt="Japeri" class="logo-small">
-          <img src="brasil-sorridente-logo.png" alt="Brasil Sorridente" class="logo-small">
-          </a>
-        </div>
-        <button id="drawerToggle" class="menu-btn" aria-label="Abrir menu" title="Abrir menu">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-          <span style="font-size:12px">Menu</span>
-        </button>
-    </header>
+<body class="bg-gray-50 text-gray-800">
 
-    <main>
-      <section class="card">
-        <h1>Avisos e Comunicados</h1>
-        <div class="avisos-list" id="avisosList">
-          <div class="aviso">
-            <div class="aviso-title"> Ainda sem previsão para novas vagas.</div>
-            <div> Não realizamos cobranças para marcação de consultas! O SUS é gratuito. Nosso contato é feito através do WhatsApp pelo perfil verificado no numero (21)97521-5959. Este não é um canal interativo! Para dúvidas, o contato deve ser feito pelo e-mail odontologiajaperi@gmail.com</div>
-            <div class="muted small"></div>
-          </div>
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="flex items-center space-x-4">
+                    <img src="japeri-logo.png" alt="Prefeitura de Japeri" class="h-12">
+                    <div class="h-10 w-px bg-gray-200 mx-2"></div>
+                    <div class="flex flex-col">
+                        <span class="text-japeri-blue font-extrabold text-xl leading-tight uppercase">Saúde Bucal</span>
+                        <span class="text-japeri-green font-bold text-xs uppercase tracking-widest">De Japeri</span>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="hidden lg:flex items-center space-x-8 font-bold text-sm text-gray-600">
+                <a href="index.html" class="hover:text-japeri-blue transition-colors">Início</a>
+                <a href="unidades.html" class="hover:text-japeri-blue transition-colors">Unidades</a>
+                <a href="avisos.html" class="text-japeri-blue border-b-2 border-japeri-blue pb-1">Avisos</a>
+                <a href="consulta-fila.html" class="bg-japeri-blue text-white px-6 py-2.5 rounded-full hover:bg-blue-900 transition-all shadow-md">Minha Fila</a>
+            </div>
+
+            <button class="lg:hidden text-japeri-blue text-2xl" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
-      </section>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="fixed inset-0 bg-white z-[60] hidden flex-col p-8">
+        <div class="flex justify-end mb-8">
+            <button class="text-3xl text-gray-400" onclick="toggleMenu()">&times;</button>
+        </div>
+        <div class="flex flex-col space-y-6 text-xl font-bold text-japeri-blue">
+            <a href="index.html" onclick="toggleMenu()">Início</a>
+            <a href="unidades.html" onclick="toggleMenu()">Unidades</a>
+            <a href="avisos.html" onclick="toggleMenu()">Avisos</a>
+            <a href="consulta-fila.html" onclick="toggleMenu()">Minha Fila</a>
+            <a href="cadastro.html" class="bg-japeri-blue text-white p-4 rounded-xl text-center" onclick="toggleMenu()">Fazer Cadastro</a>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <section class="bg-white py-16 border-b border-gray-100">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl font-extrabold text-japeri-blue mb-4">📢 Avisos e Comunicados</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Fique por dentro das últimas notícias e informações importantes sobre o atendimento odontológico em Japeri.
+            </p>
+        </div>
+    </section>
+
+    <!-- Avisos Content -->
+    <main class="container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto space-y-8">
+            
+            <!-- Aviso Principal -->
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 border-l-4 border-japeri-blue card-hover">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-blue-50 text-japeri-blue rounded-2xl flex items-center justify-center text-xl mr-4">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-japeri-blue">Informações Importantes</h2>
+                </div>
+                <div class="space-y-4 text-gray-600 leading-relaxed">
+                    <p class="font-bold text-red-500">⚠️ Ainda sem previsão para novas vagas.</p>
+                    <p>Não realizamos cobranças para marcação de consultas! O SUS é gratuito.</p>
+                    <p>Nosso contato é feito através do WhatsApp pelo perfil verificado no número <span class="font-bold text-japeri-blue">(21) 97521-5959</span>. Este não é um canal interativo!</p>
+                    <p>Para dúvidas, o contato deve ser feito pelo e-mail <a href="mailto:odontologiajaperi@gmail.com" class="text-japeri-blue font-bold hover:underline">odontologiajaperi@gmail.com</a></p>
+                </div>
+            </div>
+
+            <!-- Card de Links Rápidos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <a href="consulta-fila.html" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center group card-hover">
+                    <div class="w-12 h-12 bg-green-50 text-japeri-green rounded-2xl flex items-center justify-center text-xl mr-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Consultar Fila</h3>
+                        <p class="text-xs text-gray-500">Veja sua posição atual</p>
+                    </div>
+                </a>
+                <a href="avaliacao.html" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center group card-hover">
+                    <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-2xl flex items-center justify-center text-xl mr-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Avaliar Atendimento</h3>
+                        <p class="text-xs text-gray-500">Sua opinião é importante</p>
+                    </div>
+                </a>
+            </div>
+
+        </div>
     </main>
 
-    <footer class="footer">
-      <img src="japeri-logo.png" alt="Japeri">
-      <div class="muted">Prefeitura de Japeri — Saúde Bucal</div>
+    <!-- Footer -->
+    <footer class="bg-japeri-blue text-white pt-20 pb-10 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="flex items-center space-x-4">
+                    <img src="japeri-logo.png" alt="Logo" class="h-12 brightness-0 invert">
+                    <div class="flex flex-col">
+                        <span class="font-extrabold text-xl leading-tight uppercase">Saúde Bucal</span>
+                        <span class="text-japeri-green font-bold text-xs uppercase">De Japeri</span>
+                    </div>
+                </div>
+                <div class="text-center md:text-right text-xs text-blue-200">
+                    <p>&copy; 2026 Saúde Bucal de Japeri. Todos os direitos reservados.</p>
+                    <p>Desenvolvido para cuidar de você. <i class="fas fa-heart text-red-400"></i></p>
+                </div>
+            </div>
+        </div>
     </footer>
-  </div>
 
-  <div id="drawerOverlay" aria-hidden="true"></div>
-  <aside id="sideDrawer" class="side-drawer" aria-hidden="true" role="dialog" aria-label="Opções do site">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-      <strong>Opções</strong>
-      <button id="drawerClose" style="margin-left:auto;padding:6px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer">Fechar</button>
-    </div>
-    <nav>
-      <a class="drawer-item" href="index.html">Início</a>
-      <a class="drawer-item" href="avisos.html">Avisos</a>
-      <a class="drawer-item" href="painel.html">Fila</a>
-      <a class="drawer-item" href="consulta-fila.html">🔍 Consultar Fila</a>
-      <a class="drawer-item" id="menuCadastro" href="cadastro.html" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 800;">📋 Cadastro na Fila</a>
-      <a class="drawer-item" href="cadastro.html" style="background: linear-gradient(135deg, #ff6b9d 0%, #c41e3a 100%); color: white; font-weight: 800;">🤰 Gestantes: Cadastro e Cartilha</a>
-      <a class="drawer-item" href="avaliacao.html" style="background: linear-gradient(135deg, #1DC56F 0%, #0F8BD6 100%); color: white; font-weight: 800;">⭐ Avalie seu Atendimento</a>
-      <a class="drawer-item" href="fluxograma.html">📊 Fluxograma</a>
-      <a class="drawer-item" href="unidades.html">📍 Unidades</a>
-      <a class="drawer-item" href="#" onclick="event.preventDefault(); mostrarDuvidasDocumentos(); document.getElementById('sideDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('show');">📄 Dúvidas sobre Documentos</a>
-      <a class="drawer-item" href="mailto:odontologiajaperi@gmail.com">Contato (e-mail)</a>
-    </nav>
-  </aside>
-
-  <!-- drawer script -->
-  <script>
-    (function(){
-      const toggleSelectors = ['#drawerToggle', '.menu-btn', '.drawer-toggle', '.hamburger'];
-      const toggles = Array.from(new Set(toggleSelectors.flatMap(s => Array.from(document.querySelectorAll(s)))));
-      const drawer = document.getElementById('sideDrawer') || document.querySelector('.side-drawer');
-      let overlay = document.getElementById('drawerOverlay') || document.querySelector('.drawer-overlay');
-      if(!overlay){
-        overlay = document.createElement('div'); overlay.id = 'drawerOverlay'; overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.background='rgba(0,0,0,0.32)'; overlay.style.display='none'; overlay.style.zIndex='90'; document.body.appendChild(overlay);
-      }
-      const internalClose = Array.from(document.querySelectorAll('#drawerClose, [data-drawer-close], .drawer-close-btn'));
-      if(!drawer || toggles.length === 0) return;
-      drawer.setAttribute('role', drawer.getAttribute('role') || 'dialog');
-      drawer.setAttribute('aria-hidden', drawer.classList.contains('open') ? 'false' : 'true');
-      function setExpanded(exp){ toggles.forEach(t => { try{ t.setAttribute('aria-expanded', exp ? 'true' : 'false'); }catch(e){} }); }
-      function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); overlay.style.display='block'; overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; setExpanded(true); setTimeout(()=>{ const first = drawer.querySelector('a,button,[tabindex]:not([tabindex="-1"])'); if(first) first.focus(); },220); }
-      function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; document.body.style.overflow=''; setExpanded(false); }
-      toggles.forEach(t=>{ if(t._drawerBound) return; t._drawerBound=true; t.style.cursor='pointer'; t.addEventListener('click', e=>{ e.stopPropagation(); if(drawer.classList.contains('open')) closeDrawer(); else openDrawer(); }); });
-      overlay.addEventListener('click', ()=>{ closeDrawer(); });
-      internalClose.forEach(b=>{ if(b._drawerBoundClose) return; b._drawerBoundClose=true; b.addEventListener('click', e=>{ e.stopPropagation(); closeDrawer(); }); });
-      drawer.addEventListener('click', function(e){ const item = e.target.closest('.drawer-item, [data-drawer-item], a, button'); if(!item) return; setTimeout(()=> closeDrawer(), 120); });
-      document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape' && drawer.classList.contains('open')) closeDrawer(); });
-      document.addEventListener('click', function(e){ if(!drawer.classList.contains('open')) return; if(e.target.closest('#sideDrawer') || toggles.some(t => t.contains(e.target) || t === e.target)) return; closeDrawer(); });
-      const hideOtherOverlays = ()=> { Array.from(document.querySelectorAll('.drawer-overlay, #drawerOverlay')).forEach(o=>{ if(o !== overlay) o.style.display = 'none'; }); };
-      const mo = new MutationObserver(()=>{ hideOtherOverlays(); setExpanded(drawer.classList.contains('open')); });
-      mo.observe(drawer, { attributes:true, attributeFilter:['class'] });
-    })();
-</script>
-
-  
-  <!-- Script para mudar cor do menu baseado no status dos cadastros -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    (async function(){
-      const SUPABASE_URL = 'https://uakhmgoxgyklggsvtwdf.supabase.co';
-      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTE0NzcsImV4cCI6MjA3OTk1MTQ3N30.6iCUHePtVlmq8De9oBl4Zw5CBU4Zai7P3xLpi7cYkDo';
-      const { createClient } = supabase;
-      const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      
-      try {
-        const { data, error } = await supabaseClient
-          .from('configuracoes')
-          .select('*')
-          .in('chave', ['cadastros_abertos']);
-        
-        if (error) throw error;
-        
-        const statusConfig = data.find(c => c.chave === 'cadastros_abertos');
-        const aberto = statusConfig?.valor === 'true';
-        
-        // Mudar cor do item do menu
-        const menuCadastro = document.getElementById('menuCadastro');
-        if (menuCadastro) {
-          if (aberto) {
-            // Cadastros abertos - roxo
-            menuCadastro.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-          } else {
-            // Cadastros fechados - vermelho
-            menuCadastro.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
-          }
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
         }
-      } catch (error) {
-        console.error('Erro ao verificar status dos cadastros:', error);
-      }
-    })();
-  </script>
-
-  <script src="modal-documentos.js?v=2"></script>
-  <!-- Pop-up de Avaliação -->
-  <script>
-    fetch("avaliacao-popup.html")
-      .then(response => {
-        if (!response.ok) throw new Error('Erro ao carregar pop-up');
-        return response.text();
-      })
-      .then(html => {
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = html;
-        while (tempDiv.firstChild) {
-          document.body.appendChild(tempDiv.firstChild);
-        }
-      })
-      .catch(error => console.error('Erro ao carregar pop-up de avaliação:', error));
-  </script>
+    </script>
 </body>
 </html>

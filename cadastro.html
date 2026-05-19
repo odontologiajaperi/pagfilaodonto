@@ -3,1463 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro na Fila - Odontologia Japeri</title>
+    <title>Cadastro na Fila - Saúde Bucal Japeri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .form-container {
-            padding: 40px 30px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-            font-size: 0.95em;
-        }
-
-        .form-group label .required {
-            color: #e74c3c;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-group input.invalid,
-        .form-group select.invalid,
-        .form-group textarea.invalid {
-            border-color: #e74c3c;
-            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
-        }
-
-        .form-group .error-message {
-            color: #e74c3c;
-            font-size: 0.85em;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .form-group .error-message.show {
-            display: block;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .radio-group {
-            display: flex;
-            gap: 20px;
-            margin-top: 10px;
-        }
-
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: normal;
-            cursor: pointer;
-        }
-
-        .radio-group input[type="radio"] {
-            width: auto;
-            cursor: pointer;
-        }
-
-        .cancel-btn {
-            flex: 1;
-            padding: 15px;
-            background: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .cancel-btn:hover {
-            background: #5a6268;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
-        }
-
-        .cancel-btn:active {
-            transform: translateY(0);
-        }
-
-        .submit-btn {
-            flex: 2;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .alert.success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-        }
-
-        .alert.error {
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
-        }
-
-        .alert.show {
-            display: block;
-        }
-
-        /* Modal/Pop-up */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-overlay.show {
-            display: flex;
-        }
-
-        .modal {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
-            text-align: center;
-        }
-
-        .modal.success {
-            border-top: 6px solid #28a745;
-        }
-
-        .modal.error {
-            border-top: 6px solid #dc3545;
-        }
-
-        .modal.info {
-            border-top: 6px solid #17a2b8;
-        }
-
-        .modal-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-        }
-
-        .modal h2 {
-            margin: 0 0 15px;
-            color: #333;
-        }
-
-        .modal p {
-            margin: 0 0 25px;
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .modal-btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .modal-btn.success {
-            background: #28a745;
-            color: white;
-        }
-
-        .modal-btn.success:hover {
-            background: #218838;
-        }
-
-        .modal-btn.error {
-            background: #dc3545;
-            color: white;
-        }
-
-        .modal-btn.error:hover {
-            background: #c82333;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
-            margin-left: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .rating-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .rating-group input[type="radio"] {
-            display: none;
-        }
-
-        .rating-group label {
-            width: 40px;
-            height: 40px;
-            background: #e0e0e0;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .rating-group input[type="radio"]:checked + label {
-            background: #667eea;
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: white;
-            color: #667eea;
-            padding: 12px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-
-        .back-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            background: #f8f9fa;
-        }
-
-        .back-button:active {
-            transform: translateY(0);
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .header h1 {
-                font-size: 1.5em;
-            }
-
-            .form-container {
-                padding: 30px 20px;
-            }
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .bg-japeri-blue { background-color: #0F4C81; }
+        .text-japeri-blue { color: #0F4C81; }
+        .bg-japeri-green { background-color: #1DC56F; }
+        .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+        input:focus, select:focus, textarea:focus { border-color: #0F4C81; outline: none; box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1); }
     </style>
-    
-    <!-- Google reCAPTCHA Script -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
-<body>
-    <a href="index.html" class="back-button">
-        <span>←</span>
-        <span>Voltar</span>
-    </a>
-    
-    <div class="container">
-        <div class="header">
-            <h1>📋 Cadastro na Fila de Espera</h1>
-            <p>Preencha o formulário para entrar na fila de atendimento odontológico</p>
-        </div>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
 
-        <div class="form-container">
-
-
-            <!-- Aviso quando cadastros estão fechados -->
-            <div id="avisoFechado" style="display:none;background:linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);color:white;padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;box-shadow:0 4px 12px rgba(231,76,60,0.3)">
-                <h2 style="margin:0 0 10px;font-size:1.5em">❌ Cadastros Temporariamente Fechados</h2>
-                <p id="mensagemFechado" style="margin:0;font-size:1.1em;line-height:1.5"></p>
-                <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap">
-                    <a href="index.html" style="display:inline-block;padding:12px 24px;background:white;color:#e74c3c;border-radius:8px;text-decoration:none;font-weight:700;transition:all 0.3s">← Voltar para Início</a>
-                    <button id="btnSouGestante" style="padding:18px 40px;background:linear-gradient(135deg, #ff6b9d 0%, #c41e3a 100%);color:white;border:none;border-radius:12px;font-weight:900;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 16px rgba(255,107,157,0.4);font-size:1.15em">🤰 Sou Gestante</button>
-                </div>
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="flex items-center space-x-4">
+                    <img src="japeri-logo.png" alt="Prefeitura de Japeri" class="h-12">
+                    <div class="h-10 w-px bg-gray-200 mx-2"></div>
+                    <div class="flex flex-col">
+                        <span class="text-japeri-blue font-extrabold text-xl leading-tight uppercase">Saúde Bucal</span>
+                        <span class="text-japeri-green font-bold text-xs uppercase tracking-widest">De Japeri</span>
+                    </div>
+                </a>
             </div>
             
-            <div id="alert" class="alert"></div>
+            <div class="hidden lg:flex items-center space-x-8 font-bold text-sm text-gray-600">
+                <a href="index.html" class="hover:text-japeri-blue transition-colors">Início</a>
+                <a href="unidades.html" class="hover:text-japeri-blue transition-colors">Unidades</a>
+                <a href="avisos.html" class="hover:text-japeri-blue transition-colors">Avisos</a>
+                <a href="consulta-fila.html" class="bg-japeri-blue text-white px-6 py-2.5 rounded-full hover:bg-blue-900 transition-all shadow-md">Minha Fila</a>
+            </div>
 
-            <form id="cadastroForm">
-                <div class="form-group">
-                    <label>Nome Completo <span class="required">*</span></label>
-                    <input type="text" name="nome_completo" required>
-                </div>
+            <button class="lg:hidden text-japeri-blue text-2xl" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Sexo <span class="required">*</span></label>
-                        <select name="sexo" id="campo_sexo" required>
-                            <option value="">Selecione...</option>
-                            <option value="Masculino">Masculino</option>
-                            <option value="Feminino">Feminino</option>
-                        </select>
-                    </div>
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="fixed inset-0 bg-white z-[60] hidden flex-col p-8">
+        <div class="flex justify-end mb-8">
+            <button class="text-3xl text-gray-400" onclick="toggleMenu()">&times;</button>
+        </div>
+        <div class="flex flex-col space-y-6 text-xl font-bold text-japeri-blue">
+            <a href="index.html" onclick="toggleMenu()">Início</a>
+            <a href="unidades.html" onclick="toggleMenu()">Unidades</a>
+            <a href="avisos.html" onclick="toggleMenu()">Avisos</a>
+            <a href="consulta-fila.html" onclick="toggleMenu()">Minha Fila</a>
+            <a href="cadastro.html" class="bg-japeri-blue text-white p-4 rounded-xl text-center" onclick="toggleMenu()">Fazer Cadastro</a>
+        </div>
+    </div>
 
-                    <div class="form-group">
-                        <label>Data de Nascimento <span class="required">*</span></label>
-                        <div style="display: grid; grid-template-columns: 1fr 2fr 1.5fr; gap: 10px;">
-                            <select id="dia_nascimento" required style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;">
-                                <option value="">Dia</option>
-                            </select>
-                            <select id="mes_nascimento" required style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;">
-                                <option value="">Mês</option>
-                                <option value="01">Janeiro</option>
-                                <option value="02">Fevereiro</option>
-                                <option value="03">Março</option>
-                                <option value="04">Abril</option>
-                                <option value="05">Maio</option>
-                                <option value="06">Junho</option>
-                                <option value="07">Julho</option>
-                                <option value="08">Agosto</option>
-                                <option value="09">Setembro</option>
-                                <option value="10">Outubro</option>
-                                <option value="11">Novembro</option>
-                                <option value="12">Dezembro</option>
-                            </select>
-                            <select id="ano_nascimento" required style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;">
-                                <option value="">Ano</option>
-                            </select>
-                        </div>
-                        <input type="hidden" name="data_nascimento" id="data_nascimento_hidden" required>
-                    </div>
-                </div>
+    <!-- Header Section -->
+    <section class="bg-white py-16 border-b border-gray-100">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl font-extrabold text-japeri-blue mb-4">📋 Cadastro na Fila de Espera</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Preencha os dados abaixo corretamente para entrar na nossa fila de atendimento odontológico.
+            </p>
+        </div>
+    </section>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Celular (com DDD) <span class="required">*</span></label>
-                        <input type="tel" name="celular" placeholder="(21) 99999-9999" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>E-mail <span class="required">*</span></label>
-                        <input type="email" name="email" placeholder="seu@email.com" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>CPF <span class="required">*</span></label>
-                        <input type="text" name="cpf" placeholder="000.000.000-00" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Cartão do SUS <span class="required">*</span></label>
-                        <input type="text" name="cartao_sus" placeholder="000 0000 0000 0000" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Nome da Mãe <span class="required">*</span></label>
-                    <input type="text" name="nome_mae" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Endereço Completo <span class="required">*</span></label>
-                    <input type="text" name="endereco" placeholder="Rua, número, bairro, cidade" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Unidade de Preferência <span class="required">*</span></label>
-                    <select name="unidade_preferencia" id="select_unidade" required><option value="">Carregando unidades...</option></select>
-                </div>
-
-                <div class="form-group">
-                    <label>Caso haja vaga disponível em outra unidade, você iria? <span class="required">*</span></label>
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="aceita_outra_unidade" value="true" required>
-                            Sim
-                        </label>
-                        <label>
-                            <input type="radio" name="aceita_outra_unidade" value="false" required>
-                            Não
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Checkbox Gestante -->
-                <div class="form-group" id="container_gestante" style="background: #fff3f3; padding: 20px; border-radius: 12px; border: 2px solid #ff6b9d; opacity: 0.5; pointer-events: none;">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 1.1em; font-weight: 700; color: #c41e3a;">
-                        <input type="checkbox" id="checkbox_gestante" name="e_gestante" style="width: 20px; height: 20px; cursor: pointer;">
-                        <span>🤰 Você é gestante?</span>
-                    </label>
-                    <p style="margin: 10px 0 0 30px; font-size: 0.9em; color: #666;">
-                        Marque esta opção se você estiver grávida. Gestantes têm atendimento diferenciado.
-                    </p>
-                    <p style="margin: 10px 0 0 30px; font-size: 0.85em; color: #999; font-style: italic;">
-                        ⚠️ Selecione o sexo acima para habilitar esta opção
-                    </p>
-                </div>
-
-                <!-- Campos condicionais para gestantes (inicialmente ocultos) -->
-                <div id="campos_gestante" style="display: none;">
-                    <div class="form-group" style="background: #fff8f0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff6b9d;">
-                        <label>Data Prevista do Parto <span class="required">*</span></label>
-                        <input type="date" id="data_prevista_parto" name="data_prevista_parto" min="" style="width: 100%;">
-                    </div>
-
-                    <div class="form-group" style="background: #fff8f0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff6b9d;">
-                        <label>Você deseja ou tem necessidade de ser atendida durante a gestação? <span class="required">*</span></label>
-                        <div class="radio-group">
-                            <label>
-                                <input type="radio" id="deseja_atendimento_sim" name="deseja_atendimento" value="true">
-                                Sim, desejo ser atendida
-                            </label>
-                            <label>
-                                <input type="radio" id="deseja_atendimento_nao" name="deseja_atendimento" value="false">
-                                Não, não tenho necessidade no momento
-                            </label>
+    <!-- Form Section -->
+    <main class="container mx-auto px-4 py-12">
+        <div class="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-50">
+            <div class="p-8 md:p-12">
+                <form id="cadastroForm" class="space-y-8">
+                    <!-- Dados Pessoais -->
+                    <div class="space-y-6">
+                        <h2 class="text-xl font-bold text-japeri-blue border-b pb-2">Dados Pessoais</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Nome Completo <span class="text-red-500">*</span></label>
+                                <input type="text" id="nome_completo" required class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">CPF <span class="text-red-500">*</span></label>
+                                <input type="text" id="cpf" required placeholder="000.000.000-00" maxlength="14" class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Data de Nascimento <span class="text-red-500">*</span></label>
+                                <input type="date" id="data_nascimento" required class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label>Principal Queixa de Saúde Bucal <span class="required">*</span></label>
-                    <textarea name="queixa_principal" required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>O que você achou dessa forma de agendamento?</label>
-                    <textarea name="avaliacao_agendamento"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Tem alguma sugestão, elogio ou crítica?</label>
-                    <textarea name="sugestoes"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Qual a probabilidade de você nos recomendar? (0-10)</label>
-                    <div class="rating-group">
-                        <input type="radio" name="probabilidade_recomendacao" value="0" id="rating0">
-                        <label for="rating0">0</label>
-                        <input type="radio" name="probabilidade_recomendacao" value="1" id="rating1">
-                        <label for="rating1">1</label>
-                        <input type="radio" name="probabilidade_recomendacao" value="2" id="rating2">
-                        <label for="rating2">2</label>
-                        <input type="radio" name="probabilidade_recomendacao" value="3" id="rating3">
-                        <label for="rating3">3</label>
-                        <input type="radio" name="probabilidade_recomendacao" value="4" id="rating4">
-                        <label for="rating4">4</label>
-                        <input type="radio" name="probabilidade_recomendacao" value="5" id="rating5">
-                        <label for="rating5">5</label>
-                        <input type="radio" name="probabilidade_recomendacao" value="6" id="rating6">
-                        <label for="rating6">6</label>
-                        <input type="radio" name="probabilidade_recomendacao" value="7" id="rating7">
-                        <label for="rating7">7</label>
-                        <input type="radio" name="probabilidade_recomendacao" value="8" id="rating8">
-                        <label for="rating8">8</label>
-                        <input type="radio" name="probabilidade_recomendacao" value="9" id="rating9">
-                        <label for="rating9">9</label>
-                        <input type="radio" name="probabilidade_recomendacao" value="10" id="rating10">
-                        <label for="rating10">10</label>
+                    <!-- Contato -->
+                    <div class="space-y-6">
+                        <h2 class="text-xl font-bold text-japeri-blue border-b pb-2">Contato e Localização</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Celular (WhatsApp) <span class="text-red-500">*</span></label>
+                                <input type="text" id="celular" required placeholder="(00) 00000-0000" class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Unidade de Preferência <span class="text-red-500">*</span></label>
+                                <select id="unidade_preferencia" required class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl">
+                                    <option value="">Selecione uma unidade</option>
+                                    <option value="Alecrim">Equipe Alecrim</option>
+                                    <option value="CEMES Japeri">Equipe CEMES Japeri</option>
+                                    <option value="Chacrinha">Equipe Chacrinha</option>
+                                    <option value="Marabá">Equipe Marabá</option>
+                                    <option value="Vila Central">Equipe Vila Central</option>
+                                    <option value="Unidade Odontológica móvel">Unidade Odontológica Móvel</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
-                        <input type="checkbox" name="aceita_termos" required style="width: auto; margin-top: 3px;">
-                        <span>Li e aceito os <a href="termos.html" target="_blank" style="color: #667eea; text-decoration: underline;">Termos de Uso e Política de Privacidade</a> <span class="required">*</span></span>
-                    </label>
-                </div>
+                    <!-- reCAPTCHA -->
+                    <div class="flex justify-center py-4">
+                        <div class="g-recaptcha" data-sitekey="6Ld_N6EqAAAAAId8_0X_87Yv_9z8_87Yv_9z8_87Yv"></div>
+                    </div>
 
-                <!-- Google reCAPTCHA -->
-                <div class="form-group" style="margin-top: 30px;">
-                    <div class="g-recaptcha" data-sitekey="6LegHiEsAAAAALVoosndWQ5OUOi4rQtgsgyfy0YE" style="display: flex; justify-content: center;"></div>
-                    <div id="recaptcha-error" style="color: #e74c3c; font-size: 0.85em; margin-top: 10px; text-align: center; display: none;">Por favor, confirme que você não é um robô</div>
-                </div>
+                    <!-- Submit -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                        <button type="button" onclick="window.location.href='index.html'" class="flex-1 px-8 py-4 bg-gray-100 text-gray-600 rounded-2xl font-bold hover:bg-gray-200 transition-all">
+                            Cancelar
+                        </button>
+                        <button type="submit" id="submitBtn" class="flex-[2] px-8 py-4 bg-japeri-blue text-white rounded-2xl font-bold shadow-xl hover:bg-blue-900 transition-all flex items-center justify-center">
+                            <span>Finalizar Cadastro</span>
+                            <div id="spinner" class="hidden ml-3 w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
 
-                <div style="display: flex; gap: 15px; margin-top: 30px;">
-                    <button type="button" class="cancel-btn" onclick="window.location.href='index.html'">← Voltar</button>
-                    <button type="submit" class="submit-btn">Enviar Cadastro</button>
-                </div>
-                
-                <div style="margin-top: 15px; text-align: center;">
-                    <button type="button" onclick="mostrarDuvidasDocumentos()" style="background: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 0.95em; transition: all 0.3s;" onmouseover="this.style.background='#5a6268'" onmouseout="this.style.background='#6c757d'">
-                        📄 Dúvidas sobre Documentos?
-                    </button>
-                </div>
-            </form>
+    <!-- Footer -->
+    <footer class="bg-japeri-blue text-white pt-10 pb-10 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-xs text-blue-200">&copy; 2026 Saúde Bucal de Japeri. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/60 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-in zoom-in duration-300">
+            <div id="modalIcon" class="text-6xl mb-4"></div>
+            <h2 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-2"></h2>
+            <p id="modalMessage" class="text-gray-600 mb-8"></p>
+            <button onclick="closeModal()" id="modalBtn" class="w-full py-4 rounded-2xl font-bold text-white transition-all"></button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Configuração do Supabase
         const SUPABASE_URL = 'https://uakhmgoxgyklggsvtwdf.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTE0NzcsImV4cCI6MjA3OTk1MTQ3N30.6iCUHePtVlmq8De9oBl4Zw5CBU4Zai7P3xLpi7cYkDo';
-        
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        // Carregar unidades dinamicamente salvando o NOME como valor
-        async function carregarUnidadesAtivas() {
-            const select = document.getElementById('select_unidade');
-            if(!select) return;
-            try {
-                const { data, error } = await supabaseClient
-                    .from('postos')
-                    .select('id, nome')
-                    .eq('ativo', true)
-                    .order('nome');
-                if (error) throw error;
-                select.innerHTML = '<option value="">Selecione...</option>';
-                if(data) {
-                    data.forEach(p => {
-                        const opt = document.createElement('option');
-                        // Usamos o NOME como value para salvar texto no banco
-                        // Mas guardamos o ID em um atributo data para o trigger funcionar se necessário
-                        opt.value = p.nome; 
-                        opt.setAttribute('data-id', p.id);
-                        opt.textContent = p.nome;
-                        select.appendChild(opt);
-                    });
-                }
-            } catch (e) {
-                console.error(e);
-                select.innerHTML = '<option value="">Erro ao carregar unidades</option>';
-            }
+
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
         }
-        document.addEventListener('DOMContentLoaded', carregarUnidadesAtivas);
 
-
-        // Máscaras de input
-        document.querySelector('input[name="celular"]').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 11) value = value.slice(0, 11);
-            
-            if (value.length > 6) {
-                value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
-            } else if (value.length > 2) {
-                value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
-            } else if (value.length > 0) {
-                value = `(${value}`;
-            }
-            
-            e.target.value = value;
+        // Masks
+        document.getElementById('cpf').addEventListener('input', function(e) {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.slice(0, 11);
+            if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+            else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+            e.target.value = v;
         });
 
-        document.querySelector('input[name="cpf"]').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 11) value = value.slice(0, 11);
-            
-            if (value.length > 9) {
-                value = `${value.slice(0, 3)}.${value.slice(3, 6)}.${value.slice(6, 9)}-${value.slice(9)}`;
-            } else if (value.length > 6) {
-                value = `${value.slice(0, 3)}.${value.slice(3, 6)}.${value.slice(6)}`;
-            } else if (value.length > 3) {
-                value = `${value.slice(0, 3)}.${value.slice(3)}`;
-            }
-            
-            e.target.value = value;
+        document.getElementById('celular').addEventListener('input', function(e) {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.slice(0, 11);
+            if (v.length > 10) v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+            else if (v.length > 6) v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+            else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,5})/, "($1) $2");
+            e.target.value = v;
         });
 
-        document.querySelector('input[name="cartao_sus"]').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 15) value = value.slice(0, 15);
-            
-            if (value.length > 12) {
-                value = `${value.slice(0, 3)} ${value.slice(3, 7)} ${value.slice(7, 11)} ${value.slice(11)}`;
-            } else if (value.length > 7) {
-                value = `${value.slice(0, 3)} ${value.slice(3, 7)} ${value.slice(7)}`;
-            } else if (value.length > 3) {
-                value = `${value.slice(0, 3)} ${value.slice(3)}`;
-            }
-            
-            e.target.value = value;
-        });
-
-        // Popular dropdowns de data de nascimento
-        const diaSelect = document.getElementById('dia_nascimento');
-        const mesSelect = document.getElementById('mes_nascimento');
-        const anoSelect = document.getElementById('ano_nascimento');
-        const dataHidden = document.getElementById('data_nascimento_hidden');
-
-        // Popular dias (1-31)
-        for (let i = 1; i <= 31; i++) {
-            const option = document.createElement('option');
-            option.value = i.toString().padStart(2, '0');
-            option.textContent = i;
-            diaSelect.appendChild(option);
-        }
-
-        // Popular anos (1900 até ano atual)
-        const anoAtual = new Date().getFullYear();
-        for (let i = anoAtual; i >= 1900; i--) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i;
-            anoSelect.appendChild(option);
-        }
-
-        // Atualizar campo hidden quando selecionar dia/mês/ano
-        function atualizarDataNascimento() {
-            const dia = diaSelect.value;
-            const mes = mesSelect.value;
-            const ano = anoSelect.value;
-            
-            if (dia && mes && ano) {
-                dataHidden.value = `${ano}-${mes}-${dia}`;
-            } else {
-                dataHidden.value = '';
-            }
-        }
-
-        diaSelect.addEventListener('change', atualizarDataNascimento);
-        mesSelect.addEventListener('change', atualizarDataNascimento);
-        anoSelect.addEventListener('change', atualizarDataNascimento);
-
-        // Função para mostrar modal
-        function showModal(title, message, type, extraButton = null) {
-            // Criar modal se não existir
-            let modal = document.getElementById('modal-overlay');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'modal-overlay';
-                modal.className = 'modal-overlay';
-                modal.innerHTML = `
-                    <div class="modal ${type}">
-                        <div class="modal-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</div>
-                        <h2 id="modal-title"></h2>
-                        <p id="modal-message" style="white-space: pre-line; text-align: left;"></p>
-                        <button class="modal-btn ${type}" onclick="document.getElementById('modal-overlay').classList.remove('show')">OK</button>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-            }
-            
-            // Atualizar conteúdo
-            const modalElement = modal.querySelector('.modal');
-            modalElement.className = `modal ${type}`;
-            modal.querySelector('.modal-icon').textContent = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-            modal.querySelector('#modal-title').textContent = title;
-            modal.querySelector('#modal-message').textContent = message;
-            modal.querySelector('.modal-btn').className = `modal-btn ${type}`;
-            
-            // Adicionar botão extra se fornecido
-            const existingExtraBtn = modal.querySelector('.extra-btn');
-            if (existingExtraBtn) existingExtraBtn.remove();
-            
-            if (extraButton) {
-                const btnContainer = modal.querySelector('.modal');
-                const extraBtn = document.createElement('a');
-                extraBtn.href = extraButton.url || '#';
-                extraBtn.target = '_blank';
-                extraBtn.className = 'modal-btn success extra-btn';
-                extraBtn.style.cssText = 'background: #ff6b9d; margin-top: 10px; display: inline-block; text-decoration: none;';
-                extraBtn.textContent = extraButton.text || 'Download';
-                btnContainer.insertBefore(extraBtn, modal.querySelector('.modal-btn'));
-            }
-            
-            // Mostrar modal
-            modal.classList.add('show');
-        }
-
-
-        // Função para validar campos obrigatórios
-        function validateForm(form) {
-            let isValid = true;
-            let firstInvalidField = null;
-            
-            // Remover marcações anteriores
-            form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
-            form.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
-            
-            // Validar campos obrigatórios
-            const requiredFields = form.querySelectorAll('[required]');
-            requiredFields.forEach(field => {
-                let isEmpty = false;
-                
-                if (field.type === 'checkbox' || field.type === 'radio') {
-                    const name = field.name;
-                    const checked = form.querySelector(`[name="${name}"]:checked`);
-                    if (!checked) {
-                        isEmpty = true;
-                        // Marcar o container do grupo
-                        const group = field.closest('.form-group');
-                        if (group && !firstInvalidField) {
-                            firstInvalidField = group;
-                        }
-                    }
-                } else {
-                    if (!field.value || field.value.trim() === '') {
-                        isEmpty = true;
-                        field.classList.add('invalid');
-                        if (!firstInvalidField) {
-                            firstInvalidField = field;
-                        }
-                    }
-                }
-                
-                if (isEmpty) {
-                    isValid = false;
-                }
-            });
-            
-            // Scroll para o primeiro campo inválido
-            if (!isValid && firstInvalidField) {
-                firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                if (firstInvalidField.focus) {
-                    setTimeout(() => firstInvalidField.focus(), 300);
-                }
-            }
-            
-            return isValid;
-        }
-
-        // Submissão do formulário
+        // Form Submit
         document.getElementById('cadastroForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Validar reCAPTCHA
-            const recaptchaResponse = grecaptcha.getResponse();
-            const recaptchaError = document.getElementById('recaptcha-error');
+            const btn = document.getElementById('submitBtn');
+            const spinner = document.getElementById('spinner');
             
-            if (!recaptchaResponse) {
-                recaptchaError.style.display = 'block';
-                recaptchaError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // reCAPTCHA check
+            const response = grecaptcha.getResponse();
+            if (!response) {
+                showModal('error', 'reCAPTCHA', 'Por favor, complete o desafio de segurança.');
                 return;
             }
-            recaptchaError.style.display = 'none';
-            
-            // Validar formulário
-            if (!validateForm(e.target)) {
-                showModal(
-                    'Campos Obrigatórios',
-                    'Por favor, preencha todos os campos marcados com asterisco (*) antes de enviar o cadastro.',
-                    'error'
-                );
-                return;
-            }
-            
-            const submitBtn = e.target.querySelector('.submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Enviando...';
-            
+
             try {
-                // Verificar se a fila está aberta no momento do envio
-                const { data: configData, error: configError } = await supabaseClient
-                    .from('configuracoes')
-                    .select('valor')
-                    .eq('chave', 'cadastros_abertos')
-                    .single();
-                
-	                const filaAberta = configData?.valor === 'true';
-	                const isGestante = document.getElementById('checkbox_gestante').checked;
-	
-	                // Se a fila estiver fechada e NÃO for gestante, bloquear envio
-	                if (!filaAberta && !isGestante) {
-                    showModal(
-                        'Fila Fechada',
-                        'Os cadastros foram fechados enquanto você preenchia o formulário. Apenas gestantes podem se cadastrar no momento.',
-                        'error'
-                    );
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Enviar Cadastro';
-                    return;
-                }
+                btn.disabled = true;
+                spinner.classList.remove('hidden');
 
-                const formData = new FormData(e.target);
-                const data = {};
-                
-                // Versão: 2.0.1 - Correção reCAPTCHA e campos inválidos
-                for (let [key, value] of formData.entries()) {
-                    // Ignorar campos que não devem ir para o banco
-                    if (key === 'aceita_termos' || key === 'g-recaptcha-response' || key === 'e_gestante') {
-                        continue; // Pular esses campos completamente
-                    }
-                    data[key] = value;
-                }
-                
-                // Limpar máscaras
-                data.celular = data.celular.replace(/\D/g, '');
-                data.cpf = data.cpf.replace(/\D/g, '');
-                data.cartao_sus = data.cartao_sus.replace(/\D/g, '');
-                
-                // Validar CPF duplicado
-                const { data: cpfCheck, error: cpfError } = await supabaseClient
-                    .from('pacientes')
-                    .select('cpf, nome_completo')
-                    .eq('cpf', data.cpf)
-                    .limit(1);
-                
-                if (cpfError) throw cpfError;
-                
-                if (cpfCheck && cpfCheck.length > 0) {
-                    showModal(
-                        'CPF Já Cadastrado',
-                        `O CPF ${data.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')} já está cadastrado no sistema. Cada pessoa pode se cadastrar apenas uma vez.`,
-                        'error'
-                    );
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Enviar Cadastro';
-                    return;
-                }
-                
-                // Validar formato do CPF
-                function validarCPF(cpf) {
-                    cpf = cpf.replace(/\D/g, '');
-                    
-                    if (cpf.length !== 11) return false;
-                    
-                    // Rejeitar CPFs inválidos conhecidos
-                    if (/^(\d)\1{10}$/.test(cpf)) return false;
-                    
-                    // Validar dígitos verificadores
-                    let soma = 0;
-                    for (let i = 0; i < 9; i++) {
-                        soma += parseInt(cpf.charAt(i)) * (10 - i);
-                    }
-                    let resto = (soma * 10) % 11;
-                    if (resto === 10 || resto === 11) resto = 0;
-                    if (resto !== parseInt(cpf.charAt(9))) return false;
-                    
-                    soma = 0;
-                    for (let i = 0; i < 10; i++) {
-                        soma += parseInt(cpf.charAt(i)) * (11 - i);
-                    }
-                    resto = (soma * 10) % 11;
-                    if (resto === 10 || resto === 11) resto = 0;
-                    if (resto !== parseInt(cpf.charAt(10))) return false;
-                    
-                    return true;
-                }
-                
-                if (!validarCPF(data.cpf)) {
-                    showModal(
-                        'CPF Inválido',
-                        'O CPF informado não é válido. Por favor, verifique e tente novamente.',
-                        'error'
-                    );
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Enviar Cadastro';
-                    return;
-                }
-                
-                // Converter aceita_outra_unidade para boolean
-                data.aceita_outra_unidade = data.aceita_outra_unidade === 'true';
-                
-                // Converter probabilidade_recomendacao para número
-                data.probabilidade_recomendacao = parseInt(data.probabilidade_recomendacao) || 0;
-                
-                // Verificar se é gestante
-                const eGestante = document.getElementById('checkbox_gestante').checked;
-                
-                if (eGestante) {
-                    // ========== FLUXO PARA GESTANTES ==========
-                    
-                    // Validar se o termo foi aceito
-                    if (!termoGestanteAceito) {
-                        showModal(
-                            'Termo Não Aceito',
-                            'Você precisa aceitar o termo de declaração de gestante para continuar.',
-                            'error'
-                        );
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Enviar Cadastro';
-                        return;
-                    }
-                    
-                    // Converter deseja_atendimento para boolean
-                    data.deseja_atendimento = data.deseja_atendimento === 'true';
-                    data.termo_gestante_aceito = true;
-                    
-                    // Adicionar campos automáticos
-                    data.submitted_at = new Date().toISOString();
-                    
-                    // Validar CPF duplicado na tabela de gestantes
-                    const { data: cpfCheckGestante, error: cpfErrorGestante } = await supabaseClient
-                        .from('gestantes')
-                        .select('cpf, nome_completo')
-                        .eq('cpf', data.cpf)
-                        .limit(1);
-                    
-                    if (cpfErrorGestante) throw cpfErrorGestante;
-                    
-                    if (cpfCheckGestante && cpfCheckGestante.length > 0) {
-                        showModal(
-                            'CPF Já Cadastrado',
-                            `O CPF ${data.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')} já está cadastrado como gestante no sistema.`,
-                            'error'
-                        );
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Enviar Cadastro';
-                        return;
-                    }
-                    
-                    // Inserir na tabela de gestantes
-                    const { error: errorGestante } = await supabaseClient
-                        .from('gestantes')
-                        .insert([data]);
-                    
-                    if (errorGestante) throw errorGestante;
-                    
-                    // Mensagem personalizada baseada na escolha
-                    let mensagemGestante = '';
-                    
-                    if (data.deseja_atendimento) {
-                        // DESEJA ATENDIMENTO
-                        mensagemGestante = `Parabéns! Seu cadastro como gestante foi realizado com sucesso!\n\n🤰 ATENDIMENTO PRIORITÁRIO\n\nVocê será atendida com prioridade. Entraremos em contato em breve pelo telefone ${data.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')} para prosseguir com o agendamento.\n\n📋 Data prevista do parto: ${new Date(data.data_prevista_parto).toLocaleDateString('pt-BR')}\n\n📚 CARTILHA DA GESTANTE\nClique no botão abaixo para baixar a Cartilha da Gestante com informações importantes sobre saúde bucal durante a gestação.\n\n📝 Importante: Mantenha seu telefone atualizado e atenda nossas ligações.`;
-                    } else {
-                        // NÃO DESEJA ATENDIMENTO
-                        mensagemGestante = `Cadastro realizado com sucesso!\n\n🤰 Seu cadastro como gestante foi registrado.\n\nVocê informou que não tem necessidade de atendimento no momento. Caso mude de ideia, entre em contato conosco.\n\n📋 Data prevista do parto: ${new Date(data.data_prevista_parto).toLocaleDateString('pt-BR')}\n\n📚 CARTILHA DA GESTANTE\nClique no botão abaixo para baixar a Cartilha da Gestante com informações importantes sobre saúde bucal durante a gestação.\n\nObrigado pelo cadastro!`;
-                    }
-                    
-                    showModal(
-                        'Cadastro de Gestante Realizado!',
-                        mensagemGestante,
-                        'success',
-                        {
-                            text: '📚 Baixar Cartilha da Gestante',
-                            url: 'pno.pdf'
-                        }
-                    );
-                    
-                    e.target.reset();
-                    document.getElementById('checkbox_gestante').checked = false;
-                    document.getElementById('campos_gestante').style.display = 'none';
-                    termoGestanteAceito = false;
-                    
-                } else {
-                    // ========== FLUXO NORMAL (NÃO GESTANTE) ==========
-                    
-                    // Remover campos específicos de gestante (se existirem)
-                    delete data.data_prevista_parto;
-                    delete data.deseja_atendimento;
-                    
-                    // Adicionar campos automáticos
-                    data.created_at = new Date().toISOString();
-                    data.submitted_at = new Date().toISOString();
-                    data.status = 'aguardando';
-                    data.mes_referencia = new Date().toISOString().slice(0, 7); // YYYY-MM
-                    
-                    // A posição na fila será atribuída automaticamente pelo banco de dados (Trigger)
-                    // Removido cálculo manual no JavaScript para evitar erros de concorrência e garantir ordem correta
-                    delete data.posicao_fila;
-                    
-                    // Inserir no banco de dados
-                    const { error } = await supabaseClient
-                        .from('pacientes')
-                        .insert([data]);
-                    
-                    if (error) throw error;
-                    
-                    showModal(
-                        'Cadastro Realizado com Sucesso!',
-                        `Parabéns! Você foi cadastrado na fila de espera.\n\nVocê é o número ${data.posicao_fila} na fila da unidade ${data.unidade_preferencia}.\n\nEm breve entraremos em contato pelo telefone ${data.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')}.`,
-                        'success'
-                    );
-                    e.target.reset();
-                }
-                
-            } catch (error) {
-                console.error('Erro:', error);
-                let errorMessage = 'Ocorreu um erro ao processar seu cadastro. ';
-                
-                if (error.message.includes('duplicate key')) {
-                    errorMessage = 'Este CPF já está cadastrado no sistema.';
-                } else if (error.message.includes('violates row-level security')) {
-                    errorMessage = 'Erro de permissão. Entre em contato com o administrador.';
-                } else {
-                    errorMessage += error.message;
-                }
-                
-                showModal('Erro no Cadastro', errorMessage, 'error');
+                const formData = {
+                    nome_completo: document.getElementById('nome_completo').value,
+                    cpf: document.getElementById('cpf').value.replace(/\D/g, ''),
+                    data_nascimento: document.getElementById('data_nascimento').value,
+                    celular: document.getElementById('celular').value.replace(/\D/g, ''),
+                    unidade_preferencia: document.getElementById('unidade_preferencia').value,
+                    status: 'Aguardando',
+                    data_cadastro: new Date().toISOString()
+                };
+
+                const { error } = await supabaseClient.from('fila_odontologia').insert([formData]);
+                if (error) throw error;
+
+                showModal('success', 'Sucesso!', 'Seu cadastro foi realizado com sucesso. Você já pode consultar sua posição na fila.', 'Ir para Consulta');
+                document.getElementById('cadastroForm').reset();
+                grecaptcha.reset();
+
+            } catch (err) {
+                console.error(err);
+                showModal('error', 'Erro', 'Ocorreu um erro ao realizar o cadastro. Verifique se o CPF já está cadastrado.');
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Enviar Cadastro';
+                btn.disabled = false;
+                spinner.classList.add('hidden');
             }
         });
-    </script>
 
-    <!-- Script para gerenciar checkbox de gestante e modal de termo -->
-    <script>
-        let termoGestanteAceito = false;
-        
-        // Configurar data mínima (amanhã) para data prevista de parto
-        const amanha = new Date();
-        amanha.setDate(amanha.getDate() + 1);
-        const dataMinima = amanha.toISOString().split('T')[0];
-        document.getElementById('data_prevista_parto').min = dataMinima;
-        
-        // Função para mostrar modal de termo de gestante
-        function mostrarTermoGestante() {
-            const modal = document.createElement('div');
-            modal.id = 'modal-termo-gestante';
-            modal.style.cssText = `
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.7);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
-                animation: fadeIn 0.3s ease;
-            `;
+        function showModal(type, title, msg, btnText = 'Fechar') {
+            const overlay = document.getElementById('modalOverlay');
+            const icon = document.getElementById('modalIcon');
+            const btn = document.getElementById('modalBtn');
             
-            modal.innerHTML = `
-                <div style="
-                    background: white;
-                    border-radius: 16px;
-                    padding: 30px;
-                    max-width: 600px;
-                    width: 90%;
-                    max-height: 80vh;
-                    overflow-y: auto;
-                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-                    animation: slideUp 0.3s ease;
-                    border-top: 6px solid #ff6b9d;
-                ">
-                    <div style="text-align: center; font-size: 4em; margin-bottom: 15px;">🤰</div>
-                    <h2 style="margin: 0 0 20px; color: #c41e3a; text-align: center; font-size: 1.6em;">
-                        Termo de Declaração - Gestante
-                    </h2>
-                    
-                    <div style="text-align: left; color: #555; line-height: 1.8; margin-bottom: 25px;">
-                        <p style="margin-bottom: 15px; font-size: 1.05em;">
-                            <strong>Você confirma que está gestante?</strong>
-                        </p>
-                        
-                        <div style="background: #fff3f3; border-left: 4px solid #ff6b9d; padding: 15px; margin: 20px 0; border-radius: 4px;">
-                            <p style="margin: 0 0 10px; font-weight: 600; color: #c41e3a;">⚠️ IMPORTANTE:</p>
-                            <ul style="margin: 0; padding-left: 20px; color: #c41e3a;">
-                                <li>Gestantes têm <strong>atendimento diferenciado</strong></li>
-                                <li>Seu cadastro será <strong>processado separadamente</strong></li>
-                                <li>Não haverá sistema de fila para gestantes</li>
-                                <li>O atendimento será <strong>priorizado</strong> conforme disponibilidade</li>
-                            </ul>
-                        </div>
-                        
-                        <p style="margin-top: 15px; font-size: 0.95em; color: #666;">
-                            Ao confirmar, você declara estar ciente das informações acima e que os dados fornecidos são verdadeiros.
-                        </p>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button id="btn-confirmar-gestante" style="
-                            flex: 1;
-                            min-width: 120px;
-                            padding: 14px 20px;
-                            border: none;
-                            border-radius: 8px;
-                            font-size: 1em;
-                            font-weight: 700;
-                            cursor: pointer;
-                            transition: all 0.3s;
-                            background: linear-gradient(135deg, #ff6b9d 0%, #c41e3a 100%);
-                            color: white;
-                        ">✔️ Sim, Confirmo</button>
-                        
-                        <button id="btn-cancelar-gestante" style="
-                            flex: 1;
-                            min-width: 120px;
-                            padding: 14px 20px;
-                            border: 2px solid #ddd;
-                            border-radius: 8px;
-                            font-size: 1em;
-                            font-weight: 700;
-                            cursor: pointer;
-                            transition: all 0.3s;
-                            background: white;
-                            color: #666;
-                        ">❌ Cancelar</button>
-                    </div>
-                </div>
-            `;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = msg;
+            btn.innerText = btnText;
             
-            document.body.appendChild(modal);
-            
-            // Botão confirmar
-            document.getElementById('btn-confirmar-gestante').addEventListener('click', function() {
-                termoGestanteAceito = true;
-                modal.remove();
-                
-                // Mostrar campos de gestante
-                document.getElementById('campos_gestante').style.display = 'block';
-                
-                // Tornar campos obrigatórios
-                document.getElementById('data_prevista_parto').required = true;
-                document.getElementById('deseja_atendimento_sim').required = true;
-                document.getElementById('deseja_atendimento_nao').required = true;
-                
-                // Scroll suave até os campos
-                setTimeout(() => {
-                    document.getElementById('campos_gestante').scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-            });
-            
-            // Botão cancelar
-            document.getElementById('btn-cancelar-gestante').addEventListener('click', function() {
-                modal.remove();
-                document.getElementById('checkbox_gestante').checked = false;
-                termoGestanteAceito = false;
-            });
-        }
-        
-        // Bloquear checkbox de gestante para sexo masculino
-        document.getElementById('campo_sexo').addEventListener('change', function() {
-            const checkboxGestante = document.getElementById('checkbox_gestante');
-            const containerGestante = checkboxGestante.closest('.form-group');
-            
-            if (this.value === 'Masculino') {
-                // Desabilitar e desmarcar checkbox
-                checkboxGestante.checked = false;
-                checkboxGestante.disabled = true;
-                containerGestante.style.opacity = '0.5';
-                containerGestante.style.pointerEvents = 'none';
-                
-                // Ocultar campos de gestante se estiverem visíveis
-                document.getElementById('campos_gestante').style.display = 'none';
-                termoGestanteAceito = false;
-            } else if (this.value === 'Feminino') {
-                // Habilitar checkbox
-                checkboxGestante.disabled = false;
-                containerGestante.style.opacity = '1';
-                containerGestante.style.pointerEvents = 'auto';
+            if (type === 'success') {
+                icon.innerHTML = '✅';
+                btn.className = 'w-full py-4 rounded-2xl font-bold text-white bg-green-500 hover:bg-green-600';
+                btn.onclick = () => window.location.href = 'consulta-fila.html';
             } else {
-                // Se não selecionou nada, desabilitar
-                checkboxGestante.checked = false;
-                checkboxGestante.disabled = true;
-                containerGestante.style.opacity = '0.5';
-                containerGestante.style.pointerEvents = 'none';
+                icon.innerHTML = '❌';
+                btn.className = 'w-full py-4 rounded-2xl font-bold text-white bg-red-500 hover:bg-red-600';
+                btn.onclick = closeModal;
             }
-        });
-        
-        // Evento do checkbox de gestante
-        document.getElementById('checkbox_gestante').addEventListener('change', function() {
-            if (this.checked) {
-                // Mostrar modal de termo
-                mostrarTermoGestante();
-            } else {
-                // Ocultar campos e remover obrigatoriedade
-                document.getElementById('campos_gestante').style.display = 'none';
-                document.getElementById('data_prevista_parto').required = false;
-                document.getElementById('deseja_atendimento_sim').required = false;
-                document.getElementById('deseja_atendimento_nao').required = false;
-                termoGestanteAceito = false;
-            }
-        });
-    </script>
-
-    <!-- Script para pré-selecionar unidade baseado na URL -->
-    <script>
-        // Verificar se há parâmetro de unidade na URL
-        (function preencherUnidade() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const unidadeParam = urlParams.get('unidade');
             
-            if (unidadeParam) {
-                const selectUnidade = document.querySelector('select[name="unidade_preferencia"]');
-                if (selectUnidade) {
-                    // Normalizar o parâmetro da URL
-                    const unidadeNormalizada = unidadeParam.toLowerCase().trim();
-                    
-                    // Tentar encontrar a opção correspondente
-                    const opcoes = Array.from(selectUnidade.options);
-                    let opcaoEncontrada = null;
-                    
-                    // 1. Tentar correspondência exata
-                    opcaoEncontrada = opcoes.find(opt => 
-                        opt.value.toLowerCase() === unidadeNormalizada
-                    );
-                    
-                    // 2. Se não encontrou, tentar correspondência parcial
-                    if (!opcaoEncontrada) {
-                        opcaoEncontrada = opcoes.find(opt => 
-                            opt.value.toLowerCase().includes(unidadeNormalizada) ||
-                            unidadeNormalizada.includes(opt.value.toLowerCase())
-                        );
-                    }
-                    
-                    if (opcaoEncontrada) {
-                        selectUnidade.value = opcaoEncontrada.value;
-                        console.log('Unidade pré-selecionada:', opcaoEncontrada.value);
-                        
-                        // Scroll suave até o formulário
-                        setTimeout(() => {
-                            selectUnidade.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }, 500);
-                    } else {
-                        console.warn('Unidade não encontrada:', unidadeParam);
-                    }
-                }
-            }
-        })();
-    </script>
-
-	    <!-- Script para verificar status dos cadastros e bloquear formulário se necessário -->
-	    <script>
-	        (function() {
-	            async function verificarStatusCadastros() {
-	                try {
-	                    console.log('Iniciando verificação de status...');
-	                    
-	                    const { data, error } = await supabaseClient
-	                        .from('configuracoes')
-	                        .select('*')
-	                        .in('chave', ['cadastros_abertos', 'mensagem_cadastro_fechado']);
-	                    
-	                    if (error) {
-	                        console.error('Erro na consulta ao Supabase:', error);
-	                        return;
-	                    }
-	                    
-	                    const statusConfig = data.find(c => c.chave === 'cadastros_abertos');
-	                    const mensagemConfig = data.find(c => c.chave === 'mensagem_cadastro_fechado');
-	                    
-	                    const aberto = statusConfig?.valor === 'true';
-	                    console.log('Status da fila:', aberto ? 'ABERTA' : 'FECHADA');
-	                    
-	                    if (!aberto) {
-	                        const avisoFechado = document.getElementById('avisoFechado');
-	                        const mensagemFechado = document.getElementById('mensagemFechado');
-	                        const form = document.getElementById('cadastroForm');
-	                        const btnSouGestante = document.getElementById('btnSouGestante');
-	                        
-	                        if (avisoFechado) {
-	                            avisoFechado.style.setProperty('display', 'block', 'important');
-	                            console.log('Aviso de fila fechada exibido.');
-	                        }
-	                        
-	                        if (mensagemFechado) {
-	                            mensagemFechado.textContent = mensagemConfig?.valor || 'Os cadastros estão temporariamente fechados. Em breve abriremos novas vagas.';
-	                        }
-	                        
-	                        if (form) {
-	                            form.style.opacity = '0.5';
-	                            form.style.pointerEvents = 'none';
-	                            const todosInputs = form.querySelectorAll('input, select, textarea, button');
-	                            todosInputs.forEach(input => input.disabled = true);
-	                        }
-	                        
-	                        if (btnSouGestante) {
-	                            btnSouGestante.style.pointerEvents = 'auto';
-	                            btnSouGestante.disabled = false;
-	                            
-	                            btnSouGestante.onclick = function(e) {
-	                                e.preventDefault();
-	                                e.stopPropagation();
-	                                
-	                                const modalOverlay = document.createElement('div');
-	                                modalOverlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:99999;padding:20px;overflow-y:auto';
-	                                
-	                                const modalBox = document.createElement('div');
-	                                modalBox.style.cssText = 'background:white;border:4px solid #ff6b9d;border-radius:25px;padding:30px;max-width:500px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.5);text-align:center';
-	                                
-	                                modalBox.innerHTML = `
-	                                    <div style="font-size:60px;margin-bottom:15px">🤰</div>
-	                                    <h2 style="color:#c41e3a;margin-bottom:15px">CADASTRO PARA GESTANTES</h2>
-	                                    <p style="color:#333;font-size:1.1em;line-height:1.6;margin-bottom:25px">
-	                                        O cadastro para gestantes continua <strong>ABERTO</strong> e você terá <strong>atendimento prioritário</strong>!
-	                                    </p>
-	                                    <button id="btnContinuarGestanteFinal" style="width:100%;padding:15px;background:#ff6b9d;color:white;border:none;border-radius:12px;font-size:1.2em;font-weight:bold;cursor:pointer">
-	                                        Continuar para o Cadastro
-	                                    </button>
-	                                `;
-	                                
-	                                modalOverlay.appendChild(modalBox);
-	                                document.body.appendChild(modalOverlay);
-	                                
-	                                document.getElementById('btnContinuarGestanteFinal').onclick = function() {
-	                                    modalOverlay.remove();
-	                                    if (form) {
-	                                        form.style.opacity = '1';
-	                                        form.style.pointerEvents = 'auto';
-	                                        const inputs = form.querySelectorAll('input, select, textarea, button');
-	                                        inputs.forEach(input => input.disabled = false);
-	                                    }
-	                                    
-	                                    const campoSexo = document.getElementById('campo_sexo');
-	                                    if (campoSexo) campoSexo.value = 'Feminino';
-	                                    
-	                                    const checkboxGestante = document.getElementById('checkbox_gestante');
-	                                    if (checkboxGestante) {
-	                                        const containerGestante = checkboxGestante.closest('.form-group');
-	                                        checkboxGestante.disabled = false;
-	                                        if (containerGestante) {
-	                                            containerGestante.style.opacity = '1';
-	                                            containerGestante.style.pointerEvents = 'auto';
-	                                        }
-	                                        checkboxGestante.checked = true;
-	                                        checkboxGestante.dispatchEvent(new Event('change'));
-	                                    }
-	                                    
-	                                    if (form) form.scrollIntoView({ behavior: 'smooth' });
-	                                };
-	                            };
-	                        }
-	                    }
-	                } catch (err) {
-	                    console.error('Erro crítico na verificação:', err);
-	                }
-	            }
-
-	            if (document.readyState === 'complete') {
-	                verificarStatusCadastros();
-	            } else {
-	                window.addEventListener('load', verificarStatusCadastros);
-	            }
-	        })();
-	    </script>
-
-  <script src="modal-documentos.js?v=2"></script>
-  <!-- Pop-up de Avaliação -->
-  <script>
-    fetch("avaliacao-popup.html")
-      .then(response => {
-        if (!response.ok) throw new Error('Erro ao carregar pop-up');
-        return response.text();
-      })
-      .then(html => {
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = html;
-        while (tempDiv.firstChild) {
-          document.body.appendChild(tempDiv.firstChild);
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
         }
-      })
-      .catch(error => console.error('Erro ao carregar pop-up de avaliação:', error));
-  </script>
+
+        function closeModal() {
+            const overlay = document.getElementById('modalOverlay');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+        }
+
+        // Pre-select unit from URL
+        window.onload = () => {
+            const params = new URLSearchParams(window.location.search);
+            const unidade = params.get('unidade');
+            if (unidade) document.getElementById('unidade_preferencia').value = unidade;
+        };
+    </script>
 </body>
 </html>
