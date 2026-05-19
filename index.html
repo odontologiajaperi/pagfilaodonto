@@ -13,11 +13,8 @@
         .text-japeri-blue { color: #0F4C81; }
         .bg-japeri-green { background-color: #1DC56F; }
         .hero-gradient {
-            background-image: url('hero-bg-final.png');
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-color: #ffffff;
+            background: url('hero-bg-final.png') center center no-repeat;
+            background-size: cover;
         }
         .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
         @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
@@ -88,7 +85,7 @@
     </div>
 
     <!-- Hero Section -->
-    <section class="hero-gradient min-h-[420px] flex items-center overflow-hidden relative">
+   <section class="hero-gradient h-[650px] overflow-hidden relative">
         <div class="container mx-auto px-4 flex flex-col lg:flex-row items-center">
             <div class="lg:w-1/2 text-center lg:text-left z-10">
                 <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
