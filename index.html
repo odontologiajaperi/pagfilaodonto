@@ -12,6 +12,7 @@
         .bg-japeri-blue { background-color: #0F4C81; }
         .text-japeri-blue { color: #0F4C81; }
         .bg-japeri-green { background-color: #1DC56F; }
+        .bg-japeri-green-dark { background-color: #15803d; }
         .hero-gradient {
             background: url('hero-bg-final.png') center center no-repeat;
             background-size: cover;
@@ -19,28 +20,20 @@
         .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
         @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
         .animate-bounce-slow { animation: bounce-slow 4s ease-in-out infinite; }
-        .mascote-voador {
-            position: absolute;
-            right: 5%;
-            top: 10%;
-            width: 300px;
-            z-index: 20;
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
-        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
 
-    <!-- Top Info Bar -->
-    <div class="bg-gray-50 py-2 border-b border-gray-100 hidden md:block">
-        <div class="container mx-auto px-4 flex justify-between items-center text-xs font-medium text-gray-500">
+    <!-- Top Info Bar (Verde Escuro) -->
+    <div class="bg-japeri-green-dark py-2 hidden md:block">
+        <div class="container mx-auto px-4 flex justify-between items-center text-[11px] font-bold text-white uppercase tracking-wider">
             <div class="flex items-center space-x-6">
-                <span><i class="fas fa-map-marker-alt text-japeri-blue mr-2"></i> Coordenadoria de Saúde Bucal - CEMES Engenheiro Pedreira - Avenida Tancredo Neves, s/n - Parque Mucajá - Japeri, RJ</span>
-                <span><i class="fas fa-envelope text-japeri-blue mr-2"></i> odontologiajaperi@gmail.com</span>
+                <span><i class="fas fa-map-marker-alt mr-2"></i> Coordenadoria de Saúde Bucal - CEMES Engenheiro Pedreira - Avenida Tancredo Neves, s/n - Parque Mucajá - Japeri, RJ</span>
+                <span><i class="fas fa-envelope mr-2"></i> odontologiajaperi@gmail.com</span>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="#" class="hover:text-japeri-blue"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="hover:text-japeri-blue"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="hover:text-green-200"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="hover:text-green-200"><i class="fab fa-facebook"></i></a>
             </div>
         </div>
     </div>
@@ -85,9 +78,13 @@
     </div>
 
     <!-- Hero Section -->
-   <section class="hero-gradient h-[650px] overflow-hidden relative">
-        <div class="container mx-auto px-4 flex flex-col lg:flex-row items-center pt-42">
-            <div class="lg:w-1/2 text-center lg:text-left z-10 flex flex-col justify-center min-h-[500px]">
+    <section class="hero-gradient h-[700px] overflow-hidden relative flex items-end pb-24">
+        <div class="container mx-auto px-4">
+            <div class="lg:w-1/2 z-10">
+                <!-- Espaço para o texto que já está na imagem -->
+                <div class="h-48 md:h-64"></div> 
+                
+                <!-- Botões posicionados abaixo do texto da imagem -->
                 <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                     <a href="consulta-fila.html" class="bg-japeri-blue text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:bg-blue-900 transition-all flex items-center justify-center group">
                         <i class="fas fa-search mr-3 group-hover:scale-110 transition-transform"></i>
@@ -101,8 +98,8 @@
 
                 <!-- Card Pediatria Destaque -->
                 <div class="mt-8">
-                    <a id="btnCadastroPediatria" href="cadastro-pediatria.html" class="inline-flex items-center bg-pink-50 border-2 border-pink-100 p-4 rounded-2xl hover:border-pink-300 transition-all group">
-                        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-pink-500 text-xl shadow-sm mr-4">
+                    <a id="btnCadastroPediatria" href="cadastro-pediatria.html" class="inline-flex items-center bg-white/90 backdrop-blur-sm border-2 border-pink-100 p-4 rounded-2xl hover:border-pink-300 transition-all group shadow-lg">
+                        <div class="w-12 h-12 bg-pink-50 rounded-xl flex items-center justify-center text-pink-500 text-xl shadow-sm mr-4">
                             <i class="fas fa-child"></i>
                         </div>
                         <div class="text-left">
@@ -116,30 +113,32 @@
         </div>
     </section>
 
-    <!-- Features Bar -->
-    <div class="container mx-auto px-4 -mt-2 relative z-20">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 grid grid-cols-1 md:grid-cols-4 gap-8 border border-gray-50">
-            <div class="flex items-center space-x-4">
-                <div class="text-japeri-blue text-2xl"><i class="fas fa-heartbeat"></i></div>
-                <p class="text-sm font-bold text-gray-600">Atendimento gratuito pelo SUS</p>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div class="text-japeri-blue text-2xl"><i class="fas fa-user-md"></i></div>
-                <p class="text-sm font-bold text-gray-600">Serviço humanizado e acolhedor</p>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div class="text-japeri-blue text-2xl"><i class="fas fa-check-circle"></i></div>
-                <p class="text-sm font-bold text-gray-600">Transparência em cada etapa</p>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div class="text-japeri-blue text-2xl"><i class="fas fa-smile"></i></div>
-                <p class="text-sm font-bold text-gray-600">Cuidado que transforma sorrisos</p>
+    <!-- Features Bar (Reposicionada para não tampar o mascote/texto) -->
+    <div class="bg-gray-50 border-y border-gray-100 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="flex items-center space-x-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-japeri-blue text-xl"><i class="fas fa-heartbeat"></i></div>
+                    <p class="text-sm font-bold text-gray-700">Atendimento gratuito pelo SUS</p>
+                </div>
+                <div class="flex items-center space-x-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-japeri-green text-xl"><i class="fas fa-user-md"></i></div>
+                    <p class="text-sm font-bold text-gray-700">Serviço humanizado e acolhedor</p>
+                </div>
+                <div class="flex items-center space-x-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-japeri-blue text-xl"><i class="fas fa-check-circle"></i></div>
+                    <p class="text-sm font-bold text-gray-700">Transparência em cada etapa</p>
+                </div>
+                <div class="flex items-center space-x-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-japeri-green text-xl"><i class="fas fa-smile"></i></div>
+                    <p class="text-sm font-bold text-gray-700">Cuidado que transforma sorrisos</p>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Acesso Rápido -->
-    <section class="py-24 bg-blue-50/50">
+    <section class="py-24 bg-blue-50/30">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl font-extrabold text-japeri-blue mb-4">Acesso Rápido</h2>
@@ -188,41 +187,56 @@
     </section>
 
     <!-- Como Funciona -->
-    <section class="py-24 bg-gray-50">
+    <section class="py-24 bg-white">
         <div class="container mx-auto px-4">
             <div class="flex flex-col lg:flex-row items-center gap-16">
-                <div class="lg:w-1/3">
-                    <h2 class="text-3xl font-extrabold text-japeri-blue mb-6">Como Funciona o Atendimento?</h2>
-                    <p class="text-gray-600 mb-8">Entenda o passo a passo desde o seu cadastro até o acompanhamento do seu tratamento odontológico.</p>
-                    <a href="fluxograma.html" class="text-japeri-blue font-bold flex items-center hover:underline">
-                        Saiba mais sobre o fluxo <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
+                <div class="lg:w-1/2">
+                    <h2 class="text-4xl font-extrabold text-japeri-blue mb-6 leading-tight">Como funciona a nossa fila?</h2>
+                    <p class="text-lg text-gray-600 mb-8">O processo é simples, transparente e totalmente digital. Acompanhe cada passo do seu atendimento.</p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-japeri-blue text-white rounded-full flex items-center justify-center font-bold shrink-0">1</div>
+                            <div>
+                                <h4 class="font-bold text-japeri-blue">Cadastro Online</h4>
+                                <p class="text-sm text-gray-500">Preencha seus dados básicos e escolha a unidade mais próxima de você.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-japeri-green text-white rounded-full flex items-center justify-center font-bold shrink-0">2</div>
+                            <div>
+                                <h4 class="font-bold text-japeri-blue">Acompanhamento</h4>
+                                <p class="text-sm text-gray-500">Consulte sua posição em tempo real através do nosso portal de transparência.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-japeri-blue text-white rounded-full flex items-center justify-center font-bold shrink-0">3</div>
+                            <div>
+                                <h4 class="font-bold text-japeri-blue">Convocação</h4>
+                                <p class="text-sm text-gray-500">Nossa equipe entrará em contato via WhatsApp ou telefone quando chegar sua vez.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm text-center">
-                        <div class="w-10 h-10 bg-blue-50 text-japeri-blue rounded-full flex items-center justify-center mx-auto mb-4 font-bold">1</div>
-                        <h4 class="font-bold text-sm mb-2">Cadastro</h4>
-                        <p class="text-xs text-gray-500">Você faz seu cadastro para entrar na fila.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm text-center">
-                        <div class="w-10 h-10 bg-green-50 text-japeri-green rounded-full flex items-center justify-center mx-auto mb-4 font-bold">2</div>
-                        <h4 class="font-bold text-sm mb-2">Avaliação</h4>
-                        <p class="text-xs text-gray-500">Nossa equipe avalia o seu caso.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm text-center">
-                        <div class="w-10 h-10 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 font-bold">3</div>
-                        <h4 class="font-bold text-sm mb-2">Encaminhamento</h4>
-                        <p class="text-xs text-gray-500">Você é direcionado para o serviço adequado.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm text-center">
-                        <div class="w-10 h-10 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 font-bold">4</div>
-                        <h4 class="font-bold text-sm mb-2">Atendimento</h4>
-                        <p class="text-xs text-gray-500">Realização do tratamento indicado.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm text-center">
-                        <div class="w-10 h-10 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 font-bold">5</div>
-                        <h4 class="font-bold text-sm mb-2">Acompanhamento</h4>
-                        <p class="text-xs text-gray-500">Cuidado contínuo para sua saúde bucal.</p>
+                <div class="lg:w-1/2 relative">
+                    <div class="bg-japeri-blue rounded-[3rem] p-8 text-white shadow-2xl">
+                        <h3 class="text-2xl font-bold mb-6">Dúvidas Frequentes</h3>
+                        <div class="space-y-4">
+                            <details class="group bg-white/10 rounded-2xl p-4 cursor-pointer">
+                                <summary class="font-bold list-none flex justify-between items-center">
+                                    Quais documentos preciso?
+                                    <i class="fas fa-plus group-open:rotate-45 transition-transform"></i>
+                                </summary>
+                                <p class="text-sm mt-4 text-blue-100">CPF, Cartão do SUS e comprovante de residência em Japeri.</p>
+                            </details>
+                            <details class="group bg-white/10 rounded-2xl p-4 cursor-pointer">
+                                <summary class="font-bold list-none flex justify-between items-center">
+                                    Quanto tempo demora?
+                                    <i class="fas fa-plus group-open:rotate-45 transition-transform"></i>
+                                </summary>
+                                <p class="text-sm mt-4 text-blue-100">O tempo varia conforme a demanda da unidade escolhida e a especialidade necessária.</p>
+                            </details>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -259,7 +273,6 @@
                         <li><a href="mailto:odontologiajaperi@gmail.com" class="hover:text-white transition-colors">Fale Conosco</a></li>
                     </ul>
                 </div>
-
                 <div>
                     <h4 class="font-bold text-lg mb-6">Atendimento</h4>
                     <p class="text-blue-100 text-sm leading-relaxed">
@@ -296,7 +309,7 @@
             try {
                 const { data, error } = await supabaseClient.from('configuracoes').select('*');
                 if (error) throw error;
-
+                
                 const geral = data.find(c => c.chave === 'cadastros_abertos');
                 const pediatria = data.find(c => c.chave === 'cadastros_pediatria_abertos');
 
@@ -316,7 +329,6 @@
                 }
             } catch (e) { console.error(e); }
         }
-
         checkStatus();
     </script>
 </body>
