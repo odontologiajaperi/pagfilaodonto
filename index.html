@@ -14,8 +14,18 @@
         .bg-japeri-green { background-color: #1DC56F; }
         .bg-japeri-green-dark { background-color: #15803d; }
         .hero-gradient {
-            background: url('hero-bg-final.png') center center no-repeat;
-            background-size: cover;
+            background: url('hero-bg-final.png') center top no-repeat;
+            background-size: 100% auto;
+            aspect-ratio: 1717 / 916;
+            height: auto;
+            min-height: 500px;
+        }
+        @media (max-width: 1024px) {
+            .hero-gradient {
+                background-size: cover;
+                aspect-ratio: auto;
+                height: 600px;
+            }
         }
         .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
         @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
@@ -78,14 +88,14 @@
     </div>
 
     <!-- Hero Section -->
-    <section class="hero-gradient h-[700px] overflow-hidden relative flex items-end pb-24">
+    <section class="hero-gradient overflow-hidden relative flex items-end pb-12 md:pb-24">
         <div class="container mx-auto px-4">
             <div class="lg:w-1/2 z-10">
-                <!-- Espaço para o texto que já está na imagem -->
-                <div class="h-48 md:h-64"></div> 
+                <!-- Espaço dinâmico para o texto que já está na imagem -->
+                <div class="h-[30vw] max-h-[450px] min-h-[200px]"></div> 
                 
                 <!-- Botões posicionados abaixo do texto da imagem -->
-                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12 md:mb-20">
                     <a href="consulta-fila.html" class="bg-japeri-blue text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:bg-blue-900 transition-all flex items-center justify-center group">
                         <i class="fas fa-search mr-3 group-hover:scale-110 transition-transform"></i>
                         Consultar Fila
