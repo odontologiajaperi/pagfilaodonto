@@ -274,6 +274,7 @@
 
             const formData = new FormData(e.target);
             const rawData = Object.fromEntries(formData.entries());
+            delete rawData['g-recaptcha-response'];
             
             // Age check
             const nascimento = new Date(rawData.data_nascimento);
