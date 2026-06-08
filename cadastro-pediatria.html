@@ -296,8 +296,7 @@
                     celular: rawData.celular.replace(/\D/g, ''),
                     cep: rawData.cep.replace(/\D/g, ''),
                     cartao_sus: rawData.cartao_sus.replace(/\D/g, ''),
-                    status: 'Aguardando',
-                    data_cadastro: new Date().toISOString()
+                    status: 'Aguardando'
                 };
 
                 const { error } = await supabaseClient.from('pacientes_pediatria').insert([dataToInsert]);

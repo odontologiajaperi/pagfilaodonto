@@ -1011,8 +1011,7 @@
                     data.deseja_atendimento = data.deseja_atendimento === 'true';
                     data.termo_gestante_aceito = true;
                     
-                    // Adicionar campos automáticos
-                    data.submitted_at = new Date().toISOString();
+                    // Adicionar campos automáticos (removido submitted_at para evitar erro de coluna inexistente)
                     
                     // Validar CPF duplicado na tabela de gestantes
                     const { data: cpfCheckGestante, error: cpfErrorGestante } = await supabaseClient
@@ -1075,8 +1074,6 @@
                     delete data.deseja_atendimento;
                     
                     // Adicionar campos automáticos
-                    data.created_at = new Date().toISOString();
-                    data.submitted_at = new Date().toISOString();
                     data.status = 'aguardando';
                     data.mes_referencia = new Date().toISOString().slice(0, 7); // YYYY-MM
                     
