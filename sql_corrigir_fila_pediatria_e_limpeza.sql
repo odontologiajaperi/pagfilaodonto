@@ -139,14 +139,13 @@ SELECT public.reparar_fila_pediatria();
 CREATE OR REPLACE FUNCTION public.limpar_pacientes_agendados_apos_2_dias()
 RETURNS void AS $$
 BEGIN
+    -- A tabela public.pacientes não possui hora_agendamento.
+    -- Por isso, a limpeza considera apenas a data_agendamento.
+    -- Exemplo: consulta em 10/06 será apagada após virar 13/06.
     DELETE FROM public.pacientes
      WHERE LOWER(TRIM(COALESCE(status, ''))) IN ('agendado', 'atendido')
        AND data_agendamento IS NOT NULL
-       AND (
-            data_agendamento::timestamp
-            + COALESCE(hora_agendamento, TIME '00:00')
-            + INTERVAL '2 days'
-       ) < NOW();
+       AND data_agendamento < (CURRENT_DATE - INTERVAL '2 days');
 END;
 $$ LANGUAGE plpgsql;
 
@@ -208,12 +207,8 @@ SELECT id, nome_completo, status, posicao_fila, submitted_at
  ORDER BY posicao_fila ASC;
 
 -- Conferir pacientes normais que ainda seriam candidatos à limpeza:
-SELECT id, nome_completo, status, data_agendamento, hora_agendamento
+SELECT id, nome_completo, status, data_agendamento
   FROM public.pacientes
  WHERE LOWER(TRIM(COALESCE(status, ''))) IN ('agendado', 'atendido')
    AND data_agendamento IS NOT NULL
-   AND (
-        data_agendamento::timestamp
-        + COALESCE(hora_agendamento, TIME '00:00')
-        + INTERVAL '2 days'
-   ) < NOW();
+   AND data_agendamento < (CURRENT_DATE - INTERVAL '2 days');
