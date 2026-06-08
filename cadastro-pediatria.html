@@ -300,7 +300,7 @@
                     data_cadastro: new Date().toISOString()
                 };
 
-                const { error } = await supabaseClient.from('fila_pediatria').insert([dataToInsert]);
+                const { error } = await supabaseClient.from('pacientes_pediatria').insert([dataToInsert]);
                 if (error) throw error;
 
                 showModal('success', 'Sucesso!', 'O cadastro da criança foi realizado com sucesso.');
