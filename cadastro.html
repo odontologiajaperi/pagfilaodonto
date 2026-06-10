@@ -632,6 +632,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="protocolos.js"></script>
+    <script src="confirmacao-cadastro.js"></script>
     <script>
         // Configuração do Supabase
         const SUPABASE_URL = 'https://uakhmgoxgyklggsvtwdf.supabase.co';
@@ -757,6 +759,31 @@
         anoSelect.addEventListener('change', atualizarDataNascimento);
 
         // Função para mostrar modal
+        function formatarCpfMensagem(cpf) {
+            const digitos = String(cpf || '').replace(/\D/g, '');
+            if (digitos.length !== 11) return cpf || '';
+            return digitos.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        }
+
+        function obterMensagemErroCadastro(error, contexto = 'cadastro') {
+            const textoErro = [error?.message, error?.details, error?.hint, error?.code].filter(Boolean).join(' ').toLowerCase();
+            const cpfInfo = contexto === 'gestante' ? 'como gestante' : 'na fila geral';
+
+            if (error?.code === '23505' || textoErro.includes('duplicate key') || textoErro.includes('unique constraint') || textoErro.includes('cpf_key') || textoErro.includes('cpf')) {
+                return `Este CPF já está cadastrado ${cpfInfo}. Cada pessoa pode realizar apenas um cadastro nessa fila.`;
+            }
+
+            if (textoErro.includes('row-level security') || textoErro.includes('rls') || error?.code === '42501') {
+                return 'Erro de permissão ao salvar o cadastro. Entre em contato com a equipe responsável pelo sistema.';
+            }
+
+            if (textoErro.includes('network') || textoErro.includes('failed to fetch')) {
+                return 'Não foi possível conectar ao sistema agora. Verifique a internet e tente novamente.';
+            }
+
+            return `Ocorreu um erro ao processar seu cadastro. Motivo informado pelo sistema: ${error?.message || 'erro não especificado.'}`;
+        }
+
         function showModal(title, message, type, extraButton = null) {
             // Criar modal se não existir
             let modal = document.getElementById('modal-overlay');
@@ -935,7 +962,7 @@
                 if (cpfCheck && cpfCheck.length > 0) {
                     showModal(
                         'CPF Já Cadastrado',
-                        `O CPF ${data.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')} já está cadastrado no sistema. Cada pessoa pode se cadastrar apenas uma vez.`,
+                        `O CPF ${formatarCpfMensagem(data.cpf)} já está cadastrado na fila geral. Cada pessoa pode se cadastrar apenas uma vez nessa fila.`,
                         'error'
                     );
                     submitBtn.disabled = false;
@@ -1025,7 +1052,7 @@
                     if (cpfCheckGestante && cpfCheckGestante.length > 0) {
                         showModal(
                             'CPF Já Cadastrado',
-                            `O CPF ${data.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')} já está cadastrado como gestante no sistema.`,
+                            `O CPF ${formatarCpfMensagem(data.cpf)} já está cadastrado como gestante. Cada pessoa pode se cadastrar apenas uma vez nessa fila.`,
                             'error'
                         );
                         submitBtn.disabled = false;
@@ -1039,29 +1066,32 @@
                         .insert([data]);
                     
                     if (errorGestante) throw errorGestante;
-                    
-                    // Mensagem personalizada baseada na escolha
-                    let mensagemGestante = '';
-                    
-                    if (data.deseja_atendimento) {
-                        // DESEJA ATENDIMENTO
-                        mensagemGestante = `Parabéns! Seu cadastro como gestante foi realizado com sucesso!\n\n🤰 ATENDIMENTO PRIORITÁRIO\n\nVocê será atendida com prioridade. Entraremos em contato em breve pelo telefone ${data.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')} para prosseguir com o agendamento.\n\n📋 Data prevista do parto: ${new Date(data.data_prevista_parto).toLocaleDateString('pt-BR')}\n\n📚 CARTILHA DA GESTANTE\nClique no botão abaixo para baixar a Cartilha da Gestante com informações importantes sobre saúde bucal durante a gestação.\n\n📝 Importante: Mantenha seu telefone atualizado e atenda nossas ligações.`;
-                    } else {
-                        // NÃO DESEJA ATENDIMENTO
-                        mensagemGestante = `Cadastro realizado com sucesso!\n\n🤰 Seu cadastro como gestante foi registrado.\n\nVocê informou que não tem necessidade de atendimento no momento. Caso mude de ideia, entre em contato conosco.\n\n📋 Data prevista do parto: ${new Date(data.data_prevista_parto).toLocaleDateString('pt-BR')}\n\n📚 CARTILHA DA GESTANTE\nClique no botão abaixo para baixar a Cartilha da Gestante com informações importantes sobre saúde bucal durante a gestação.\n\nObrigado pelo cadastro!`;
-                    }
-                    
-                    showModal(
-                        'Cadastro de Gestante Realizado!',
-                        mensagemGestante,
-                        'success',
-                        {
-                            text: '📚 Baixar Cartilha da Gestante',
-                            url: 'pno.pdf'
-                        }
-                    );
+                    const protocoloGestante = ProtocoloFila.gerar(data.cpf, '2');
+                    const mensagemGestante = data.deseja_atendimento
+                        ? `Seu cadastro como gestante foi registrado com atendimento prioritário. A equipe entrará em contato pelo telefone ${ConfirmacaoCadastro.formatarTelefone(data.celular)} para prosseguir com o agendamento. Guarde o protocolo e mantenha seu telefone atualizado.`
+                        : `Seu cadastro como gestante foi registrado. Você informou que não necessita de atendimento no momento. Caso mude de ideia, entre em contato conosco. Guarde o protocolo como comprovante do cadastro.`;
+
+                    ConfirmacaoCadastro.mostrar({
+                        titulo: 'Cadastro de Gestante Confirmado!',
+                        subtitulo: 'Sua confirmação foi gerada com os dados principais do cadastro.',
+                        protocolo: protocoloGestante,
+                        nome: data.nome_completo,
+                        cpf: data.cpf,
+                        dataCadastro: ConfirmacaoCadastro.dataHoraAtualBr(),
+                        tipo: 'Gestante',
+                        camposExtras: [
+                            { rotulo: 'Telefone informado', valor: ConfirmacaoCadastro.formatarTelefone(data.celular) },
+                            { rotulo: 'Data prevista do parto', valor: ConfirmacaoCadastro.formatarDataBr(data.data_prevista_parto) },
+                            { rotulo: 'Solicitou atendimento agora?', valor: data.deseja_atendimento ? 'Sim' : 'Não' }
+                        ],
+                        mensagem: mensagemGestante,
+                        botoesExtras: [
+                            { texto: 'Baixar Cartilha da Gestante', url: 'pno.pdf' }
+                        ]
+                    });
                     
                     e.target.reset();
+                    if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
                     document.getElementById('checkbox_gestante').checked = false;
                     document.getElementById('campos_gestante').style.display = 'none';
                     termoGestanteAceito = false;
@@ -1087,26 +1117,30 @@
                         .insert([data]);
                     
                     if (error) throw error;
-                    
-                    showModal(
-                        'Cadastro Realizado com Sucesso!',
-                        `Parabéns! Você foi cadastrado na fila de espera.\n\nVocê é o número ${data.posicao_fila} na fila da unidade ${data.unidade_preferencia}.\n\nEm breve entraremos em contato pelo telefone ${data.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')}.`,
-                        'success'
-                    );
+                    const protocoloGeral = ProtocoloFila.gerar(data.cpf, '1');
+                    ConfirmacaoCadastro.mostrar({
+                        titulo: 'Cadastro Confirmado na Fila!',
+                        subtitulo: 'Seu cadastro foi recebido e sua confirmação foi gerada.',
+                        protocolo: protocoloGeral,
+                        nome: data.nome_completo,
+                        cpf: data.cpf,
+                        dataCadastro: ConfirmacaoCadastro.dataHoraAtualBr(),
+                        tipo: 'Fila Geral',
+                        camposExtras: [
+                            { rotulo: 'Unidade de preferência', valor: data.unidade_preferencia || 'Não informada' },
+                            { rotulo: 'Telefone informado', valor: ConfirmacaoCadastro.formatarTelefone(data.celular) },
+                            { rotulo: 'Mês de referência', valor: data.mes_referencia }
+                        ],
+                        mensagem: `Seu cadastro foi registrado na fila de espera. A equipe entrará em contato pelo telefone ${ConfirmacaoCadastro.formatarTelefone(data.celular)} conforme a organização da fila. Guarde o protocolo e tire print desta tela.`
+                    });
                     e.target.reset();
+                    if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
                 }
                 
             } catch (error) {
                 console.error('Erro:', error);
-                let errorMessage = 'Ocorreu um erro ao processar seu cadastro. ';
-                
-                if (error.message.includes('duplicate key')) {
-                    errorMessage = 'Este CPF já está cadastrado no sistema.';
-                } else if (error.message.includes('violates row-level security')) {
-                    errorMessage = 'Erro de permissão. Entre em contato com o administrador.';
-                } else {
-                    errorMessage += error.message;
-                }
+                const eGestanteAtual = document.getElementById('checkbox_gestante')?.checked;
+                const errorMessage = obterMensagemErroCadastro(error, eGestanteAtual ? 'gestante' : 'geral');
                 
                 showModal('Erro no Cadastro', errorMessage, 'error');
             } finally {

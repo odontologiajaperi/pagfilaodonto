@@ -283,6 +283,11 @@
                     </div>
 
                     <div class="info-item">
+                        <div class="info-label">Tipo de Cadastro</div>
+                        <div class="info-value" id="tipoCadastro">-</div>
+                    </div>
+
+                    <div class="info-item">
                         <div class="info-label">Unidade de Preferência</div>
                         <div class="info-value" id="unidade">-</div>
                     </div>
@@ -363,6 +368,32 @@
             return true;
         }
 
+        async function buscarPacientePorCpf(cpf) {
+            const consultaGeral = await supabaseClient
+                .from('pacientes')
+                .select('*')
+                .eq('cpf', cpf)
+                .maybeSingle();
+
+            if (consultaGeral.error) throw consultaGeral.error;
+            if (consultaGeral.data) {
+                return { ...consultaGeral.data, tipoCadastro: 'Fila Geral' };
+            }
+
+            const consultaPediatria = await supabaseClient
+                .from('pacientes_pediatria')
+                .select('*')
+                .eq('cpf', cpf)
+                .maybeSingle();
+
+            if (consultaPediatria.error) throw consultaPediatria.error;
+            if (consultaPediatria.data) {
+                return { ...consultaPediatria.data, tipoCadastro: 'Odontopediatria' };
+            }
+
+            return null;
+        }
+
         // Função para consultar fila
         async function consultarFila() {
             const cpfInput = document.getElementById('cpf');
@@ -382,34 +413,29 @@
             }
 
             try {
-                // Buscar paciente no banco
-                const { data, error } = await supabaseClient
-                    .from('pacientes')
-                    .select('*')
-                    .eq('cpf', cpf)
-                    .single();
+                const data = await buscarPacientePorCpf(cpf);
 
-                if (error) {
-                    if (error.code === 'PGRST116') {
-                        errorMessage.textContent = '❌ CPF não encontrado. Você ainda não está cadastrado na fila.';
-                    } else {
-                        errorMessage.textContent = '❌ Erro ao consultar: ' + error.message;
-                    }
+                if (!data) {
+                    errorMessage.textContent = '❌ CPF não encontrado. Você ainda não está cadastrado na fila geral ou na odontopediatria.';
                     errorMessage.classList.add('show');
                     return;
                 }
 
+                const status = data.status || 'aguardando';
+                const mesReferencia = data.mes_referencia || (data.submitted_at ? data.submitted_at.slice(0, 7) : '');
+
                 // Exibir resultado
                 document.getElementById('positionBadge').textContent = data.posicao_fila || '-';
-                document.getElementById('nome').textContent = data.nome_completo;
-                document.getElementById('unidade').textContent = data.unidade_preferencia;
-                document.getElementById('celular').textContent = formatarCelular(data.celular);
-                document.getElementById('mesReferencia').textContent = formatarMes(data.mes_referencia);
+                document.getElementById('nome').textContent = data.nome_completo || '-';
+                document.getElementById('tipoCadastro').textContent = data.tipoCadastro || 'Fila Geral';
+                document.getElementById('unidade').textContent = data.unidade_preferencia || (data.tipoCadastro === 'Odontopediatria' ? 'Odontopediatria' : 'Não informada');
+                document.getElementById('celular').textContent = formatarCelular(data.celular || '');
+                document.getElementById('mesReferencia').textContent = mesReferencia ? formatarMes(mesReferencia) : '-';
 
                 // Status
                 const statusElement = document.getElementById('status');
-                statusElement.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
-                statusElement.className = 'status-badge status-' + data.status;
+                statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                statusElement.className = 'status-badge status-' + status;
 
                 // Data de agendamento (se houver)
                 const agendamentoItem = document.getElementById('agendamentoItem');
@@ -424,7 +450,7 @@
 
             } catch (error) {
                 console.error('Erro:', error);
-                errorMessage.textContent = '❌ Erro ao consultar. Tente novamente mais tarde.';
+                errorMessage.textContent = '❌ Erro ao consultar: ' + (error.message || 'tente novamente mais tarde.');
                 errorMessage.classList.add('show');
             }
         }

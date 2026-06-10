@@ -190,6 +190,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="protocolos.js"></script>
+    <script src="confirmacao-cadastro.js"></script>
     <script>
         const SUPABASE_URL = 'https://uakhmgoxgyklggsvtwdf.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTE0NzcsImV4cCI6MjA3OTk1MTQ3N30.6iCUHePtVlmq8De9oBl4Zw5CBU4Zai7P3xLpi7cYkDo';
@@ -260,6 +262,30 @@
             }
         });
 
+        function formatarCpfMensagem(cpf) {
+            const digitos = String(cpf || '').replace(/\D/g, '');
+            if (digitos.length !== 11) return cpf || '';
+            return digitos.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        }
+
+        function obterMensagemErroCadastro(error) {
+            const textoErro = [error?.message, error?.details, error?.hint, error?.code].filter(Boolean).join(' ').toLowerCase();
+
+            if (error?.code === '23505' || textoErro.includes('duplicate key') || textoErro.includes('unique constraint') || textoErro.includes('cpf_key') || textoErro.includes('cpf')) {
+                return 'Este CPF já está cadastrado na odontopediatria. Cada criança/responsável pode realizar apenas um cadastro nessa fila.';
+            }
+
+            if (textoErro.includes('row-level security') || textoErro.includes('rls') || error?.code === '42501') {
+                return 'Erro de permissão ao salvar o cadastro. Entre em contato com a equipe responsável pelo sistema.';
+            }
+
+            if (textoErro.includes('network') || textoErro.includes('failed to fetch')) {
+                return 'Não foi possível conectar ao sistema agora. Verifique a internet e tente novamente.';
+            }
+
+            return `Ocorreu um erro ao realizar o cadastro. Motivo informado pelo sistema: ${error?.message || 'erro não especificado.'}`;
+        }
+
         // Form Submit
         document.getElementById('cadastroForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -300,13 +326,43 @@
                     status: 'aguardando'
                 };
 
+                const { data: cpfCheckPediatria, error: cpfErrorPediatria } = await supabaseClient
+                    .from('pacientes_pediatria')
+                    .select('cpf, nome_completo')
+                    .eq('cpf', dataToInsert.cpf)
+                    .limit(1);
+
+                if (cpfErrorPediatria) throw cpfErrorPediatria;
+
+                if (cpfCheckPediatria && cpfCheckPediatria.length > 0) {
+                    showModal('error', 'CPF Já Cadastrado', `O CPF ${formatarCpfMensagem(dataToInsert.cpf)} já está cadastrado na odontopediatria. Cada criança/responsável pode se cadastrar apenas uma vez.`);
+                    return;
+                }
+
                 const { error } = await supabaseClient.from('pacientes_pediatria').insert([dataToInsert]);
                 if (error) throw error;
 
-                showModal('success', 'Sucesso!', 'O cadastro da criança foi realizado com sucesso.');
+                const protocoloPediatria = ProtocoloFila.gerar(dataToInsert.cpf, '3');
+                ConfirmacaoCadastro.mostrar({
+                    titulo: 'Cadastro Infantil Confirmado!',
+                    subtitulo: 'A confirmação da odontopediatria foi gerada com os principais dados.',
+                    protocolo: protocoloPediatria,
+                    nome: dataToInsert.nome_completo,
+                    cpf: dataToInsert.cpf,
+                    dataCadastro: ConfirmacaoCadastro.dataHoraAtualBr(),
+                    tipo: 'Odontopediatria',
+                    camposExtras: [
+                        { rotulo: 'Nome da mãe/responsável', valor: dataToInsert.nome_mae },
+                        { rotulo: 'Data de nascimento', valor: ConfirmacaoCadastro.formatarDataBr(dataToInsert.data_nascimento) },
+                        { rotulo: 'Telefone informado', valor: ConfirmacaoCadastro.formatarTelefone(dataToInsert.celular) }
+                    ],
+                    mensagem: 'O cadastro da criança foi registrado na fila de odontopediatria. Tire print ou foto desta confirmação e guarde o protocolo para conferência posterior.'
+                });
+                e.target.reset();
+                if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
             } catch (err) {
                 console.error(err);
-                showModal('error', 'Erro', 'Ocorreu um erro ao realizar o cadastro. Verifique os dados e tente novamente.');
+                showModal('error', 'Erro no Cadastro', obterMensagemErroCadastro(err));
             } finally {
                 btn.disabled = false;
                 spinner.classList.add('hidden');

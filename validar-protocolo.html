@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Validador de Protocolo | Fila Odontológica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfeff 48%, #eff6ff 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            box-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+        }
+
+        .protocol-font {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        }
+    </style>
+</head>
+<body>
+    <main class="min-h-screen flex items-center justify-center px-4 py-10">
+        <section class="glass-card w-full max-w-3xl rounded-[2rem] overflow-hidden">
+            <header class="bg-gradient-to-r from-slate-900 via-blue-900 to-green-700 text-white px-7 py-8 md:px-10">
+                <p class="uppercase tracking-[0.22em] text-xs font-black text-green-200 mb-3">Ferramenta interna</p>
+                <h1 class="text-3xl md:text-4xl font-black leading-tight">Validador de Protocolo</h1>
+                <p class="mt-4 text-blue-50 leading-relaxed">
+                    Use esta tela para conferir se um protocolo segue a codificação oficial do site. O CPF é opcional, mas quando preenchido permite confirmar se o protocolo combina com o CPF informado no cadastro.
+                </p>
+            </header>
+
+            <div class="p-6 md:p-10 space-y-7">
+                <div class="rounded-2xl border-l-4 border-amber-500 bg-amber-50 p-5 text-amber-900 leading-relaxed">
+                    <strong>Importante:</strong> esta validação não consulta banco de dados. Ela verifica a estrutura, a data, o tipo de cadastro e os dígitos verificadores do número. Para maior segurança, confira junto com o CPF e solicite o print/foto da tela de confirmação do paciente.
+                </div>
+
+                <form id="formValidador" class="space-y-5">
+                    <div>
+                        <label for="protocolo" class="block text-sm font-black uppercase tracking-wide text-slate-700 mb-2">Número de protocolo</label>
+                        <input
+                            id="protocolo"
+                            name="protocolo"
+                            type="text"
+                            inputmode="numeric"
+                            autocomplete="off"
+                            placeholder="Ex.: 260609-1-143502-4821-0734-55"
+                            class="protocol-font w-full rounded-2xl border-2 border-slate-200 px-4 py-4 text-lg font-black tracking-wide text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label for="cpf" class="block text-sm font-black uppercase tracking-wide text-slate-700 mb-2">CPF para conferência opcional</label>
+                        <input
+                            id="cpf"
+                            name="cpf"
+                            type="text"
+                            inputmode="numeric"
+                            autocomplete="off"
+                            placeholder="Digite o CPF se quiser conferir a compatibilidade"
+                            class="w-full rounded-2xl border-2 border-slate-200 px-4 py-4 text-lg font-semibold text-slate-900 outline-none transition focus:border-green-500 focus:ring-4 focus:ring-green-100"
+                        >
+                    </div>
+
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <button type="submit" class="rounded-2xl bg-green-600 px-6 py-4 font-black text-white shadow-lg shadow-green-600/20 transition hover:-translate-y-0.5 hover:bg-green-700">
+                            Validar protocolo
+                        </button>
+                        <button type="button" id="limpar" class="rounded-2xl bg-slate-900 px-6 py-4 font-black text-white shadow-lg shadow-slate-900/20 transition hover:-translate-y-0.5 hover:bg-slate-800">
+                            Limpar
+                        </button>
+                    </div>
+                </form>
+
+                <section id="resultado" class="hidden rounded-3xl border p-6"></section>
+
+                <section class="rounded-3xl bg-slate-50 p-6 text-slate-700 leading-relaxed">
+                    <h2 class="text-lg font-black text-slate-900 mb-3">Como interpretar</h2>
+                    <p>
+                        Um protocolo válido possui data, tipo de fila, horário, uma série aleatória de quatro dígitos, uma codificação derivada do CPF e dois dígitos verificadores. Existem 10.000 séries aleatórias possíveis em cada combinação de data, horário, tipo e CPF codificado, o que permite gerar números grandes sem gravar nada no banco.
+                    </p>
+                </section>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <a href="index.html" class="flex-1 rounded-2xl border-2 border-slate-200 px-5 py-4 text-center font-black text-slate-700 transition hover:bg-white">Voltar ao site</a>
+                    <a href="consulta-fila.html" class="flex-1 rounded-2xl border-2 border-blue-200 px-5 py-4 text-center font-black text-blue-700 transition hover:bg-blue-50">Consulta por CPF</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="protocolos.js"></script>
+    <script>
+        const protocoloInput = document.getElementById('protocolo');
+        const cpfInput = document.getElementById('cpf');
+        const resultado = document.getElementById('resultado');
+
+        function mascararCpf(valor) {
+            const digitos = valor.replace(/\D/g, '').slice(0, 11);
+            if (digitos.length > 9) return `${digitos.slice(0, 3)}.${digitos.slice(3, 6)}.${digitos.slice(6, 9)}-${digitos.slice(9)}`;
+            if (digitos.length > 6) return `${digitos.slice(0, 3)}.${digitos.slice(3, 6)}.${digitos.slice(6)}`;
+            if (digitos.length > 3) return `${digitos.slice(0, 3)}.${digitos.slice(3)}`;
+            return digitos;
+        }
+
+        cpfInput.addEventListener('input', (event) => {
+            event.target.value = mascararCpf(event.target.value);
+        });
+
+        protocoloInput.addEventListener('input', (event) => {
+            const digitos = event.target.value.replace(/\D/g, '').slice(0, 23);
+            event.target.value = ProtocoloFila.formatarProtocolo(digitos);
+        });
+
+        document.getElementById('limpar').addEventListener('click', () => {
+            protocoloInput.value = '';
+            cpfInput.value = '';
+            resultado.className = 'hidden rounded-3xl border p-6';
+            resultado.innerHTML = '';
+            protocoloInput.focus();
+        });
+
+        document.getElementById('formValidador').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const validacao = ProtocoloFila.validar(protocoloInput.value, cpfInput.value);
+            resultado.classList.remove('hidden');
+
+            if (!validacao.valido) {
+                resultado.className = 'rounded-3xl border-2 border-red-200 bg-red-50 p-6 text-red-900';
+                resultado.innerHTML = `
+                    <h2 class="text-2xl font-black mb-3">Protocolo inválido</h2>
+                    <p class="leading-relaxed">${validacao.motivo}</p>
+                `;
+                return;
+            }
+
+            resultado.className = 'rounded-3xl border-2 border-green-200 bg-green-50 p-6 text-green-950';
+            resultado.innerHTML = `
+                <h2 class="text-2xl font-black mb-4">Protocolo válido</h2>
+                <div class="protocol-font rounded-2xl bg-slate-900 px-4 py-4 text-center text-xl font-black tracking-wide text-white mb-5">${validacao.protocoloFormatado}</div>
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-2xl bg-white p-4 border border-green-100"><span class="block text-xs font-black uppercase text-slate-500">Tipo</span><strong>${validacao.tipoNome}</strong></div>
+                    <div class="rounded-2xl bg-white p-4 border border-green-100"><span class="block text-xs font-black uppercase text-slate-500">Data</span><strong>${validacao.data}</strong></div>
+                    <div class="rounded-2xl bg-white p-4 border border-green-100"><span class="block text-xs font-black uppercase text-slate-500">Horário</span><strong>${validacao.hora}</strong></div>
+                    <div class="rounded-2xl bg-white p-4 border border-green-100"><span class="block text-xs font-black uppercase text-slate-500">Série aleatória</span><strong>${validacao.serie}</strong></div>
+                </div>
+                <p class="mt-5 leading-relaxed"><strong>Resultado:</strong> ${validacao.motivo}</p>
+            `;
+        });
+    </script>
+</body>
+</html>
