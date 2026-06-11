@@ -384,11 +384,11 @@
                 .from('pacientes_pediatria')
                 .select('*')
                 .eq('cpf', cpf)
-                .maybeSingle();
+                .limit(1);
 
             if (consultaPediatria.error) throw consultaPediatria.error;
-            if (consultaPediatria.data) {
-                return { ...consultaPediatria.data, tipoCadastro: 'Odontopediatria' };
+            if (consultaPediatria.data && consultaPediatria.data.length > 0) {
+                return { ...consultaPediatria.data[0], tipoCadastro: 'Odontopediatria' };
             }
 
             return null;

@@ -271,8 +271,8 @@
         function obterMensagemErroCadastro(error) {
             const textoErro = [error?.message, error?.details, error?.hint, error?.code].filter(Boolean).join(' ').toLowerCase();
 
-            if (error?.code === '23505' || textoErro.includes('duplicate key') || textoErro.includes('unique constraint') || textoErro.includes('cpf_key') || textoErro.includes('cpf')) {
-                return 'Este CPF já está cadastrado na odontopediatria. Cada criança/responsável pode realizar apenas um cadastro nessa fila.';
+            if (error?.code === '23505' || textoErro.includes('duplicate key') || textoErro.includes('unique constraint') || textoErro.includes('cpf_key')) {
+                return 'O site já permite CPF repetido na odontopediatria, mas o banco de dados ainda recusou este cadastro por uma restrição de duplicidade. Se esta mensagem aparecer, será necessário remover a restrição única de CPF na tabela pacientes_pediatria.';
             }
 
             if (textoErro.includes('row-level security') || textoErro.includes('rls') || error?.code === '42501') {
@@ -326,19 +326,7 @@
                     status: 'aguardando'
                 };
 
-                const { data: cpfCheckPediatria, error: cpfErrorPediatria } = await supabaseClient
-                    .from('pacientes_pediatria')
-                    .select('cpf, nome_completo')
-                    .eq('cpf', dataToInsert.cpf)
-                    .limit(1);
-
-                if (cpfErrorPediatria) throw cpfErrorPediatria;
-
-                if (cpfCheckPediatria && cpfCheckPediatria.length > 0) {
-                    showModal('error', 'CPF Já Cadastrado', `O CPF ${formatarCpfMensagem(dataToInsert.cpf)} já está cadastrado na odontopediatria. Cada criança/responsável pode se cadastrar apenas uma vez.`);
-                    return;
-                }
-
+                // Na odontopediatria, CPF repetido é permitido porque o mesmo responsável pode cadastrar mais de uma criança.
                 const { error } = await supabaseClient.from('pacientes_pediatria').insert([dataToInsert]);
                 if (error) throw error;
 
