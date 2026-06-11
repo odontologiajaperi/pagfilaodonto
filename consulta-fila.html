@@ -124,6 +124,42 @@
             animation: slideIn 0.3s ease;
         }
 
+        .result-summary {
+            background: #eef2ff;
+            border-left: 4px solid #667eea;
+            color: #3730a3;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            line-height: 1.45;
+            margin-bottom: 18px;
+        }
+
+        .result-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .patient-result {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        .patient-result + .patient-result {
+            margin-top: 4px;
+        }
+
+        .patient-result-title {
+            color: #333;
+            font-size: 1.15em;
+            font-weight: 800;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -246,6 +282,10 @@
             .position-badge {
                 font-size: 3em;
             }
+
+            .patient-result {
+                padding: 16px;
+            }
         }
     </style>
 </head>
@@ -271,50 +311,8 @@
             <div class="error-message" id="errorMessage"></div>
 
             <div class="result-card" id="resultCard">
-                <div class="result-header">
-                    <div class="position-badge" id="positionBadge">-</div>
-                    <span class="position-label">Posição na Fila</span>
-                </div>
-
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Nome</div>
-                        <div class="info-value" id="nome">-</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-label">Tipo de Cadastro</div>
-                        <div class="info-value" id="tipoCadastro">-</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-label">Unidade de Preferência</div>
-                        <div class="info-value" id="unidade">-</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-label">Status</div>
-                        <div class="info-value">
-                            <span class="status-badge" id="status">-</span>
-                        </div>
-                    </div>
-
-                    <div class="info-item" id="agendamentoItem" style="display: none;">
-                        <div class="info-label">Data de Agendamento</div>
-                        <div class="info-value" id="dataAgendamento">-</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-label">Mês de Referência</div>
-                        <div class="info-value" id="mesReferencia">-</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-label">Celular de Contato</div>
-                        <div class="info-value" id="celular">-</div>
-                    </div>
-                </div>
-
+                <div class="result-summary" id="resultSummary"></div>
+                <div class="result-list" id="resultList"></div>
                 <button class="btn" onclick="limparConsulta()" style="margin-top: 20px;">Nova Consulta</button>
             </div>
         </div>
@@ -368,30 +366,151 @@
             return true;
         }
 
-        async function buscarPacientePorCpf(cpf) {
-            const consultaGeral = await supabaseClient
-                .from('pacientes')
-                .select('*')
-                .eq('cpf', cpf)
-                .maybeSingle();
+        async function buscarPacientesPorCpf(cpf) {
+            const consultas = await Promise.all([
+                supabaseClient
+                    .from('pacientes')
+                    .select('*')
+                    .eq('cpf', cpf),
+                supabaseClient
+                    .from('gestantes')
+                    .select('*')
+                    .eq('cpf', cpf),
+                supabaseClient
+                    .from('pacientes_pediatria')
+                    .select('*')
+                    .eq('cpf', cpf)
+            ]);
+
+            const [consultaGeral, consultaGestantes, consultaPediatria] = consultas;
 
             if (consultaGeral.error) throw consultaGeral.error;
-            if (consultaGeral.data) {
-                return { ...consultaGeral.data, tipoCadastro: 'Fila Geral' };
-            }
-
-            const consultaPediatria = await supabaseClient
-                .from('pacientes_pediatria')
-                .select('*')
-                .eq('cpf', cpf)
-                .limit(1);
-
+            if (consultaGestantes.error) throw consultaGestantes.error;
             if (consultaPediatria.error) throw consultaPediatria.error;
-            if (consultaPediatria.data && consultaPediatria.data.length > 0) {
-                return { ...consultaPediatria.data[0], tipoCadastro: 'Odontopediatria' };
-            }
 
-            return null;
+            const resultados = [];
+
+            (consultaGeral.data || []).forEach((paciente, indice) => {
+                resultados.push({ ...paciente, tipoCadastro: 'Fila Geral', ordemResultado: indice + 1 });
+            });
+
+            (consultaGestantes.data || []).forEach((gestante, indice) => {
+                resultados.push({ ...gestante, tipoCadastro: 'Gestante', ordemResultado: indice + 1 });
+            });
+
+            (consultaPediatria.data || []).forEach((paciente, indice) => {
+                resultados.push({ ...paciente, tipoCadastro: 'Odontopediatria', ordemResultado: indice + 1 });
+            });
+
+            return resultados;
+        }
+
+        function escaparHtml(valor) {
+            return String(valor ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatarStatus(status) {
+            const statusNormalizado = status || 'aguardando';
+            return statusNormalizado.charAt(0).toUpperCase() + statusNormalizado.slice(1);
+        }
+
+        function obterMesReferencia(data) {
+            return data.mes_referencia || (data.submitted_at ? data.submitted_at.slice(0, 7) : '');
+        }
+
+        function obterUnidade(data) {
+            if (data.unidade_preferencia) return data.unidade_preferencia;
+            if (data.tipoCadastro === 'Odontopediatria') return 'Odontopediatria';
+            if (data.tipoCadastro === 'Gestante') return 'Atendimento prioritário para gestantes';
+            return 'Não informada';
+        }
+
+        function montarResultadoPaciente(data, indice, total) {
+            const status = data.status || 'aguardando';
+            const mesReferencia = obterMesReferencia(data);
+            const tituloResultado = total > 1 ? `Cadastro ${indice + 1} de ${total}` : 'Cadastro encontrado';
+            const dataAgendamentoHtml = data.data_agendamento ? `
+                <div class="info-item">
+                    <div class="info-label">Data de Agendamento</div>
+                    <div class="info-value">${escaparHtml(formatarData(data.data_agendamento))}</div>
+                </div>
+            ` : '';
+            const responsavelHtml = data.nome_mae ? `
+                <div class="info-item">
+                    <div class="info-label">Mãe/Responsável</div>
+                    <div class="info-value">${escaparHtml(data.nome_mae)}</div>
+                </div>
+            ` : '';
+
+            return `
+                <div class="patient-result">
+                    <div class="patient-result-title">${escaparHtml(tituloResultado)} — ${escaparHtml(data.tipoCadastro || 'Fila Geral')}</div>
+                    <div class="result-header">
+                        <div class="position-badge">${escaparHtml(data.posicao_fila || '-')}</div>
+                        <span class="position-label">Posição na Fila</span>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Nome</div>
+                            <div class="info-value">${escaparHtml(data.nome_completo || '-')}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">Tipo de Cadastro</div>
+                            <div class="info-value">${escaparHtml(data.tipoCadastro || 'Fila Geral')}</div>
+                        </div>
+
+                        ${responsavelHtml}
+
+                        <div class="info-item">
+                            <div class="info-label">Unidade de Preferência</div>
+                            <div class="info-value">${escaparHtml(obterUnidade(data))}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">Status</div>
+                            <div class="info-value">
+                                <span class="status-badge status-${escaparHtml(status)}">${escaparHtml(formatarStatus(status))}</span>
+                            </div>
+                        </div>
+
+                        ${dataAgendamentoHtml}
+
+                        <div class="info-item">
+                            <div class="info-label">Mês de Referência</div>
+                            <div class="info-value">${mesReferencia ? escaparHtml(formatarMes(mesReferencia)) : '-'}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">Celular de Contato</div>
+                            <div class="info-value">${escaparHtml(formatarCelular(data.celular || ''))}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function exibirResultados(resultados) {
+            const resultSummary = document.getElementById('resultSummary');
+            const resultList = document.getElementById('resultList');
+            const resultCard = document.getElementById('resultCard');
+            const total = resultados.length;
+
+            resultSummary.textContent = total === 1
+                ? 'Encontramos 1 cadastro para este CPF.'
+                : `Encontramos ${total} cadastros para este CPF. Todos estão listados abaixo, incluindo fila geral, gestante e odontopediatria quando houver.`;
+
+            resultList.innerHTML = resultados
+                .map((data, indice) => montarResultadoPaciente(data, indice, total))
+                .join('');
+
+            resultCard.classList.add('show');
         }
 
         // Função para consultar fila
@@ -413,40 +532,15 @@
             }
 
             try {
-                const data = await buscarPacientePorCpf(cpf);
+                const resultados = await buscarPacientesPorCpf(cpf);
 
-                if (!data) {
-                    errorMessage.textContent = '❌ CPF não encontrado. Você ainda não está cadastrado na fila geral ou na odontopediatria.';
+                if (!resultados.length) {
+                    errorMessage.textContent = '❌ CPF não encontrado. Você ainda não está cadastrado na fila geral, gestantes ou odontopediatria.';
                     errorMessage.classList.add('show');
                     return;
                 }
 
-                const status = data.status || 'aguardando';
-                const mesReferencia = data.mes_referencia || (data.submitted_at ? data.submitted_at.slice(0, 7) : '');
-
-                // Exibir resultado
-                document.getElementById('positionBadge').textContent = data.posicao_fila || '-';
-                document.getElementById('nome').textContent = data.nome_completo || '-';
-                document.getElementById('tipoCadastro').textContent = data.tipoCadastro || 'Fila Geral';
-                document.getElementById('unidade').textContent = data.unidade_preferencia || (data.tipoCadastro === 'Odontopediatria' ? 'Odontopediatria' : 'Não informada');
-                document.getElementById('celular').textContent = formatarCelular(data.celular || '');
-                document.getElementById('mesReferencia').textContent = mesReferencia ? formatarMes(mesReferencia) : '-';
-
-                // Status
-                const statusElement = document.getElementById('status');
-                statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-                statusElement.className = 'status-badge status-' + status;
-
-                // Data de agendamento (se houver)
-                const agendamentoItem = document.getElementById('agendamentoItem');
-                if (data.data_agendamento) {
-                    document.getElementById('dataAgendamento').textContent = formatarData(data.data_agendamento);
-                    agendamentoItem.style.display = 'block';
-                } else {
-                    agendamentoItem.style.display = 'none';
-                }
-
-                resultCard.classList.add('show');
+                exibirResultados(resultados);
 
             } catch (error) {
                 console.error('Erro:', error);
