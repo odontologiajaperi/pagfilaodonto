@@ -56,20 +56,23 @@
                 position: fixed;
                 inset: 0;
                 display: flex;
-                align-items: center;
+                align-items: flex-start;
                 justify-content: center;
                 background: rgba(15, 23, 42, 0.74);
                 z-index: 99999;
-                padding: 18px;
+                padding: 12px;
                 overflow-y: auto;
             }
 
             .confirmacao-card {
-                width: min(820px, 100%);
+                width: min(760px, 100%);
+                max-height: calc(100dvh - 24px);
                 background: #ffffff;
-                border-radius: 28px;
+                border-radius: 24px;
                 box-shadow: 0 24px 80px rgba(15, 23, 42, 0.35);
                 overflow: hidden;
+                display: flex;
+                flex-direction: column;
                 border: 1px solid rgba(148, 163, 184, 0.3);
                 animation: confirmacaoSlideUp 0.28s ease;
                 color: #1f2937;
@@ -79,47 +82,48 @@
             .confirmacao-topo {
                 background: linear-gradient(135deg, #15803d 0%, #16a34a 50%, #22c55e 100%);
                 color: #ffffff;
-                padding: 28px 30px;
+                padding: 18px 24px;
                 text-align: center;
             }
 
             .confirmacao-topo h2 {
-                margin: 0 0 10px;
-                font-size: clamp(1.65rem, 4vw, 2.35rem);
+                margin: 0 0 6px;
+                font-size: clamp(1.35rem, 3.2vw, 1.95rem);
                 line-height: 1.15;
                 font-weight: 900;
             }
 
             .confirmacao-topo p {
                 margin: 0;
-                font-size: 1rem;
-                line-height: 1.55;
+                font-size: 0.95rem;
+                line-height: 1.4;
                 opacity: 0.96;
             }
 
             .confirmacao-corpo {
-                padding: 28px 30px 30px;
+                padding: 18px 24px 20px;
+                overflow-y: auto;
             }
 
             .confirmacao-alerta-print {
                 background: #fff7ed;
                 border: 2px solid #fed7aa;
                 color: #9a3412;
-                padding: 16px 18px;
-                border-radius: 18px;
+                padding: 12px 14px;
+                border-radius: 16px;
                 font-weight: 800;
-                line-height: 1.55;
-                margin-bottom: 18px;
+                line-height: 1.35;
+                margin-bottom: 12px;
                 text-align: center;
             }
 
             .confirmacao-protocolo-box {
                 background: #0f172a;
                 color: #ffffff;
-                padding: 22px;
-                border-radius: 22px;
+                padding: 14px 16px;
+                border-radius: 18px;
                 text-align: center;
-                margin-bottom: 20px;
+                margin-bottom: 12px;
                 border: 3px solid #22c55e;
             }
 
@@ -130,7 +134,7 @@
                 text-transform: uppercase;
                 color: #bbf7d0;
                 font-weight: 900;
-                margin-bottom: 10px;
+                margin-bottom: 6px;
             }
 
             .confirmacao-protocolo-numero {
@@ -145,15 +149,15 @@
             .confirmacao-grid {
                 display: grid;
                 grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 12px;
-                margin: 18px 0;
+                gap: 10px;
+                margin: 12px 0;
             }
 
             .confirmacao-campo {
                 background: #f8fafc;
                 border: 1px solid #e2e8f0;
-                border-radius: 16px;
-                padding: 14px 16px;
+                border-radius: 14px;
+                padding: 10px 12px;
             }
 
             .confirmacao-campo.destaque {
@@ -184,17 +188,17 @@
                 background: #eff6ff;
                 border-left: 5px solid #2563eb;
                 color: #1e3a8a;
-                padding: 16px 18px;
+                padding: 12px 14px;
                 border-radius: 14px;
-                line-height: 1.6;
-                margin-top: 18px;
+                line-height: 1.4;
+                margin-top: 12px;
             }
 
             .confirmacao-acoes {
                 display: flex;
                 flex-wrap: wrap;
-                gap: 12px;
-                margin-top: 22px;
+                gap: 10px;
+                margin-top: 14px;
             }
 
             .confirmacao-acoes button,
@@ -205,13 +209,13 @@
                 justify-content: center;
                 border: 0;
                 border-radius: 16px;
-                padding: 14px 18px;
+                padding: 11px 14px;
                 font-weight: 900;
                 text-decoration: none;
                 cursor: pointer;
                 transition: transform 0.2s ease, box-shadow 0.2s ease;
                 font-size: 0.98rem;
-                min-height: 52px;
+                min-height: 44px;
             }
 
             .confirmacao-acoes button:hover,
@@ -230,10 +234,19 @@
                 to { opacity: 1; transform: translateY(0) scale(1); }
             }
 
+            @media (max-height: 760px) {
+                .confirmacao-topo { padding-top: 14px; padding-bottom: 14px; }
+                .confirmacao-corpo { padding-top: 14px; padding-bottom: 16px; }
+                .confirmacao-alerta-print { font-size: 0.92rem; }
+                .confirmacao-mensagem { font-size: 0.92rem; }
+                .confirmacao-acoes button,
+                .confirmacao-acoes a { min-height: 40px; font-size: 0.92rem; }
+            }
+
             @media (max-width: 640px) {
                 .confirmacao-overlay {
                     align-items: flex-start;
-                    padding: 10px;
+                    padding: 8px;
                 }
 
                 .confirmacao-card {
