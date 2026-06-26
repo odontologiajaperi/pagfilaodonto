@@ -28,6 +28,33 @@
         .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
         @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
         .animate-bounce-slow { animation: bounce-slow 4s ease-in-out infinite; }
+        .notice-ticker {
+            background: linear-gradient(90deg, #0F4C81 0%, #1DC56F 50%, #0F4C81 100%);
+            border-top: 3px solid rgba(29, 197, 111, 0.95);
+            border-bottom: 3px solid rgba(15, 76, 129, 0.95);
+            box-shadow: 0 14px 30px rgba(15, 76, 129, 0.18);
+        }
+        .notice-ticker-track {
+            display: flex;
+            width: max-content;
+            animation: ticker-scroll 38s linear infinite;
+        }
+        .notice-ticker:hover .notice-ticker-track {
+            animation-play-state: paused;
+        }
+        .notice-ticker-text {
+            white-space: nowrap;
+            padding-right: 3rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        @keyframes ticker-scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+        @media (max-width: 640px) {
+            .notice-ticker-track { animation-duration: 48s; }
+            .notice-ticker-text { padding-right: 2rem; }
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -115,6 +142,15 @@
                             Odontopediatria
                         </a>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 mt-5 md:mt-6 relative z-10">
+            <div class="notice-ticker overflow-hidden rounded-2xl text-white" role="marquee" aria-label="Avisos importantes da Saúde Bucal de Japeri">
+                <div class="notice-ticker-track py-3 md:py-4 text-sm md:text-base font-extrabold uppercase tracking-wide">
+                    <span class="notice-ticker-text">Abertura de vagas para odontopediatria na segunda semana de cada mês • pacientes com necessidades especiais, idosos e gestantes podem realizar o agendamento direto na unidade • em breve, abriremos novas vagas • em caso de urgências odontológicas, basta se direcionar à unidade mais próxima com atendimento •</span>
+                    <span class="notice-ticker-text" aria-hidden="true">Abertura de vagas para odontopediatria na segunda semana de cada mês • pacientes com necessidades especiais, idosos e gestantes podem realizar o agendamento direto na unidade • em breve, abriremos novas vagas • em caso de urgências odontológicas, basta se direcionar à unidade mais próxima com atendimento •</span>
                 </div>
             </div>
         </div>
