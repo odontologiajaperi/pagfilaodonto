@@ -641,28 +641,66 @@
         
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        // Carregar unidades dinamicamente salvando o NOME como valor
+        // Carregar unidades dinamicamente com contagem de vagas por posto
         async function carregarUnidadesAtivas() {
             const select = document.getElementById('select_unidade');
             if(!select) return;
+            select.innerHTML = '<option value="">Carregando unidades...</option>';
             try {
-                const { data, error } = await supabaseClient
+                // Buscar postos ativos com o limite de vagas
+                const { data: postos, error: erroPostos } = await supabaseClient
                     .from('postos')
-                    .select('id, nome')
+                    .select('id, nome, vagas_limite')
                     .eq('ativo', true)
                     .order('nome');
-                if (error) throw error;
+                if (erroPostos) throw erroPostos;
+
+                // Buscar contagem de inscritos aguardando por unidade
+                const { data: contagens, error: erroContagens } = await supabaseClient
+                    .from('pacientes')
+                    .select('unidade_preferencia')
+                    .eq('status', 'aguardando');
+                if (erroContagens) throw erroContagens;
+
+                // Montar mapa de contagem por posto
+                const contagemPorPosto = {};
+                (contagens || []).forEach(p => {
+                    contagemPorPosto[p.unidade_preferencia] = (contagemPorPosto[p.unidade_preferencia] || 0) + 1;
+                });
+
                 select.innerHTML = '<option value="">Selecione...</option>';
-                if(data) {
-                    data.forEach(p => {
+
+                if (postos && postos.length > 0) {
+                    postos.forEach(p => {
+                        const inscritos = contagemPorPosto[p.nome] || 0;
+                        const temLimite = p.vagas_limite !== null && p.vagas_limite !== undefined;
+                        const vagasRestantes = temLimite ? Math.max(0, p.vagas_limite - inscritos) : null;
+
+                        // Ocultar posto se não tem mais vagas
+                        if (temLimite && vagasRestantes <= 0) return;
+
                         const opt = document.createElement('option');
-                        // Usamos o NOME como value para salvar texto no banco
-                        // Mas guardamos o ID em um atributo data para o trigger funcionar se necessário
-                        opt.value = p.nome; 
+                        opt.value = p.nome;
                         opt.setAttribute('data-id', p.id);
-                        opt.textContent = p.nome;
+                        opt.setAttribute('data-vagas', vagasRestantes !== null ? vagasRestantes : 'ilimitado');
+
+                        // Mostrar vagas restantes no nome se tiver limite
+                        if (temLimite) {
+                            opt.textContent = `${p.nome} (${vagasRestantes} vaga${vagasRestantes !== 1 ? 's' : ''} restante${vagasRestantes !== 1 ? 's' : ''})`;
+                        } else {
+                            opt.textContent = p.nome;
+                        }
                         select.appendChild(opt);
                     });
+
+                    // Se não sobrou nenhuma opção, mostrar aviso
+                    if (select.options.length <= 1) {
+                        select.innerHTML = '<option value="">Todas as vagas foram preenchidas</option>';
+                        select.disabled = true;
+                    }
+                } else {
+                    select.innerHTML = '<option value="">Nenhuma unidade disponível no momento</option>';
+                    select.disabled = true;
                 }
             } catch (e) {
                 console.error(e);
@@ -931,6 +969,48 @@
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Enviar Cadastro';
                     return;
+                }
+
+                // Verificar vagas no posto escolhido (somente para não-gestantes)
+                const unidadeEscolhida = document.getElementById('select_unidade').value;
+                if (!isGestante && unidadeEscolhida) {
+                    const { data: postoData } = await supabaseClient
+                        .from('postos')
+                        .select('vagas_limite, ativo')
+                        .eq('nome', unidadeEscolhida)
+                        .single();
+
+                    if (!postoData || !postoData.ativo) {
+                        showModal(
+                            'Unidade Indisponível',
+                            'A unidade selecionada não está mais disponível para cadastro. Por favor, escolha outra unidade ou tente novamente mais tarde.',
+                            'error'
+                        );
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Enviar Cadastro';
+                        await carregarUnidadesAtivas();
+                        return;
+                    }
+
+                    if (postoData.vagas_limite !== null) {
+                        const { count: inscritosAtual } = await supabaseClient
+                            .from('pacientes')
+                            .select('id', { count: 'exact', head: true })
+                            .eq('unidade_preferencia', unidadeEscolhida)
+                            .eq('status', 'aguardando');
+
+                        if (inscritosAtual >= postoData.vagas_limite) {
+                            showModal(
+                                'Vagas Esgotadas',
+                                `As vagas para a unidade "${unidadeEscolhida}" foram preenchidas enquanto você preenchia o formulário. Por favor, escolha outra unidade.`,
+                                'error'
+                            );
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Enviar Cadastro';
+                            await carregarUnidadesAtivas();
+                            return;
+                        }
+                    }
                 }
 
                 const formData = new FormData(e.target);
