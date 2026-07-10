@@ -377,6 +377,26 @@
             } catch (e) { console.error(e); }
         }
         checkStatus();
+
+        // Registrar acesso à página no Supabase
+        async function registrarAcesso() {
+            try {
+                const paginaAtual = window.location.pathname.split('/').pop() || 'index.html';
+                const referrer = document.referrer || 'direto';
+                const userAgent = navigator.userAgent;
+
+                await supabaseClient.rpc('registrar_acesso', {
+                    p_pagina: paginaAtual,
+                    p_referrer: referrer,
+                    p_user_agent: userAgent
+                });
+            } catch (e) {
+                console.log('Rastreamento de acesso:', e.message);
+            }
+        }
+        
+        // Registrar acesso quando a página carregar
+        registrarAcesso();
     </script>
 </body>
 </html>
