@@ -3,7 +3,7 @@
 -- ============================================================
 -- Execute este script no SQL Editor do Supabase.
 -- Cria uma tabela para registrar cada acesso ao site com
--- informações como página visitada, horário, IP (se disponível)
+-- informações como página visitada, horário, referrer e user agent
 -- e permite visualizar estatísticas de acesso.
 -- ============================================================
 
@@ -18,10 +18,9 @@ CREATE TABLE IF NOT EXISTS public.acessos_site (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 2. Criar índices para melhor performance
+-- 2. Criar índices para melhor performance (sem usar DATE que causa erro)
 CREATE INDEX IF NOT EXISTS idx_acessos_pagina ON public.acessos_site(pagina);
 CREATE INDEX IF NOT EXISTS idx_acessos_timestamp ON public.acessos_site(timestamp);
-CREATE INDEX IF NOT EXISTS idx_acessos_data ON public.acessos_site(DATE(timestamp));
 
 -- 3. VIEW: Total de acessos por página
 CREATE OR REPLACE VIEW public.acessos_por_pagina AS

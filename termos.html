@@ -181,5 +181,54 @@
       })
       .catch(error => console.error('Erro ao carregar pop-up de avaliação:', error));
   </script>
+    <script>
+
+        // Registrar acesso à página no Supabase
+        async function registrarAcesso() {
+            try {
+                const SUPABASE_URL = "https://uakhmgoxgyklggsvtwdf.supabase.co";
+                const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTE0NzcsImV4cCI6MjA3OTk1MTQ3N30.6iCUHePtVlmq8De9oBl4Zw5CBU4Zai7P3xLpi7cYkDo";
+                
+                if (typeof supabase === "undefined") {
+                    const script = document.createElement("script");
+                    script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+                    script.onload = () => {
+                        const { createClient } = supabase;
+                        const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                        enviarRastreamento(client);
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    const { createClient } = supabase;
+                    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    enviarRastreamento(client);
+                }
+            } catch (e) {
+                console.log("Rastreamento:", e.message);
+            }
+        }
+        
+        function enviarRastreamento(client) {
+            try {
+                const paginaAtual = window.location.pathname.split("/").pop() || "index.html";
+                const referrer = document.referrer || "direto";
+                const userAgent = navigator.userAgent;
+                client.rpc("registrar_acesso", {
+                    p_pagina: paginaAtual,
+                    p_referrer: referrer,
+                    p_user_agent: userAgent
+                }).catch(e => console.log("Erro:", e.message));
+            } catch (e) {
+                console.log("Rastreamento:", e.message);
+            }
+        }
+        
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", registrarAcesso);
+        } else {
+            registrarAcesso();
+        }
+    
+    </script>
 </body>
 </html>
