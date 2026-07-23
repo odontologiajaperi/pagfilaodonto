@@ -8,7 +8,6 @@
     
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
     
     <style>
         * {
@@ -375,15 +374,14 @@
                     <label for="unidade">Unidade <span class="required">*</span></label>
                     <select id="unidade" name="unidade" required>
                         <option value="">Selecione a unidade...</option>
-                        <option value="Marabá">Marabá</option>
                         <option value="Alecrim">Alecrim</option>
-                        <option value="Vila Central">Vila Central</option>
-                        <option value="Japeri Centro">Japeri Centro</option>
+                        <option value="CEMES Japeri">CEMES Japeri</option>
                         <option value="Chacrinha">Chacrinha</option>
-                        <option value="CEO">CEO - Centro de Especialidades Odontológicas</option>
-                        <option value="Unidade Odontológica móvel do Rio D'ouro">Unidade Odontológica móvel do Rio D'ouro</option>
-                        <option value="Unidade Odontológica móvel do Laranjal">Unidade Odontológica móvel do Laranjal</option>
-                        <option value="Unidade Odontológica móvel do Marajoara">Unidade Odontológica móvel do Marajoara</option>
+                        <option value="Marabá">Marabá</option>
+                        <option value="Vila Central">Vila Central</option>
+                        <option value="São Jorge">São Jorge</option>
+                        <option value="CEO Japeri">CEO Japeri</option>
+                        <option value="Unidade Odontológica Móvel São Sebastião">Unidade Odontológica Móvel São Sebastião</option>
                     </select>
                 </div>
 
@@ -392,16 +390,24 @@
                     <label for="cirurgiao_dentista">Cirurgião-Dentista <span class="required">*</span></label>
                     <select id="cirurgiao_dentista" name="cirurgiao_dentista" required>
                         <option value="">Selecione o dentista...</option>
-                        <option value="Dr. João Silva">Dr. João Silva</option>
-                        <option value="Dra. Maria Santos">Dra. Maria Santos</option>
-                        <option value="Dr. Pedro Oliveira">Dr. Pedro Oliveira</option>
-                        <option value="Dra. Ana Costa">Dra. Ana Costa</option>
-                        <option value="Dr. Carlos Souza">Dr. Carlos Souza</option>
-                        <option value="Dra. Juliana Lima">Dra. Juliana Lima</option>
-                        <option value="Dr. Ricardo Alves">Dr. Ricardo Alves</option>
-                        <option value="Dra. Fernanda Rocha">Dra. Fernanda Rocha</option>
-                        <option value="Dr. Paulo Mendes">Dr. Paulo Mendes</option>
-                        <option value="Dra. Beatriz Cardoso">Dra. Beatriz Cardoso</option>
+                        <option value="Bruna de Sousa Lopes">Bruna de Sousa Lopes</option>
+                        <option value="Claudio Arruda Viana">Claudio Arruda Viana</option>
+                        <option value="Caroline Santos Romano">Caroline Santos Romano</option>
+                        <option value="Caroline Cavaignac Silva">Caroline Cavaignac Silva</option>
+                        <option value="Jefferson Ferreira dos Santos">Jefferson Ferreira dos Santos</option>
+                        <option value="Karine Silva Lima Ramos">Karine Silva Lima Ramos</option>
+                        <option value="Leonardo Colodette dos Reis">Leonardo Colodette dos Reis</option>
+                        <option value="Mariana Morais Dias">Mariana Morais Dias</option>
+                        <option value="Stella Ramos D'Aiuto">Stella Ramos D'Aiuto</option>
+                        <option value="Tamiris Ramos Vargas">Tamiris Ramos Vargas</option>
+                        <option value="Vivianne Codeceira Lopes Pedreira">Vivianne Codeceira Lopes Pedreira</option>
+                        <option value="Bruno Costa Ferreira">Bruno Costa Ferreira</option>
+                        <option value="Thamires Gentil">Thamires Gentil</option>
+                        <option value="Jenyfer Poppe">Jenyfer Poppe</option>
+                        <option value="Ana paula costa nogueira">Ana paula costa nogueira</option>
+                        <option value="Erica Maria Gioia Pereira">Erica Maria Gioia Pereira</option>
+                        <option value="Paula Costa Nogueira">Paula Costa Nogueira</option>
+                        <option value="Jenffer Alves da Silva">Jenffer Alves da Silva</option>
                         <option value="Outro">Outro</option>
                     </select>
                 </div>
@@ -500,6 +506,11 @@
 
             document.getElementById('modalOverlay').classList.add('show');
         }
+
+        // Inicializar Supabase Client
+        const SUPABASE_URL = "https://uakhmgoxgyklggsvtwdf.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTE0NzcsImV4cCI6MjA3OTk1MTQ3N30.6iCUHePtVlmq8De9oBl4Zw5CBU4Zai7P3xLpi7cYkDo";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Submissão do formulário
         document.getElementById('avaliacaoForm').addEventListener('submit', async function(e) {
