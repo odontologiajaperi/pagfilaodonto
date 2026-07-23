@@ -1,8 +1,7 @@
 -- ============================================================
--- TABELA DE AVALIAÇÕES - CRIAÇÃO E CONFIGURAÇÃO
+-- TABELA DE AVALIAÇÕES - CRIAÇÃO E CONFIGURAÇÃO (VERSÃO CORRIGIDA)
 -- ============================================================
--- Execute este script no SQL Editor do Supabase para criar
--- a tabela de avaliações com permissões de inserção pública
+-- Execute este script no SQL Editor do Supabase.
 -- ============================================================
 
 -- 1. Criar tabela de avaliações
@@ -27,10 +26,11 @@ CREATE INDEX IF NOT EXISTS idx_avaliacoes_data ON public.avaliacoes(created_at);
 ALTER TABLE public.avaliacoes DISABLE ROW LEVEL SECURITY;
 
 -- 4. Dar permissões de inserção para usuários anônimos e autenticados
+-- Usamos ALL SEQUENCES para evitar erro de nome de sequência inexistente
 GRANT INSERT ON public.avaliacoes TO anon;
 GRANT INSERT ON public.avaliacoes TO authenticated;
-GRANT USAGE, SELECT ON SEQUENCE public.avaliacoes_id_seq TO anon;
-GRANT USAGE, SELECT ON SEQUENCE public.avaliacoes_id_seq TO authenticated;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO authenticated;
 
 -- 5. VIEW: Resumo de avaliações por dentista
 CREATE OR REPLACE VIEW public.resumo_avaliacoes_dentista AS
@@ -56,12 +56,3 @@ SELECT
 FROM public.avaliacoes
 GROUP BY unidade
 ORDER BY nota_media DESC;
-
--- ============================================================
--- COMO USAR:
--- 1. Execute este script no SQL Editor do Supabase.
--- 2. A página de avaliação do site agora conseguirá gravar dados.
--- 3. Para ver estatísticas:
---    SELECT * FROM public.resumo_avaliacoes_dentista;
---    SELECT * FROM public.resumo_avaliacoes_unidade;
--- ============================================================
