@@ -233,6 +233,38 @@
         </div>
     </section>
 
+    <!-- Avalie seu Atendimento - Destaque -->
+    <section class="py-16 bg-gradient-to-r from-[#0F4C81] to-[#1DC56F]">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="text-white text-center md:text-left">
+                    <div class="flex items-center justify-center md:justify-start gap-3 mb-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl">
+                            <i class="fas fa-star text-yellow-300"></i>
+                        </div>
+                        <span class="text-xs font-extrabold uppercase tracking-widest text-green-200">Sua opinião importa</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-extrabold leading-tight mb-3">Avalie seu Atendimento</h2>
+                    <p class="text-blue-100 text-base max-w-lg">Foi atendido em uma de nossas unidades? Conte como foi sua experiência e nos ajude a melhorar cada vez mais.</p>
+                    <div class="flex items-center justify-center md:justify-start gap-1 mt-4">
+                        <i class="fas fa-star text-yellow-300 text-xl"></i>
+                        <i class="fas fa-star text-yellow-300 text-xl"></i>
+                        <i class="fas fa-star text-yellow-300 text-xl"></i>
+                        <i class="fas fa-star text-yellow-300 text-xl"></i>
+                        <i class="fas fa-star-half-alt text-yellow-300 text-xl"></i>
+                        <span class="text-white font-bold ml-2 text-sm">Baseado em avaliações reais</span>
+                    </div>
+                </div>
+                <div class="flex-shrink-0">
+                    <a href="avaliacao.html" class="inline-flex items-center gap-3 bg-white text-[#0F4C81] px-10 py-5 rounded-2xl font-extrabold text-lg shadow-2xl hover:scale-105 transition-all">
+                        <i class="fas fa-pencil-alt text-[#1DC56F]"></i>
+                        Avaliar Agora
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Como Funciona -->
     <section class="py-24 bg-white">
         <div class="container mx-auto px-4">
@@ -397,6 +429,16 @@
         
         // Registrar acesso quando a página carregar
         registrarAcesso();
+
+        // Injetar popup de avaliação
+        fetch('avaliacao-popup.html')
+            .then(r => r.text())
+            .then(html => {
+                const div = document.createElement('div');
+                div.innerHTML = html;
+                document.body.appendChild(div);
+            })
+            .catch(() => {});
     </script>
 </body>
 </html>
