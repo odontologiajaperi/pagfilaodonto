@@ -268,6 +268,25 @@
             return digitos.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
         }
 
+        // Registrar erro no banco para análise (sem expor ao paciente)
+        async function registrarErroLog(error, contexto, dadosExtra = {}) {
+            try {
+                await supabaseClient.from('logs_erros').insert([{
+                    pagina: 'cadastro-pediatria.html',
+                    contexto: contexto,
+                    codigo_erro: error?.code || null,
+                    mensagem_erro: error?.message || 'Erro desconhecido',
+                    detalhes: error?.details || null,
+                    hint: error?.hint || null,
+                    dados_extra: JSON.stringify(dadosExtra),
+                    user_agent: navigator.userAgent,
+                    created_at: new Date().toISOString()
+                }]);
+            } catch (logErr) {
+                console.warn('Falha ao registrar log:', logErr);
+            }
+        }
+
         function obterMensagemErroCadastro(error) {
             const textoErro = [error?.message, error?.details, error?.hint, error?.code].filter(Boolean).join(' ').toLowerCase();
 
@@ -276,14 +295,15 @@
             }
 
             if (textoErro.includes('row-level security') || textoErro.includes('rls') || error?.code === '42501') {
-                return 'Erro de permissão ao salvar o cadastro. Entre em contato com a equipe responsável pelo sistema.';
+                return 'Não foi possível salvar o cadastro no momento. Tente novamente em alguns minutos ou entre em contato com a equipe de saúde bucal.';
             }
 
             if (textoErro.includes('network') || textoErro.includes('failed to fetch')) {
-                return 'Não foi possível conectar ao sistema agora. Verifique a internet e tente novamente.';
+                return 'Não foi possível conectar ao sistema. Verifique sua conexão com a internet e tente novamente.';
             }
 
-            return `Ocorreu um erro ao realizar o cadastro. Motivo informado pelo sistema: ${error?.message || 'erro não especificado.'}`;
+            // Mensagem genérica amigável — NÃO expõe detalhes técnicos
+            return 'Ocorreu um erro temporário no sistema. Por favor, tente novamente em alguns instantes. Se o problema persistir, entre em contato pelo e-mail odontologiajaperi@gmail.com.';
         }
 
         // Form Submit
@@ -350,6 +370,7 @@
                 if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
             } catch (err) {
                 console.error(err);
+                registrarErroLog(err, 'pediatria');
                 showModal('error', 'Erro no Cadastro', obterMensagemErroCadastro(err));
             } finally {
                 btn.disabled = false;

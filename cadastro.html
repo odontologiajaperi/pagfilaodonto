@@ -382,15 +382,18 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            min-height: 24px;
             border-radius: 50%;
-            font-size: 0.75em;
+            font-size: 0.8em;
             font-weight: 900;
             cursor: help;
             position: relative;
             vertical-align: middle;
-            margin-left: 6px;
+            margin-left: 8px;
+            flex-shrink: 0;
         }
 
         .tooltip-icon.info {
@@ -412,16 +415,17 @@
             transform: translateX(-50%);
             background: #333;
             color: white;
-            padding: 12px 16px;
+            padding: 14px 18px;
             border-radius: 10px;
             font-size: 0.85rem;
             font-weight: 400;
             width: 280px;
             text-align: left;
-            line-height: 1.5;
-            z-index: 999;
+            line-height: 1.6;
+            z-index: 9999;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             transition: opacity 0.3s, visibility 0.3s;
+            pointer-events: none;
         }
 
         .tooltip-icon .tooltip-text::after {
@@ -449,27 +453,36 @@
             margin-bottom: 25px;
         }
 
+        .acs-section > label {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
         .acs-section.disabled-section {
             opacity: 0.6;
             pointer-events: none;
         }
 
         .acs-checkbox-container {
-            margin-top: 12px;
-            padding: 12px 16px;
+            margin-top: 14px;
+            padding: 14px 16px;
             background: #fff3cd;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid #ffc107;
         }
 
         .acs-checkbox-container label {
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
             gap: 10px;
             cursor: pointer;
             font-weight: 600;
             color: #856404;
-            font-size: 0.95em;
+            font-size: 0.92em;
+            line-height: 1.4;
         }
 
         .acs-checkbox-container.esgotado {
@@ -485,8 +498,8 @@
         .acs-aviso-vagas {
             font-size: 0.82em;
             color: #856404;
-            margin-top: 6px;
-            margin-left: 30px;
+            margin-top: 8px;
+            margin-left: 0;
             font-style: italic;
         }
 
@@ -512,12 +525,48 @@
             }
 
             .form-container {
-                padding: 30px 20px;
+                padding: 30px 15px;
+            }
+
+            .tooltip-icon {
+                width: 26px;
+                height: 26px;
+                min-width: 26px;
+                min-height: 26px;
+                font-size: 0.85em;
             }
 
             .tooltip-icon .tooltip-text {
-                width: 220px;
-                font-size: 0.8rem;
+                width: 240px;
+                font-size: 0.82rem;
+                left: auto;
+                right: -10px;
+                transform: none;
+                bottom: 140%;
+            }
+
+            .tooltip-icon .tooltip-text::after {
+                left: auto;
+                right: 16px;
+                transform: none;
+            }
+
+            .acs-section {
+                padding: 16px 14px;
+            }
+
+            .acs-section > label {
+                font-size: 0.9em;
+                line-height: 1.4;
+            }
+
+            .acs-checkbox-container {
+                padding: 12px;
+            }
+
+            .acs-checkbox-container label {
+                font-size: 0.85em;
+                gap: 8px;
             }
         }
     </style>
@@ -1059,6 +1108,26 @@
             return digitos.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
         }
 
+        // Registrar erro no banco de dados para análise posterior (sem expor ao paciente)
+        async function registrarErroLog(error, contexto, dadosExtra = {}) {
+            try {
+                await supabaseClient.from('logs_erros').insert([{
+                    pagina: 'cadastro.html',
+                    contexto: contexto,
+                    codigo_erro: error?.code || null,
+                    mensagem_erro: error?.message || 'Erro desconhecido',
+                    detalhes: error?.details || null,
+                    hint: error?.hint || null,
+                    dados_extra: JSON.stringify(dadosExtra),
+                    user_agent: navigator.userAgent,
+                    created_at: new Date().toISOString()
+                }]);
+            } catch (logErr) {
+                // Se falhar o log, apenas ignora (não travar o fluxo)
+                console.warn('Falha ao registrar log de erro:', logErr);
+            }
+        }
+
         function obterMensagemErroCadastro(error, contexto = 'cadastro') {
             const textoErro = [error?.message, error?.details, error?.hint, error?.code].filter(Boolean).join(' ').toLowerCase();
             const cpfInfo = contexto === 'gestante' ? 'como gestante' : 'na fila geral';
@@ -1068,14 +1137,15 @@
             }
 
             if (textoErro.includes('row-level security') || textoErro.includes('rls') || error?.code === '42501') {
-                return 'Erro de permissão ao salvar o cadastro. Entre em contato com a equipe responsável pelo sistema.';
+                return 'Não foi possível salvar seu cadastro no momento. Por favor, tente novamente em alguns minutos ou entre em contato com a equipe de saúde bucal.';
             }
 
             if (textoErro.includes('network') || textoErro.includes('failed to fetch')) {
-                return 'Não foi possível conectar ao sistema agora. Verifique a internet e tente novamente.';
+                return 'Não foi possível conectar ao sistema. Verifique sua conexão com a internet e tente novamente.';
             }
 
-            return `Ocorreu um erro ao processar seu cadastro. Motivo informado pelo sistema: ${error?.message || 'erro não especificado.'}`;
+            // Mensagem genérica amigável — NÃO expõe detalhes técnicos ao paciente
+            return 'Ocorreu um erro temporário no sistema. Por favor, tente novamente em alguns instantes. Se o problema persistir, entre em contato com a equipe de saúde bucal pelo e-mail odontologiajaperi@gmail.com.';
         }
 
         function showModal(title, message, type, extraButton = null) {
@@ -1497,7 +1567,11 @@
             } catch (error) {
                 console.error('Erro:', error);
                 const eGestanteAtual = document.getElementById('checkbox_gestante')?.checked;
-                const errorMessage = obterMensagemErroCadastro(error, eGestanteAtual ? 'gestante' : 'geral');
+                const ctxErro = eGestanteAtual ? 'gestante' : 'geral';
+                const errorMessage = obterMensagemErroCadastro(error, ctxErro);
+                
+                // Registrar erro técnico no banco para análise (não expõe ao paciente)
+                registrarErroLog(error, ctxErro, { unidade: data?.unidade_preferencia || 'N/A' });
                 
                 showModal('Erro no Cadastro', errorMessage, 'error');
             } finally {
