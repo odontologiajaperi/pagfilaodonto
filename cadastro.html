@@ -382,17 +382,17 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 24px;
-            height: 24px;
-            min-width: 24px;
-            min-height: 24px;
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            min-height: 22px;
             border-radius: 50%;
-            font-size: 0.8em;
+            font-size: 0.75em;
             font-weight: 900;
             cursor: help;
-            position: relative;
+            position: static;
             vertical-align: middle;
-            margin-left: 8px;
+            margin-left: 6px;
             flex-shrink: 0;
         }
 
@@ -406,48 +406,30 @@
             color: white;
         }
 
-        .tooltip-icon .tooltip-text {
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            bottom: 130%;
-            left: 50%;
-            transform: translateX(-50%);
+        /* Tooltip exibido como bloco abaixo, não mais como popup absoluto */
+        .tooltip-text {
+            display: none;
             background: #333;
             color: white;
-            padding: 14px 18px;
+            padding: 12px 14px;
             border-radius: 10px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 400;
-            width: 280px;
+            width: 100%;
             text-align: left;
-            line-height: 1.6;
-            z-index: 9999;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transition: opacity 0.3s, visibility 0.3s;
-            pointer-events: none;
+            line-height: 1.5;
+            margin-top: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
-        .tooltip-icon .tooltip-text::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 6px solid transparent;
-            border-top-color: #333;
-        }
-
-        .tooltip-icon:hover .tooltip-text,
-        .tooltip-icon:focus .tooltip-text {
-            visibility: visible;
-            opacity: 1;
+        .tooltip-text.tooltip-visible {
+            display: block;
         }
 
         /* Seção ACS */
         .acs-section {
             background: #f0f7ff;
-            padding: 20px;
+            padding: 18px;
             border-radius: 12px;
             border: 2px solid #667eea;
             margin-bottom: 25px;
@@ -456,8 +438,9 @@
         .acs-section > label {
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 4px;
+            font-size: 0.95em;
         }
 
         .acs-section.disabled-section {
@@ -473,15 +456,15 @@
             border: 1px solid #ffc107;
         }
 
-        .acs-checkbox-container label {
+        .acs-checkbox-container > label {
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 10px;
             cursor: pointer;
             font-weight: 600;
             color: #856404;
-            font-size: 0.92em;
+            font-size: 0.9em;
             line-height: 1.4;
         }
 
@@ -528,46 +511,25 @@
                 padding: 30px 15px;
             }
 
-            .tooltip-icon {
-                width: 26px;
-                height: 26px;
-                min-width: 26px;
-                min-height: 26px;
-                font-size: 0.85em;
-            }
-
-            .tooltip-icon .tooltip-text {
-                width: 240px;
-                font-size: 0.82rem;
-                left: auto;
-                right: -10px;
-                transform: none;
-                bottom: 140%;
-            }
-
-            .tooltip-icon .tooltip-text::after {
-                left: auto;
-                right: 16px;
-                transform: none;
-            }
-
             .acs-section {
-                padding: 16px 14px;
+                padding: 14px 12px;
             }
 
             .acs-section > label {
-                font-size: 0.9em;
-                line-height: 1.4;
+                font-size: 0.85em;
+                flex-wrap: wrap;
             }
 
             .acs-checkbox-container {
-                padding: 12px;
+                padding: 12px 10px;
             }
 
-            .acs-checkbox-container label {
-                font-size: 0.85em;
+            .acs-checkbox-container > label {
+                font-size: 0.82em;
                 gap: 8px;
+                flex-wrap: wrap;
             }
+        }
         }
     </style>
     
@@ -689,10 +651,9 @@
                 <div class="form-group acs-section" id="acs_section">
                     <label>
                         Nome do ACS (Agente Comunitário de Saúde) <span class="required">*</span>
-                        <span class="tooltip-icon info" tabindex="0">?
-                            <span class="tooltip-text">Informe o nome do ACS (Agente Comunitário de Saúde) com quem você fez o cadastro no posto de saúde da sua região de Japeri. Caso não tenha, vá a um posto de saúde próximo e peça para fazer o cadastro.</span>
-                        </span>
+                        <span class="tooltip-icon info" tabindex="0" onclick="toggleTooltip('tooltip_acs_info')">?</span>
                     </label>
+                    <div class="tooltip-text" id="tooltip_acs_info">Informe o nome do ACS (Agente Comunitário de Saúde) com quem você fez o cadastro no posto de saúde da sua região de Japeri. Caso não tenha, vá a um posto de saúde próximo e peça para fazer o cadastro.</div>
                     <input type="text" name="nome_acs" placeholder="Nome completo do seu ACS" id="nome_acs" required>
                     <p class="nome-invalido-msg" id="acs_nome_erro">O nome deve conter apenas letras, espaços e acentos.</p>
 
@@ -700,13 +661,20 @@
                         <label>
                             <input type="checkbox" id="checkbox_sem_acs" name="sem_acs" style="width: 20px; height: 20px; cursor: pointer;">
                             <span>Não tenho ACS / Não sou cadastrado no posto</span>
-                            <span class="tooltip-icon warning" tabindex="0">!
-                                <span class="tooltip-text">Atenção: as vagas para quem não possui cadastro no sistema de saúde do posto próximo são bem mais limitadas. Recomendamos que vá ao posto de saúde da sua região e solicite o cadastro com um ACS.</span>
-                            </span>
+                            <span class="tooltip-icon warning" tabindex="0" onclick="event.preventDefault(); toggleTooltip('tooltip_acs_warning')">!</span>
                         </label>
+                        <div class="tooltip-text" id="tooltip_acs_warning">Atenção: as vagas para quem não possui cadastro no sistema de saúde do posto próximo são bem mais limitadas. Recomendamos que vá ao posto de saúde da sua região e solicite o cadastro com um ACS.</div>
                         <p class="acs-aviso-vagas" id="acs_aviso_vagas"></p>
                     </div>
                 </div>
+
+                <script>
+                // Toggle simples para tooltips (apenas visual, não mexe em funcionalidade)
+                function toggleTooltip(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.classList.toggle('tooltip-visible');
+                }
+                </script>
 
                 <div class="form-group">
                     <label>Caso haja vaga disponível em outra unidade, você iria? <span class="required">*</span></label>
