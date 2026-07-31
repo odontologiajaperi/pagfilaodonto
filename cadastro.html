@@ -377,127 +377,6 @@
             transform: translateY(0);
         }
 
-        /* Tooltip de ajuda (?) e alerta (!) */
-        .tooltip-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 22px;
-            height: 22px;
-            min-width: 22px;
-            min-height: 22px;
-            border-radius: 50%;
-            font-size: 0.75em;
-            font-weight: 900;
-            cursor: help;
-            position: static;
-            vertical-align: middle;
-            margin-left: 6px;
-            flex-shrink: 0;
-        }
-
-        .tooltip-icon.info {
-            background: #667eea;
-            color: white;
-        }
-
-        .tooltip-icon.warning {
-            background: #f39c12;
-            color: white;
-        }
-
-        /* Tooltip exibido como bloco abaixo, não mais como popup absoluto */
-        .tooltip-text {
-            display: none;
-            background: #333;
-            color: white;
-            padding: 12px 14px;
-            border-radius: 10px;
-            font-size: 0.82rem;
-            font-weight: 400;
-            width: 100%;
-            text-align: left;
-            line-height: 1.5;
-            margin-top: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .tooltip-text.tooltip-visible {
-            display: block;
-        }
-
-        /* Seção ACS */
-        .acs-section {
-            background: #f0f7ff;
-            padding: 18px;
-            border-radius: 12px;
-            border: 2px solid #667eea;
-            margin-bottom: 25px;
-        }
-
-        .acs-section > label {
-            display: flex;
-            align-items: center;
-            flex-wrap: nowrap;
-            gap: 4px;
-            font-size: 0.95em;
-        }
-
-        .acs-section.disabled-section {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        .acs-checkbox-container {
-            margin-top: 14px;
-            padding: 14px 16px;
-            background: #fff3cd;
-            border-radius: 10px;
-            border: 1px solid #ffc107;
-        }
-
-        .acs-checkbox-container > label {
-            display: flex;
-            align-items: center;
-            flex-wrap: nowrap;
-            gap: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            color: #856404;
-            font-size: 0.9em;
-            line-height: 1.4;
-        }
-
-        .acs-checkbox-container.esgotado {
-            background: #f8d7da;
-            border-color: #dc3545;
-        }
-
-        .acs-checkbox-container.esgotado label {
-            color: #721c24;
-            cursor: not-allowed;
-        }
-
-        .acs-aviso-vagas {
-            font-size: 0.82em;
-            color: #856404;
-            margin-top: 8px;
-            margin-left: 0;
-            font-style: italic;
-        }
-
-        .acs-aviso-vagas.esgotado {
-            color: #dc3545;
-            font-weight: 600;
-        }
-
-        .nome-invalido-msg {
-            color: #e74c3c;
-            font-size: 0.82em;
-            margin-top: 4px;
-            display: none;
-        }
-
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -508,28 +387,8 @@
             }
 
             .form-container {
-                padding: 30px 15px;
+                padding: 30px 20px;
             }
-
-            .acs-section {
-                padding: 14px 12px;
-            }
-
-            .acs-section > label {
-                font-size: 0.85em;
-                flex-wrap: wrap;
-            }
-
-            .acs-checkbox-container {
-                padding: 12px 10px;
-            }
-
-            .acs-checkbox-container > label {
-                font-size: 0.82em;
-                gap: 8px;
-                flex-wrap: wrap;
-            }
-        }
         }
     </style>
     
@@ -647,53 +506,9 @@
                     <select name="unidade_preferencia" id="select_unidade" required><option value="">Carregando unidades...</option></select>
                 </div>
 
-                <!-- Seção ACS -->
-                <div class="form-group acs-section" id="acs_section">
-                    <label>
-                        Nome do ACS (Agente Comunitário de Saúde) <span class="required">*</span>
-                        <span class="tooltip-icon info" tabindex="0" onclick="toggleTooltip('tooltip_acs_info')">?</span>
-                    </label>
-                    <div class="tooltip-text" id="tooltip_acs_info">Informe o nome do ACS (Agente Comunitário de Saúde) com quem você fez o cadastro no posto de saúde da sua região de Japeri. Caso não tenha, vá a um posto de saúde próximo e peça para fazer o cadastro.</div>
-                    <input type="text" name="nome_acs" placeholder="Nome completo do seu ACS" id="nome_acs" required>
-                    <p class="nome-invalido-msg" id="acs_nome_erro">O nome deve conter apenas letras, espaços e acentos.</p>
-
-                    <div class="acs-checkbox-container" id="acs_checkbox_container">
-                        <label>
-                            <input type="checkbox" id="checkbox_sem_acs" name="sem_acs" style="width: 20px; height: 20px; cursor: pointer;">
-                            <span>Não tenho ACS / Não sou cadastrado no posto</span>
-                            <span class="tooltip-icon warning" tabindex="0" onclick="event.preventDefault(); toggleTooltip('tooltip_acs_warning')">!</span>
-                        </label>
-                        <div class="tooltip-text" id="tooltip_acs_warning">Atenção: as vagas para quem não possui cadastro no sistema de saúde do posto próximo são bem mais limitadas. Recomendamos que vá ao posto de saúde da sua região e solicite o cadastro com um ACS.</div>
-                        <p class="acs-aviso-vagas" id="acs_aviso_vagas"></p>
-                    </div>
-                </div>
-
-                <script>
-                // Toggle simples para tooltips (apenas visual, não mexe em funcionalidade)
-                function toggleTooltip(id) {
-                    var el = document.getElementById(id);
-                    if (el) el.classList.toggle('tooltip-visible');
-                }
-                </script>
-
-                <!-- Aviso de Checagem do ACS -->
-                <div class="form-group" id="aviso_checagem_acs" style="background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%); padding: 18px 16px; border-radius: 12px; border: 2px solid #ffc107; border-left: 5px solid #f39c12;">
-                    <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
-                        <span style="font-size: 1.4em; flex-shrink: 0;">&#9888;</span>
-                        <div>
-                            <p style="margin: 0 0 8px; font-weight: 700; color: #856404; font-size: 0.95em;">Aviso Importante sobre o ACS</p>
-                            <p style="margin: 0; color: #664d03; font-size: 0.85em; line-height: 1.6;">
-                                Informamos que o nome do Agente Comunitário de Saúde (ACS) informado neste cadastro será verificado junto à base de dados da rede de saúde do município. Caso o nome não seja localizado ou não corresponda a um profissional vinculado à sua região, o cadastro poderá ser desconsiderado da fila de atendimento.
-                            </p>
-                            <p style="margin: 8px 0 0; color: #664d03; font-size: 0.85em; line-height: 1.6;">
-                                Caso não saiba o nome do seu ACS, recomendamos que procure a Unidade Básica de Saúde mais próxima da sua residência para realizar o cadastro antes de prosseguir.
-                            </p>
-                        </div>
-                    </div>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px 12px; background: white; border-radius: 8px; border: 1px solid #ffc107; margin-top: 4px;">
-                        <input type="checkbox" id="aceite_checagem_acs" name="aceite_checagem_acs" required style="width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;">
-                        <span style="font-size: 0.85em; color: #495057; font-weight: 600;">Li e estou ciente de que o nome do ACS será verificado.</span>
-                    </label>
+                <div class="form-group">
+                    <label>Nome do ACS (Agente Comunitário de Saúde)</label>
+                    <input type="text" name="nome_acs" placeholder="Opcional" id="nome_acs">
                 </div>
 
                 <div class="form-group">
@@ -826,66 +641,28 @@
         
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        // Carregar unidades dinamicamente com contagem de vagas por posto
+        // Carregar unidades dinamicamente salvando o NOME como valor
         async function carregarUnidadesAtivas() {
             const select = document.getElementById('select_unidade');
             if(!select) return;
-            select.innerHTML = '<option value="">Carregando unidades...</option>';
             try {
-                // Buscar postos ativos com o limite de vagas
-                const { data: postos, error: erroPostos } = await supabaseClient
+                const { data, error } = await supabaseClient
                     .from('postos')
-                    .select('id, nome, vagas_limite')
+                    .select('id, nome')
                     .eq('ativo', true)
                     .order('nome');
-                if (erroPostos) throw erroPostos;
-
-                // Buscar contagem de inscritos aguardando por unidade
-                const { data: contagens, error: erroContagens } = await supabaseClient
-                    .from('pacientes')
-                    .select('unidade_preferencia')
-                    .eq('status', 'aguardando');
-                if (erroContagens) throw erroContagens;
-
-                // Montar mapa de contagem por posto
-                const contagemPorPosto = {};
-                (contagens || []).forEach(p => {
-                    contagemPorPosto[p.unidade_preferencia] = (contagemPorPosto[p.unidade_preferencia] || 0) + 1;
-                });
-
+                if (error) throw error;
                 select.innerHTML = '<option value="">Selecione...</option>';
-
-                if (postos && postos.length > 0) {
-                    postos.forEach(p => {
-                        const inscritos = contagemPorPosto[p.nome] || 0;
-                        const temLimite = p.vagas_limite !== null && p.vagas_limite !== undefined;
-                        const vagasRestantes = temLimite ? Math.max(0, p.vagas_limite - inscritos) : null;
-
-                        // Ocultar posto se não tem mais vagas
-                        if (temLimite && vagasRestantes <= 0) return;
-
+                if(data) {
+                    data.forEach(p => {
                         const opt = document.createElement('option');
-                        opt.value = p.nome;
+                        // Usamos o NOME como value para salvar texto no banco
+                        // Mas guardamos o ID em um atributo data para o trigger funcionar se necessário
+                        opt.value = p.nome; 
                         opt.setAttribute('data-id', p.id);
-                        opt.setAttribute('data-vagas', vagasRestantes !== null ? vagasRestantes : 'ilimitado');
-
-                        // Mostrar vagas restantes no nome se tiver limite
-                        if (temLimite) {
-                            opt.textContent = `${p.nome} (${vagasRestantes} vaga${vagasRestantes !== 1 ? 's' : ''} restante${vagasRestantes !== 1 ? 's' : ''})`;
-                        } else {
-                            opt.textContent = p.nome;
-                        }
+                        opt.textContent = p.nome;
                         select.appendChild(opt);
                     });
-
-                    // Se não sobrou nenhuma opção, mostrar aviso
-                    if (select.options.length <= 1) {
-                        select.innerHTML = '<option value="">Todas as vagas foram preenchidas</option>';
-                        select.disabled = true;
-                    }
-                } else {
-                    select.innerHTML = '<option value="">Nenhuma unidade disponível no momento</option>';
-                    select.disabled = true;
                 }
             } catch (e) {
                 console.error(e);
@@ -893,114 +670,6 @@
             }
         }
         document.addEventListener('DOMContentLoaded', carregarUnidadesAtivas);
-
-        // ========== LÓGICA DO CAMPO ACS ==========
-
-        // Regex para validar nomes (apenas letras, espaços, acentos e hífens)
-        const regexNome = /^[A-Za-zÀ-ÿ\s\-']+$/;
-
-        // Função para validar campo de nome (apenas letras)
-        function validarCampoNome(input, erroElement) {
-            input.addEventListener('input', function() {
-                const valor = this.value;
-                // Remover números e caracteres especiais em tempo real
-                const valorLimpo = valor.replace(/[0-9!@#$%^&*()_+=\[\]{}|\\;:"<>,.\/~`]/g, '');
-                if (valor !== valorLimpo) {
-                    this.value = valorLimpo;
-                }
-                // Mostrar/ocultar mensagem de erro
-                if (erroElement) {
-                    if (valorLimpo.length > 0 && !regexNome.test(valorLimpo)) {
-                        erroElement.style.display = 'block';
-                    } else {
-                        erroElement.style.display = 'none';
-                    }
-                }
-            });
-        }
-
-        // Aplicar validação nos campos de nome
-        document.addEventListener('DOMContentLoaded', function() {
-            const campoNomeCompleto = document.querySelector('input[name="nome_completo"]');
-            const campoNomeMae = document.querySelector('input[name="nome_mae"]');
-            const campoNomeAcs = document.getElementById('nome_acs');
-
-            if (campoNomeCompleto) validarCampoNome(campoNomeCompleto, null);
-            if (campoNomeMae) validarCampoNome(campoNomeMae, null);
-            if (campoNomeAcs) validarCampoNome(campoNomeAcs, document.getElementById('acs_nome_erro'));
-        });
-
-        // Lógica da checkbox "Não tenho ACS"
-        const checkboxSemAcs = document.getElementById('checkbox_sem_acs');
-        const inputNomeAcs = document.getElementById('nome_acs');
-        const acsAvisoVagas = document.getElementById('acs_aviso_vagas');
-        const acsCheckboxContainer = document.getElementById('acs_checkbox_container');
-
-        if (checkboxSemAcs) {
-            checkboxSemAcs.addEventListener('change', function() {
-                if (this.checked) {
-                    inputNomeAcs.disabled = true;
-                    inputNomeAcs.removeAttribute('required');
-                    inputNomeAcs.value = '';
-                    inputNomeAcs.placeholder = 'Desabilitado (sem ACS)';
-                    inputNomeAcs.style.opacity = '0.5';
-                } else {
-                    inputNomeAcs.disabled = false;
-                    inputNomeAcs.setAttribute('required', '');
-                    inputNomeAcs.placeholder = 'Nome completo do seu ACS';
-                    inputNomeAcs.style.opacity = '1';
-                }
-            });
-        }
-
-        // Função para verificar cota sem ACS do posto selecionado
-        async function verificarCotaSemAcs(unidade) {
-            if (!unidade) {
-                acsAvisoVagas.textContent = '';
-                acsCheckboxContainer.classList.remove('esgotado');
-                checkboxSemAcs.disabled = false;
-                return;
-            }
-            try {
-                const { data, error } = await supabaseClient.rpc('verificar_cota_sem_acs', { p_unidade: unidade });
-                if (error) {
-                    console.log('Erro ao verificar cota ACS:', error.message);
-                    return;
-                }
-
-                const resultado = typeof data === 'string' ? JSON.parse(data) : data;
-
-                if (!resultado.disponivel && resultado.motivo !== 'Sem restrição configurada') {
-                    // Cota esgotada
-                    acsCheckboxContainer.classList.add('esgotado');
-                    checkboxSemAcs.disabled = true;
-                    checkboxSemAcs.checked = false;
-                    inputNomeAcs.disabled = false;
-                    inputNomeAcs.setAttribute('required', '');
-                    inputNomeAcs.placeholder = 'Nome completo do seu ACS';
-                    inputNomeAcs.style.opacity = '1';
-                    acsAvisoVagas.textContent = 'Vagas sem ACS esgotadas para esta unidade. É necessário informar o nome do seu ACS.';
-                    acsAvisoVagas.classList.add('esgotado');
-                } else {
-                    // Cota disponível
-                    acsCheckboxContainer.classList.remove('esgotado');
-                    checkboxSemAcs.disabled = false;
-                    acsAvisoVagas.classList.remove('esgotado');
-                    if (resultado.vagas_restantes_sem_acs !== undefined && resultado.vagas_restantes_sem_acs !== null) {
-                        acsAvisoVagas.textContent = `Vagas sem ACS disponíveis nesta unidade: ${resultado.vagas_restantes_sem_acs} de ${resultado.max_sem_acs}`;
-                    } else {
-                        acsAvisoVagas.textContent = '';
-                    }
-                }
-            } catch (e) {
-                console.log('Erro ao verificar cota ACS:', e.message);
-            }
-        }
-
-        // Verificar cota quando mudar a unidade selecionada
-        document.getElementById('select_unidade').addEventListener('change', function() {
-            verificarCotaSemAcs(this.value);
-        });
 
 
         // Máscaras de input
@@ -1096,26 +765,6 @@
             return digitos.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
         }
 
-        // Registrar erro no banco de dados para análise posterior (sem expor ao paciente)
-        async function registrarErroLog(error, contexto, dadosExtra = {}) {
-            try {
-                await supabaseClient.from('logs_erros').insert([{
-                    pagina: 'cadastro.html',
-                    contexto: contexto,
-                    codigo_erro: error?.code || null,
-                    mensagem_erro: error?.message || 'Erro desconhecido',
-                    detalhes: error?.details || null,
-                    hint: error?.hint || null,
-                    dados_extra: JSON.stringify(dadosExtra),
-                    user_agent: navigator.userAgent,
-                    created_at: new Date().toISOString()
-                }]);
-            } catch (logErr) {
-                // Se falhar o log, apenas ignora (não travar o fluxo)
-                console.warn('Falha ao registrar log de erro:', logErr);
-            }
-        }
-
         function obterMensagemErroCadastro(error, contexto = 'cadastro') {
             const textoErro = [error?.message, error?.details, error?.hint, error?.code].filter(Boolean).join(' ').toLowerCase();
             const cpfInfo = contexto === 'gestante' ? 'como gestante' : 'na fila geral';
@@ -1125,15 +774,14 @@
             }
 
             if (textoErro.includes('row-level security') || textoErro.includes('rls') || error?.code === '42501') {
-                return 'Não foi possível salvar seu cadastro no momento. Por favor, tente novamente em alguns minutos ou entre em contato com a equipe de saúde bucal.';
+                return 'Erro de permissão ao salvar o cadastro. Entre em contato com a equipe responsável pelo sistema.';
             }
 
             if (textoErro.includes('network') || textoErro.includes('failed to fetch')) {
-                return 'Não foi possível conectar ao sistema. Verifique sua conexão com a internet e tente novamente.';
+                return 'Não foi possível conectar ao sistema agora. Verifique a internet e tente novamente.';
             }
 
-            // Mensagem genérica amigável — NÃO expõe detalhes técnicos ao paciente
-            return 'Ocorreu um erro temporário no sistema. Por favor, tente novamente em alguns instantes. Se o problema persistir, entre em contato com a equipe de saúde bucal pelo e-mail odontologiajaperi@gmail.com.';
+            return `Ocorreu um erro ao processar seu cadastro. Motivo informado pelo sistema: ${error?.message || 'erro não especificado.'}`;
         }
 
         function showModal(title, message, type, extraButton = null) {
@@ -1285,75 +933,13 @@
                     return;
                 }
 
-                // Verificar vagas no posto escolhido (somente para não-gestantes)
-                const unidadeEscolhida = document.getElementById('select_unidade').value;
-                if (!isGestante && unidadeEscolhida) {
-                    const { data: postoData } = await supabaseClient
-                        .from('postos')
-                        .select('vagas_limite, ativo')
-                        .eq('nome', unidadeEscolhida)
-                        .single();
-
-                    if (!postoData || !postoData.ativo) {
-                        showModal(
-                            'Unidade Indisponível',
-                            'A unidade selecionada não está mais disponível para cadastro. Por favor, escolha outra unidade ou tente novamente mais tarde.',
-                            'error'
-                        );
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Enviar Cadastro';
-                        await carregarUnidadesAtivas();
-                        return;
-                    }
-
-                    if (postoData.vagas_limite !== null) {
-                        const { count: inscritosAtual } = await supabaseClient
-                            .from('pacientes')
-                            .select('id', { count: 'exact', head: true })
-                            .eq('unidade_preferencia', unidadeEscolhida)
-                            .eq('status', 'aguardando');
-
-                        if (inscritosAtual >= postoData.vagas_limite) {
-                            showModal(
-                                'Vagas Esgotadas',
-                                `As vagas para a unidade "${unidadeEscolhida}" foram preenchidas enquanto você preenchia o formulário. Por favor, escolha outra unidade.`,
-                                'error'
-                            );
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Enviar Cadastro';
-                            await carregarUnidadesAtivas();
-                            return;
-                        }
-                    }
-
-                    // Verificar cota sem ACS no momento do envio (race condition)
-                    const semAcsChecked = document.getElementById('checkbox_sem_acs').checked;
-                    if (semAcsChecked) {
-                        const { data: cotaData, error: cotaError } = await supabaseClient.rpc('verificar_cota_sem_acs', { p_unidade: unidadeEscolhida });
-                        if (!cotaError) {
-                            const cotaResult = typeof cotaData === 'string' ? JSON.parse(cotaData) : cotaData;
-                            if (!cotaResult.disponivel && cotaResult.motivo !== 'Sem restrição configurada') {
-                                showModal(
-                                    'Vagas Sem ACS Esgotadas',
-                                    `As vagas para pessoas sem cadastro no posto de saúde (sem ACS) estão esgotadas para a unidade "${unidadeEscolhida}". Por favor, vá ao posto de saúde mais próximo e solicite o cadastro com um ACS, ou escolha outra unidade.`,
-                                    'error'
-                                );
-                                submitBtn.disabled = false;
-                                submitBtn.textContent = 'Enviar Cadastro';
-                                verificarCotaSemAcs(unidadeEscolhida);
-                                return;
-                            }
-                        }
-                    }
-                }
-
                 const formData = new FormData(e.target);
                 const data = {};
                 
                 // Versão: 2.0.1 - Correção reCAPTCHA e campos inválidos
                 for (let [key, value] of formData.entries()) {
                     // Ignorar campos que não devem ir para o banco
-                    if (key === 'aceita_termos' || key === 'g-recaptcha-response' || key === 'e_gestante' || key === 'sem_acs') {
+                    if (key === 'aceita_termos' || key === 'g-recaptcha-response' || key === 'e_gestante') {
                         continue; // Pular esses campos completamente
                     }
                     data[key] = value;
@@ -1520,7 +1106,6 @@
                     // Adicionar campos automáticos
                     data.status = 'aguardando';
                     data.mes_referencia = new Date().toISOString().slice(0, 7); // YYYY-MM
-                    data.sem_acs = document.getElementById('checkbox_sem_acs').checked;
                     
                     // A posição na fila será atribuída automaticamente pelo banco de dados (Trigger)
                     // Removido cálculo manual no JavaScript para evitar erros de concorrência e garantir ordem correta
@@ -1555,11 +1140,7 @@
             } catch (error) {
                 console.error('Erro:', error);
                 const eGestanteAtual = document.getElementById('checkbox_gestante')?.checked;
-                const ctxErro = eGestanteAtual ? 'gestante' : 'geral';
-                const errorMessage = obterMensagemErroCadastro(error, ctxErro);
-                
-                // Registrar erro técnico no banco para análise (não expõe ao paciente)
-                registrarErroLog(error, ctxErro, { unidade: data?.unidade_preferencia || 'N/A' });
+                const errorMessage = obterMensagemErroCadastro(error, eGestanteAtual ? 'gestante' : 'geral');
                 
                 showModal('Erro no Cadastro', errorMessage, 'error');
             } finally {
@@ -1916,54 +1497,5 @@
       })
       .catch(error => console.error('Erro ao carregar pop-up de avaliação:', error));
   </script>
-    <script>
-
-        // Registrar acesso à página no Supabase
-        async function registrarAcesso() {
-            try {
-                const SUPABASE_URL = "https://uakhmgoxgyklggsvtwdf.supabase.co";
-                const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTE0NzcsImV4cCI6MjA3OTk1MTQ3N30.6iCUHePtVlmq8De9oBl4Zw5CBU4Zai7P3xLpi7cYkDo";
-                
-                if (typeof supabase === "undefined") {
-                    const script = document.createElement("script");
-                    script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-                    script.onload = () => {
-                        const { createClient } = supabase;
-                        const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                        enviarRastreamento(client);
-                    };
-                    document.head.appendChild(script);
-                } else {
-                    const { createClient } = supabase;
-                    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                    enviarRastreamento(client);
-                }
-            } catch (e) {
-                console.log("Rastreamento:", e.message);
-            }
-        }
-        
-        function enviarRastreamento(client) {
-            try {
-                const paginaAtual = window.location.pathname.split("/").pop() || "index.html";
-                const referrer = document.referrer || "direto";
-                const userAgent = navigator.userAgent;
-                client.rpc("registrar_acesso", {
-                    p_pagina: paginaAtual,
-                    p_referrer: referrer,
-                    p_user_agent: userAgent
-                }).catch(e => console.log("Erro:", e.message));
-            } catch (e) {
-                console.log("Rastreamento:", e.message);
-            }
-        }
-        
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", registrarAcesso);
-        } else {
-            registrarAcesso();
-        }
-    
-    </script>
 </body>
 </html>
