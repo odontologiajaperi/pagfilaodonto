@@ -1354,7 +1354,7 @@
                 // Versão: 2.0.1 - Correção reCAPTCHA e campos inválidos
                 for (let [key, value] of formData.entries()) {
                     // Ignorar campos que não devem ir para o banco
-                    if (key === 'aceita_termos' || key === 'g-recaptcha-response' || key === 'e_gestante' || key === 'sem_acs') {
+                    if (key === 'aceita_termos' || key === 'g-recaptcha-response' || key === 'e_gestante' || key === 'sem_acs' || key === 'aceite_checagem_acs') {
                         continue; // Pular esses campos completamente
                     }
                     data[key] = value;
