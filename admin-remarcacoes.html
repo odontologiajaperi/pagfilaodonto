@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Remarcações - Admin</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        /* LOGIN */
+        .login-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; padding: 20px;
+        }
+        .login-overlay.oculto { display: none; }
+        .login-card {
+            background: white; border-radius: 16px; padding: 40px;
+            max-width: 400px; width: 100%; text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .login-card h2 { color: #333; margin-bottom: 8px; }
+        .login-card p { color: #666; margin-bottom: 24px; font-size: 0.9em; }
+        .login-card input {
+            width: 100%; padding: 14px; border: 2px solid #e0e0e0;
+            border-radius: 10px; font-size: 1em; margin-bottom: 16px;
+            text-align: center; letter-spacing: 2px;
+        }
+        .login-card input:focus { outline: none; border-color: #667eea; }
+        .login-card .btn-login {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; border: none; border-radius: 10px; font-size: 1em;
+            font-weight: 600; cursor: pointer; transition: all 0.3s;
+        }
+        .login-card .btn-login:hover { transform: translateY(-2px); }
+        .login-card .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+        .login-erro { color: #dc3545; font-size: 0.85em; margin-bottom: 12px; display: none; }
+        .tentativas-aviso { color: #856404; font-size: 0.8em; margin-top: 10px; display: none; }
+
+        /* PAINEL */
+        .painel { display: none; }
+        .painel.ativo { display: block; }
+        .painel-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .painel-header h1 { font-size: 1.4em; }
+        .btn-sair {
+            padding: 8px 16px; background: rgba(255,255,255,0.2);
+            color: white; border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 8px; cursor: pointer; font-size: 0.85em;
+        }
+        .btn-sair:hover { background: rgba(255,255,255,0.3); }
+
+        /* Abas */
+        .abas {
+            display: flex; background: white; border-bottom: 2px solid #e0e0e0;
+            padding: 0 20px; overflow-x: auto;
+        }
+        .aba {
+            padding: 14px 20px; cursor: pointer; font-weight: 600;
+            color: #666; border-bottom: 3px solid transparent;
+            white-space: nowrap; font-size: 0.9em; transition: all 0.2s;
+        }
+        .aba:hover { color: #667eea; }
+        .aba.ativa { color: #667eea; border-bottom-color: #667eea; }
+        .aba .badge-count {
+            display: inline-block; background: #dc3545; color: white;
+            font-size: 0.7em; padding: 2px 7px; border-radius: 10px;
+            margin-left: 6px; font-weight: 700;
+        }
+
+        /* Conteúdo */
+        .painel-conteudo { padding: 20px; max-width: 1200px; margin: 0 auto; }
+
+        /* Cards de solicitação */
+        .sol-card {
+            background: white; border-radius: 12px; padding: 20px;
+            margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #667eea;
+        }
+        .sol-card.preventiva { border-left-color: #17a2b8; }
+        .sol-card.por_falta { border-left-color: #ffc107; }
+        .sol-card-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+        }
+        .sol-card-header h3 { font-size: 1.1em; color: #333; }
+        .sol-card-info {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px; margin-bottom: 14px;
+        }
+        .sol-info-item { font-size: 0.85em; }
+        .sol-info-item .label { color: #888; }
+        .sol-info-item .valor { color: #333; font-weight: 600; }
+        .sol-card-motivo {
+            background: #f8f9fa; padding: 10px 14px; border-radius: 8px;
+            font-size: 0.85em; color: #555; margin-bottom: 14px;
+            font-style: italic;
+        }
+        .sol-card-acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-acao {
+            padding: 8px 16px; border: none; border-radius: 8px;
+            font-size: 0.85em; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-aprovar { background: #28a745; color: white; }
+        .btn-aprovar:hover { background: #218838; }
+        .btn-recusar { background: #dc3545; color: white; }
+        .btn-recusar:hover { background: #c82333; }
+        .btn-contatado { background: #17a2b8; color: white; }
+        .btn-contatado:hover { background: #138496; }
+
+        .badge-status {
+            display: inline-block; padding: 3px 10px; border-radius: 12px;
+            font-size: 0.75em; font-weight: 600; text-transform: uppercase;
+        }
+        .badge-pendente { background: #fff3cd; color: #856404; }
+        .badge-aprovada { background: #d4edda; color: #155724; }
+        .badge-recusada { background: #f8d7da; color: #721c24; }
+        .badge-contatado { background: #d1ecf1; color: #0c5460; }
+
+        .vazio { text-align: center; padding: 40px; color: #999; }
+
+        /* Modal de ação */
+        .modal-acao-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-acao-overlay.ativo { display: flex; }
+        .modal-acao {
+            background: white; border-radius: 16px; padding: 30px;
+            max-width: 500px; width: 100%;
+        }
+        .modal-acao h3 { margin-bottom: 16px; color: #333; }
+        .modal-acao .form-group { margin-bottom: 14px; }
+        .modal-acao label { display: block; margin-bottom: 6px; font-weight: 600; color: #555; font-size: 0.9em; }
+        .modal-acao input, .modal-acao textarea {
+            width: 100%; padding: 10px; border: 2px solid #e0e0e0;
+            border-radius: 8px; font-size: 0.95em;
+        }
+        .modal-acao textarea { resize: vertical; min-height: 60px; }
+        .modal-acao-btns { display: flex; gap: 10px; margin-top: 16px; }
+        .modal-acao-btns .btn-acao { flex: 1; padding: 12px; }
+
+        @media (max-width: 600px) {
+            .painel-header { flex-direction: column; gap: 10px; text-align: center; }
+            .abas { padding: 0 10px; }
+            .aba { padding: 12px 14px; font-size: 0.8em; }
+            .sol-card-info { grid-template-columns: 1fr; }
+            .sol-card-acoes { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TELA DE LOGIN -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <h2>🔒 Acesso Restrito</h2>
+            <p>Painel de Gerenciamento de Remarcações</p>
+            <div id="loginErro" class="login-erro">Senha incorreta. Tente novamente.</div>
+            <input type="password" id="senhaInput" placeholder="Digite a senha" onkeydown="if(event.key==='Enter')fazerLogin()">
+            <button class="btn-login" id="btnLogin" onclick="fazerLogin()">Entrar</button>
+            <div id="tentativasAviso" class="tentativas-aviso"></div>
+        </div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL -->
+    <div id="painel" class="painel">
+        <div class="painel-header">
+            <h1>📋 Painel de Remarcações</h1>
+            <button class="btn-sair" onclick="sair()">Sair</button>
+        </div>
+
+        <div class="abas">
+            <div class="aba ativa" data-status="pendente" onclick="trocarAba(this)">
+                Pendentes <span class="badge-count" id="count-pendente">0</span>
+            </div>
+            <div class="aba" data-status="aprovada" onclick="trocarAba(this)">Aprovadas</div>
+            <div class="aba" data-status="contatado" onclick="trocarAba(this)">Contatados</div>
+            <div class="aba" data-status="recusada" onclick="trocarAba(this)">Recusadas</div>
+            <div class="aba" data-status="" onclick="trocarAba(this)">Todas</div>
+        </div>
+
+        <div class="painel-conteudo" id="listaContainer">
+            <div class="vazio">Carregando...</div>
+        </div>
+    </div>
+
+    <!-- MODAL DE AÇÃO -->
+    <div id="modalAcao" class="modal-acao-overlay">
+        <div class="modal-acao">
+            <h3 id="modalAcaoTitulo">Processar Solicitação</h3>
+            <div class="form-group" id="grupoDataNova" style="display:none;">
+                <label>Nova data da consulta</label>
+                <input type="date" id="inputDataNova">
+            </div>
+            <div class="form-group">
+                <label>Observação</label>
+                <textarea id="inputObservacao" placeholder="Observação opcional..."></textarea>
+            </div>
+            <div class="modal-acao-btns">
+                <button class="btn-acao" style="background:#ccc;color:#333;" onclick="fecharModalAcao()">Cancelar</button>
+                <button class="btn-acao btn-aprovar" id="btnExecutarAcao" onclick="executarAcao()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://uakhmgoxgyklggsvtwdf.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2htZ294Z3lrbGdnc3Z0d2RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTE0NzcsImV4cCI6MjA3OTk1MTQ3N30.6iCUHePtVlmq8De9oBl4Zw5CBU4Zai7P3xLpi7cYkDo';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let senhaAtual = '';
+        let tentativas = 0;
+        const MAX_TENTATIVAS = 5;
+        let acaoAtual = null;
+        let solicitacaoAtual = null;
+
+        // ===== LOGIN =====
+        async function fazerLogin() {
+            if (tentativas >= MAX_TENTATIVAS) {
+                document.getElementById('tentativasAviso').style.display = 'block';
+                document.getElementById('tentativasAviso').textContent = 'Muitas tentativas. Aguarde alguns minutos.';
+                document.getElementById('btnLogin').disabled = true;
+                setTimeout(() => {
+                    tentativas = 0;
+                    document.getElementById('btnLogin').disabled = false;
+                    document.getElementById('tentativasAviso').style.display = 'none';
+                }, 60000);
+                return;
+            }
+
+            const senha = document.getElementById('senhaInput').value;
+            if (!senha) return;
+
+            document.getElementById('btnLogin').disabled = true;
+            document.getElementById('btnLogin').textContent = 'Verificando...';
+
+            try {
+                const { data, error } = await supabaseClient.rpc('verificar_senha_admin', { p_senha: senha });
+                if (error) throw error;
+
+                if (data === true) {
+                    senhaAtual = senha;
+                    document.getElementById('loginOverlay').classList.add('oculto');
+                    document.getElementById('painel').classList.add('ativo');
+                    carregarSolicitacoes('pendente');
+                } else {
+                    tentativas++;
+                    document.getElementById('loginErro').style.display = 'block';
+                    if (tentativas >= 3) {
+                        document.getElementById('tentativasAviso').style.display = 'block';
+                        document.getElementById('tentativasAviso').textContent = `Tentativa ${tentativas} de ${MAX_TENTATIVAS}. Após ${MAX_TENTATIVAS} tentativas, o acesso será bloqueado por 1 minuto.`;
+                    }
+                }
+            } catch (err) {
+                document.getElementById('loginErro').style.display = 'block';
+                document.getElementById('loginErro').textContent = 'Erro ao verificar senha. Tente novamente.';
+                console.error(err);
+            }
+
+            document.getElementById('btnLogin').disabled = false;
+            document.getElementById('btnLogin').textContent = 'Entrar';
+        }
+
+        function sair() {
+            senhaAtual = '';
+            document.getElementById('painel').classList.remove('ativo');
+            document.getElementById('loginOverlay').classList.remove('oculto');
+            document.getElementById('senhaInput').value = '';
+            document.getElementById('loginErro').style.display = 'none';
+        }
+
+        // ===== ABAS =====
+        function trocarAba(el) {
+            document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
+            el.classList.add('ativa');
+            carregarSolicitacoes(el.dataset.status || null);
+        }
+
+        // ===== CARREGAR SOLICITAÇÕES =====
+        async function carregarSolicitacoes(status) {
+            const container = document.getElementById('listaContainer');
+            container.innerHTML = '<div class="vazio">Carregando...</div>';
+
+            try {
+                const { data, error } = await supabaseClient.rpc('listar_solicitacoes_remarcacao', {
+                    p_senha: senhaAtual,
+                    p_status: status || null
+                });
+
+                if (error) throw error;
+                if (!data || !data.sucesso) {
+                    container.innerHTML = '<div class="vazio">Erro ao carregar dados.</div>';
+                    return;
+                }
+
+                const solicitacoes = data.dados || [];
+
+                // Atualizar contador de pendentes
+                const pendentes = solicitacoes.filter(s => s.status_solicitacao === 'pendente');
+                document.getElementById('count-pendente').textContent = status ? (status === 'pendente' ? solicitacoes.length : pendentes.length) : pendentes.length;
+
+                if (solicitacoes.length === 0) {
+                    container.innerHTML = '<div class="vazio">Nenhuma solicitação encontrada.</div>';
+                    return;
+                }
+
+                container.innerHTML = solicitacoes.map(s => renderCard(s)).join('');
+
+            } catch (err) {
+                container.innerHTML = '<div class="vazio">Erro ao carregar solicitações.</div>';
+                console.error(err);
+            }
+        }
+
+        function renderCard(s) {
+            const tipoClass = s.tipo_remarcacao === 'preventiva' ? 'preventiva' : 'por_falta';
+            const statusBadge = {
+                'pendente': '<span class="badge-status badge-pendente">Pendente</span>',
+                'aprovada': '<span class="badge-status badge-aprovada">Aprovada</span>',
+                'recusada': '<span class="badge-status badge-recusada">Recusada</span>',
+                'contatado': '<span class="badge-status badge-contatado">Contatado</span>'
+            };
+
+            const cpfOculto = s.cpf ? '***.' + s.cpf.slice(3, 6) + '.' + s.cpf.slice(6, 9) + '-' + s.cpf.slice(9) : '';
+
+            let acoes = '';
+            if (s.status_solicitacao === 'pendente') {
+                acoes = `
+                    <button class="btn-acao btn-aprovar" onclick="abrirModalAcao('${s.id}', 'aprovar')">✓ Aprovar</button>
+                    <button class="btn-acao btn-contatado" onclick="abrirModalAcao('${s.id}', 'contatado')">📞 Contatado</button>
+                    <button class="btn-acao btn-recusar" onclick="abrirModalAcao('${s.id}', 'recusar')">✗ Recusar</button>
+                `;
+            }
+
+            return `
+                <div class="sol-card ${tipoClass}">
+                    <div class="sol-card-header">
+                        <h3>${s.nome_completo}</h3>
+                        ${statusBadge[s.status_solicitacao] || ''}
+                    </div>
+                    <div class="sol-card-info">
+                        <div class="sol-info-item"><span class="label">CPF:</span> <span class="valor">${cpfOculto}</span></div>
+                        <div class="sol-info-item"><span class="label">Celular:</span> <span class="valor">${s.celular || 'Não informado'}</span></div>
+                        <div class="sol-info-item"><span class="label">Unidade:</span> <span class="valor">${s.unidade}</span></div>
+                        <div class="sol-info-item"><span class="label">Tipo:</span> <span class="valor">${s.tipo_remarcacao === 'preventiva' ? '🔵 Preventiva' : '🟡 Por falta'}</span></div>
+                        <div class="sol-info-item"><span class="label">Data original:</span> <span class="valor">${formatarData(s.data_agendamento_original)}</span></div>
+                        <div class="sol-info-item"><span class="label">Solicitado há:</span> <span class="valor">${s.dias_desde_solicitacao} dia(s)</span></div>
+                        ${s.data_nova ? `<div class="sol-info-item"><span class="label">Nova data:</span> <span class="valor" style="color:#28a745;">${formatarData(s.data_nova)}</span></div>` : ''}
+                    </div>
+                    ${s.motivo ? `<div class="sol-card-motivo">"${s.motivo}"</div>` : ''}
+                    ${s.observacao_admin ? `<div class="sol-card-motivo" style="border-left:3px solid #667eea;"><strong>Admin:</strong> ${s.observacao_admin}</div>` : ''}
+                    ${acoes ? `<div class="sol-card-acoes">${acoes}</div>` : ''}
+                </div>
+            `;
+        }
+
+        function formatarData(dataStr) {
+            if (!dataStr) return 'Não definida';
+            const partes = dataStr.split('-');
+            if (partes.length !== 3) return dataStr;
+            return partes[2] + '/' + partes[1] + '/' + partes[0];
+        }
+
+        // ===== MODAL DE AÇÃO =====
+        function abrirModalAcao(id, acao) {
+            solicitacaoAtual = id;
+            acaoAtual = acao;
+
+            const titulo = {
+                'aprovar': 'Aprovar Remarcação',
+                'recusar': 'Recusar Solicitação',
+                'contatado': 'Marcar como Contatado'
+            };
+
+            document.getElementById('modalAcaoTitulo').textContent = titulo[acao] || 'Processar';
+            document.getElementById('grupoDataNova').style.display = acao === 'aprovar' ? 'block' : 'none';
+            document.getElementById('inputDataNova').value = '';
+            document.getElementById('inputObservacao').value = '';
+
+            const btnExec = document.getElementById('btnExecutarAcao');
+            btnExec.textContent = acao === 'aprovar' ? 'Aprovar' : acao === 'recusar' ? 'Recusar' : 'Confirmar';
+            btnExec.className = 'btn-acao ' + (acao === 'recusar' ? 'btn-recusar' : acao === 'contatado' ? 'btn-contatado' : 'btn-aprovar');
+
+            document.getElementById('modalAcao').classList.add('ativo');
+        }
+
+        function fecharModalAcao() {
+            document.getElementById('modalAcao').classList.remove('ativo');
+            solicitacaoAtual = null;
+            acaoAtual = null;
+        }
+
+        async function executarAcao() {
+            if (!solicitacaoAtual || !acaoAtual) return;
+
+            const dataNova = document.getElementById('inputDataNova').value || null;
+            const observacao = document.getElementById('inputObservacao').value || null;
+
+            if (acaoAtual === 'aprovar' && !dataNova) {
+                alert('Por favor, informe a nova data da consulta para aprovar.');
+                return;
+            }
+
+            const btn = document.getElementById('btnExecutarAcao');
+            btn.disabled = true;
+            btn.textContent = 'Processando...';
+
+            try {
+                const { data, error } = await supabaseClient.rpc('processar_remarcacao', {
+                    p_senha: senhaAtual,
+                    p_solicitacao_id: solicitacaoAtual,
+                    p_acao: acaoAtual,
+                    p_data_nova: dataNova,
+                    p_observacao: observacao
+                });
+
+                if (error) throw error;
+
+                if (data && data.sucesso) {
+                    fecharModalAcao();
+                    // Recarregar aba atual
+                    const abaAtiva = document.querySelector('.aba.ativa');
+                    carregarSolicitacoes(abaAtiva ? abaAtiva.dataset.status || null : 'pendente');
+                } else {
+                    alert(data ? data.mensagem : 'Erro ao processar.');
+                }
+            } catch (err) {
+                alert('Erro ao processar solicitação. Tente novamente.');
+                console.error(err);
+            }
+
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
