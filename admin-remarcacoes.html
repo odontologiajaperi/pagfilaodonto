@@ -215,6 +215,37 @@
         </div>
     </div>
 
+    <!-- MODAL DE EDIÇÃO -->
+    <div id="modalEditar" class="modal-acao-overlay">
+        <div class="modal-acao" style="max-width:500px;">
+            <h3>Editar Informações</h3>
+            <div class="form-group">
+                <label>Nome completo</label>
+                <input type="text" id="editNome" placeholder="Nome do paciente">
+            </div>
+            <div class="form-group">
+                <label>Telefone de contato</label>
+                <input type="tel" id="editTelefone" placeholder="(21) 99999-9999">
+            </div>
+            <div class="form-group">
+                <label>E-mail de contato</label>
+                <input type="email" id="editEmail" placeholder="email@exemplo.com">
+            </div>
+            <div class="form-group">
+                <label>Unidade</label>
+                <input type="text" id="editUnidade" placeholder="Nome da unidade">
+            </div>
+            <div class="form-group">
+                <label>Observação do admin</label>
+                <textarea id="editObservacao" placeholder="Observação opcional..."></textarea>
+            </div>
+            <div class="modal-acao-btns">
+                <button class="btn-acao" style="background:#ccc;color:#333;" onclick="fecharModalEditar()">Cancelar</button>
+                <button class="btn-acao btn-aprovar" id="btnSalvarEdicao" onclick="salvarEdicao()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://uakhmgoxgyklggsvtwdf.supabase.co';
@@ -354,9 +385,9 @@
             const contatoEmail = escaparHtml(s.email_contato || 'Não informado');
             const localizado = s.cadastro_localizado === true;
 
-            let acoes = '';
+            let acoes = `<button class="btn-acao" style="background:#667eea;color:#fff;" onclick="abrirModalEditar('${s.id}', '${escaparHtml(s.nome_completo || '')}', '${escaparHtml(s.telefone_contato || s.celular || '')}', '${escaparHtml(s.email_contato || '')}', '${escaparHtml(s.unidade || '')}', '${escaparHtml(s.observacao_admin || '')}')">✏️ Editar</button>`;
             if (s.status_solicitacao === 'pendente') {
-                acoes = `
+                acoes += `
                     <button class="btn-acao btn-aprovar" onclick="abrirModalAcao('${s.id}', 'aprovar')">✓ Aprovar</button>
                     <button class="btn-acao btn-contatado" onclick="abrirModalAcao('${s.id}', 'contatado')">📞 Contatado</button>
                     <button class="btn-acao btn-recusar" onclick="abrirModalAcao('${s.id}', 'recusar')">✗ Recusar</button>
@@ -379,6 +410,10 @@
                         <div class="sol-info-item"><span class="label">Data original:</span> <span class="valor">${formatarData(s.data_agendamento_original)}</span></div>
                         <div class="sol-info-item"><span class="label">Solicitado há:</span> <span class="valor">${s.dias_desde_solicitacao ?? 0} dia(s)</span></div>
                         ${s.data_nova ? `<div class="sol-info-item"><span class="label">Nova data:</span> <span class="valor" style="color:#28a745;">${formatarData(s.data_nova)}</span></div>` : ''}
+                        ${s.endereco_paciente ? `<div class="sol-info-item"><span class="label">Endereço:</span> <span class="valor">${escaparHtml(s.endereco_paciente)}</span></div>` : ''}
+                        ${s.acs_paciente ? `<div class="sol-info-item"><span class="label">ACS:</span> <span class="valor">${escaparHtml(s.acs_paciente)}</span></div>` : ''}
+                        ${s.posicao_fila ? `<div class="sol-info-item"><span class="label">Posição na fila:</span> <span class="valor">${s.posicao_fila}</span></div>` : ''}
+                        ${s.status_paciente ? `<div class="sol-info-item"><span class="label">Status no banco:</span> <span class="valor">${escaparHtml(s.status_paciente)}</span></div>` : ''}
                     </div>
                     ${s.motivo ? `<div class="sol-card-motivo">"${escaparHtml(s.motivo)}"</div>` : ''}
                     ${s.observacao_admin ? `<div class="sol-card-motivo" style="border-left:3px solid #667eea;"><strong>Admin:</strong> ${escaparHtml(s.observacao_admin)}</div>` : ''}
@@ -421,6 +456,59 @@
             document.getElementById('modalAcao').classList.remove('ativo');
             solicitacaoAtual = null;
             acaoAtual = null;
+        }
+
+        // ===== MODAL DE EDIÇÃO =====
+        let editandoId = null;
+
+        function abrirModalEditar(id, nome, telefone, email, unidade, obs) {
+            editandoId = id;
+            document.getElementById('editNome').value = nome || '';
+            document.getElementById('editTelefone').value = telefone || '';
+            document.getElementById('editEmail').value = email || '';
+            document.getElementById('editUnidade').value = unidade || '';
+            document.getElementById('editObservacao').value = obs || '';
+            document.getElementById('modalEditar').classList.add('ativo');
+        }
+
+        function fecharModalEditar() {
+            document.getElementById('modalEditar').classList.remove('ativo');
+            editandoId = null;
+        }
+
+        async function salvarEdicao() {
+            if (!editandoId) return;
+            const btn = document.getElementById('btnSalvarEdicao');
+            btn.disabled = true;
+            btn.textContent = 'Salvando...';
+
+            try {
+                const { data, error } = await supabaseClient.rpc('editar_solicitacao_remarcacao', {
+                    p_senha: senhaAtual,
+                    p_solicitacao_id: editandoId,
+                    p_nome_completo: document.getElementById('editNome').value || null,
+                    p_telefone_contato: document.getElementById('editTelefone').value || null,
+                    p_email_contato: document.getElementById('editEmail').value || null,
+                    p_unidade: document.getElementById('editUnidade').value || null,
+                    p_observacao_admin: document.getElementById('editObservacao').value || null
+                });
+
+                if (error) throw error;
+
+                if (data && data.sucesso) {
+                    fecharModalEditar();
+                    const abaAtiva = document.querySelector('.aba.ativa');
+                    carregarSolicitacoes(abaAtiva ? abaAtiva.dataset.status || null : 'pendente');
+                } else {
+                    alert(data ? data.mensagem : 'Erro ao salvar.');
+                }
+            } catch (err) {
+                alert('Erro ao salvar edição. Tente novamente.');
+                console.error(err);
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Salvar';
         }
 
         async function executarAcao() {
