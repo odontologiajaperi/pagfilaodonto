@@ -386,9 +386,6 @@
             const localizado = s.cadastro_localizado === true;
 
             let acoes = `<button class="btn-acao" style="background:#667eea;color:#fff;" onclick="abrirModalEditar('${s.id}', '${escaparHtml(s.nome_completo || '')}', '${escaparHtml(s.telefone_contato || s.celular || '')}', '${escaparHtml(s.email_contato || '')}', '${escaparHtml(s.unidade || '')}', '${escaparHtml(s.observacao_admin || '')}')">✏️ Editar</button>`;
-            if (s.documento_path) {
-                acoes += `<button class="btn-acao" style="background:#2f855a;color:#fff;" onclick="abrirDocumento('${s.id}')">📎 Ver documento</button>`;
-            }
             if (s.status_solicitacao === 'pendente') {
                 acoes += `
                     <button class="btn-acao btn-aprovar" onclick="abrirModalAcao('${s.id}', 'aprovar')">✓ Aprovar</button>
@@ -417,7 +414,6 @@
                         ${s.acs_paciente ? `<div class="sol-info-item"><span class="label">ACS:</span> <span class="valor">${escaparHtml(s.acs_paciente)}</span></div>` : ''}
                         ${s.posicao_fila ? `<div class="sol-info-item"><span class="label">Posição na fila:</span> <span class="valor">${s.posicao_fila}</span></div>` : ''}
                         ${s.status_paciente ? `<div class="sol-info-item"><span class="label">Status no banco:</span> <span class="valor">${escaparHtml(s.status_paciente)}</span></div>` : ''}
-                        ${s.documento_nome ? `<div class="sol-info-item"><span class="label">Documento:</span> <span class="valor">${escaparHtml(s.documento_nome)}</span></div>` : ''}
                     </div>
                     ${s.motivo ? `<div class="sol-card-motivo">"${escaparHtml(s.motivo)}"</div>` : ''}
                     ${s.observacao_admin ? `<div class="sol-card-motivo" style="border-left:3px solid #667eea;"><strong>Admin:</strong> ${escaparHtml(s.observacao_admin)}</div>` : ''}
@@ -460,30 +456,6 @@
             document.getElementById('modalAcao').classList.remove('ativo');
             solicitacaoAtual = null;
             acaoAtual = null;
-        }
-
-        // ===== DOCUMENTO PRIVADO =====
-        async function abrirDocumento(solicitacaoId) {
-            const janela = window.open('', '_blank');
-            if (!janela) {
-                alert('O navegador bloqueou a abertura. Permita pop-ups para este site e tente novamente.');
-                return;
-            }
-            janela.document.write('<p style="font-family:Arial;padding:24px">Preparando documento seguro...</p>');
-
-            try {
-                const { data, error } = await supabaseClient.functions.invoke('documento-remarcacao', {
-                    body: { senha: senhaAtual, solicitacao_id: solicitacaoId }
-                });
-                if (error || !data || !data.sucesso || !data.url) {
-                    throw error || new Error(data ? data.mensagem : 'Não foi possível abrir o documento.');
-                }
-                janela.location.href = data.url;
-            } catch (erro) {
-                janela.close();
-                alert('Não foi possível abrir o documento. Tente novamente.');
-                console.error(erro);
-            }
         }
 
         // ===== MODAL DE EDIÇÃO =====
