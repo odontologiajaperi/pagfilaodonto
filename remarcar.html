@@ -50,6 +50,19 @@
             border-color: #667eea;
         }
         .form-group textarea { resize: vertical; min-height: 80px; }
+        .upload-documento {
+            background: #fff8e1;
+            border: 2px dashed #d69e2e;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .upload-documento label { color: #7a5600; font-size: 1em; }
+        .upload-documento input[type="file"] {
+            background: white;
+            border: 1px solid #e5c36e;
+            padding: 10px;
+            cursor: pointer;
+        }
         .btn {
             display: inline-block;
             padding: 14px 28px;
@@ -217,14 +230,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="motivo">Motivo da remarcação (opcional)</label>
-                    <textarea id="motivo" placeholder="Informe brevemente o motivo, se desejar..." maxlength="200"></textarea>
+                    <label for="motivo">Motivo da remarcação <span style="color:red">*</span></label>
+                    <textarea id="motivo" placeholder="Explique brevemente o motivo da solicitação..." maxlength="200" required></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label for="documentoJustificativa">Documento de justificativa <span style="color:#856404">(obrigatório somente em caso de falta)</span></label>
+                <div class="form-group upload-documento">
+                    <label for="documentoJustificativa">📎 Anexar foto ou PDF da justificativa <span style="color:#856404">(obrigatório somente em caso de falta)</span></label>
                     <input type="file" id="documentoJustificativa" accept="image/jpeg,image/png,image/webp,image/heic,application/pdf" aria-describedby="ajudaDocumento">
-                    <small id="ajudaDocumento" style="display:block; margin-top:7px; color:#666; line-height:1.45;">Envie uma foto legível ou PDF do atestado, declaração de trabalho, boletim de ocorrência ou outro comprovante. Tamanho máximo: 5 MB.</small>
+                    <small id="ajudaDocumento" style="display:block; margin-top:7px; color:#664d03; line-height:1.45;">Selecione uma foto legível ou PDF do atestado, declaração de trabalho, boletim de ocorrência ou outro comprovante. Tamanho máximo: 5 MB.</small>
                 </div>
 
                 <div class="alerta alerta-aviso">
@@ -366,6 +379,11 @@
             const telefone = document.getElementById('telefoneContato').value.replace(/\D/g, '');
             const motivo = document.getElementById('motivo').value.trim();
             const documento = document.getElementById('documentoJustificativa').files[0] || null;
+
+            if (!motivo) {
+                mostrarErro('Por favor, informe o motivo da remarcação.');
+                return;
+            }
 
             if (documento) {
                 const formatosPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'application/pdf'];

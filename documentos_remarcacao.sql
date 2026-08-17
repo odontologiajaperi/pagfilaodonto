@@ -13,6 +13,24 @@ ALTER TABLE public.solicitacoes_remarcacao
     ADD COLUMN IF NOT EXISTS documento_tamanho INTEGER,
     ADD COLUMN IF NOT EXISTS documento_enviado_em TIMESTAMPTZ;
 
+-- Motivo é obrigatório mesmo se a requisição for feita fora da página.
+CREATE OR REPLACE FUNCTION public.validar_motivo_remarcacao()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NULLIF(trim(COALESCE(NEW.motivo, '')), '') IS NULL THEN
+        RAISE EXCEPTION 'Informe o motivo da solicitação de remarcação.';
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_validar_motivo_remarcacao ON public.solicitacoes_remarcacao;
+CREATE TRIGGER trg_validar_motivo_remarcacao
+BEFORE INSERT OR UPDATE OF motivo ON public.solicitacoes_remarcacao
+FOR EACH ROW EXECUTE FUNCTION public.validar_motivo_remarcacao();
+
 -- 2. Bucket privado: sem URL pública, máximo de 5 MB e tipos permitidos.
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
