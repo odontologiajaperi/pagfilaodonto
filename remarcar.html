@@ -221,6 +221,12 @@
                     <textarea id="motivo" placeholder="Informe brevemente o motivo, se desejar..." maxlength="200"></textarea>
                 </div>
 
+                <div class="form-group">
+                    <label for="documentoJustificativa">Documento de justificativa <span style="color:#856404">(obrigatório somente em caso de falta)</span></label>
+                    <input type="file" id="documentoJustificativa" accept="image/jpeg,image/png,image/webp,image/heic,application/pdf" aria-describedby="ajudaDocumento">
+                    <small id="ajudaDocumento" style="display:block; margin-top:7px; color:#666; line-height:1.45;">Envie uma foto legível ou PDF do atestado, declaração de trabalho, boletim de ocorrência ou outro comprovante. Tamanho máximo: 5 MB.</small>
+                </div>
+
                 <div class="alerta alerta-aviso">
                     <strong>⚠️ Atenção:</strong> A solicitação de remarcação por falta somente será aprovada mediante apresentação de documento que justifique a ausência (atestado médico, declaração de trabalho, boletim de ocorrência ou outro comprovante). Solicitações sem justificativa documental serão <strong>negadas</strong>.
                 </div>
@@ -359,6 +365,19 @@
             const email = document.getElementById('emailContato').value.trim().toLowerCase();
             const telefone = document.getElementById('telefoneContato').value.replace(/\D/g, '');
             const motivo = document.getElementById('motivo').value.trim();
+            const documento = document.getElementById('documentoJustificativa').files[0] || null;
+
+            if (documento) {
+                const formatosPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'application/pdf'];
+                if (!formatosPermitidos.includes(documento.type)) {
+                    mostrarErro('Envie apenas foto nos formatos JPG, PNG, WEBP, HEIC ou um arquivo PDF.');
+                    return;
+                }
+                if (documento.size > 5 * 1024 * 1024) {
+                    mostrarErro('O documento deve ter no máximo 5 MB.');
+                    return;
+                }
+            }
 
             if (cpf.length !== 11) {
                 mostrarErro('Por favor, informe um CPF válido com 11 dígitos.');
@@ -395,7 +414,7 @@
                 console.warn('Verificação de CPF indisponível:', err);
             }
 
-            dadosPaciente = { cpf, email, telefone, motivo, verificacao };
+            dadosPaciente = { cpf, email, telefone, motivo, documento, verificacao };
 
             const localizado = verificacao.cadastro_localizado === true;
             const tipoEl = document.getElementById('info-tipo');
@@ -438,7 +457,43 @@
         }
 
         function confirmarRemarcacao() {
+            const tipo = dadosPaciente && dadosPaciente.verificacao ? dadosPaciente.verificacao.tipo_remarcacao : null;
+            if (tipo === 'por_falta' && !dadosPaciente.documento) {
+                mostrarErro('Para solicitar remarcação após falta, anexe o documento de justificativa antes de continuar.');
+                voltarEtapa1();
+                return;
+            }
             document.getElementById('modalConfirmacao').classList.add('ativo');
+        }
+
+        function nomeSeguroArquivo(nome) {
+            const extensao = (nome.split('.').pop() || 'arquivo').toLowerCase().replace(/[^a-z0-9]/g, '');
+            return extensao || 'arquivo';
+        }
+
+        async function enviarDocumentoJustificativa(solicitacaoId, arquivo) {
+            if (!arquivo) return { sucesso: true };
+
+            const caminho = `solicitacoes/${solicitacaoId}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${nomeSeguroArquivo(arquivo.name)}`;
+            const { error: erroUpload } = await supabaseClient.storage
+                .from('documentos-remarcacao')
+                .upload(caminho, arquivo, { contentType: arquivo.type, upsert: false });
+
+            if (erroUpload) throw erroUpload;
+
+            const { data: vinculo, error: erroVinculo } = await supabaseClient.rpc('vincular_documento_remarcacao', {
+                p_solicitacao_id: solicitacaoId,
+                p_documento_path: caminho,
+                p_documento_nome: arquivo.name,
+                p_documento_mime: arquivo.type,
+                p_documento_tamanho: arquivo.size
+            });
+
+            if (erroVinculo || !vinculo || !vinculo.sucesso) {
+                throw erroVinculo || new Error(vinculo ? vinculo.mensagem : 'Não foi possível vincular o documento.');
+            }
+
+            return { sucesso: true };
         }
 
         function fecharModal() {
@@ -461,10 +516,21 @@
                 if (error) throw error;
 
                 if (data && data.sucesso) {
+                    let mensagemDocumento = '';
+                    if (dadosPaciente.documento) {
+                        try {
+                            btnModal.textContent = 'Anexando documento...';
+                            await enviarDocumentoJustificativa(data.solicitacao_id, dadosPaciente.documento);
+                            mensagemDocumento = '<br><br><strong>Documento de justificativa recebido com sucesso.</strong>';
+                        } catch (erroDocumento) {
+                            console.error('Erro ao anexar documento:', erroDocumento);
+                            mensagemDocumento = '<br><br><strong>A solicitação foi registrada, mas não foi possível anexar o documento.</strong> Guarde o comprovante e apresente-o à equipe quando ela entrar em contato.';
+                        }
+                    }
                     fecharModal();
-                    document.getElementById('msg-sucesso').innerHTML = data.cadastro_localizado
+                    document.getElementById('msg-sucesso').innerHTML = (data.cadastro_localizado
                         ? 'Sua solicitação foi registrada com sucesso. Nossa equipe entrará em contato em até <strong>3 dias úteis</strong> pelo telefone ou e-mail informado.'
-                        : 'Sua solicitação foi registrada para análise manual. Nossa equipe entrará em contato em até <strong>3 dias úteis</strong> pelo telefone ou e-mail informado.';
+                        : 'Sua solicitação foi registrada para análise manual. Nossa equipe entrará em contato em até <strong>3 dias úteis</strong> pelo telefone ou e-mail informado.') + mensagemDocumento;
                     if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
                     irParaEtapa(3);
                 } else {
