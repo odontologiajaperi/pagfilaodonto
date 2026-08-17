@@ -203,12 +203,26 @@
 
                 <div class="form-group">
                     <label for="cpf">Informe seu CPF <span style="color:red">*</span></label>
-                    <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" required>
+                    <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="emailContato">E-mail para contato <span style="color:red">*</span></label>
+                    <input type="email" id="emailContato" placeholder="seuemail@exemplo.com" maxlength="120" autocomplete="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefoneContato">Telefone / WhatsApp para contato <span style="color:red">*</span></label>
+                    <input type="tel" id="telefoneContato" placeholder="(21) 99999-9999" maxlength="15" inputmode="tel" autocomplete="tel" required>
                 </div>
 
                 <div class="form-group">
                     <label for="motivo">Motivo da remarcação (opcional)</label>
                     <textarea id="motivo" placeholder="Informe brevemente o motivo, se desejar..." maxlength="200"></textarea>
+                </div>
+
+                <div class="alerta alerta-info">
+                    <strong>Importante:</strong> Vamos verificar se o CPF está cadastrado no sistema. Mesmo que não seja localizado, sua solicitação será registrada para análise manual e a equipe entrará em contato pelos dados informados.
                 </div>
 
                 <div id="recaptcha-container" class="form-group" style="display:flex;justify-content:center;">
@@ -217,27 +231,31 @@
 
                 <div id="mensagem-erro" class="alerta alerta-erro" style="display:none;"></div>
 
-                <button id="btnBuscar" class="btn btn-primary" onclick="buscarAgendamento()">Buscar meu agendamento</button>
+                <button id="btnBuscar" class="btn btn-primary" onclick="buscarAgendamento()">Verificar e continuar</button>
             </div>
 
             <!-- ETAPA 2: Confirmação -->
             <div id="etapa2" class="etapa">
                 <div class="info-card">
-                    <h3>Dados do seu agendamento</h3>
+                    <h3>Verificação da solicitação</h3>
                     <div class="info-row">
+                        <span class="info-label">Situação do CPF:</span>
+                        <span class="info-value" id="info-situacao"></span>
+                    </div>
+                    <div class="info-row" id="linhaNome" style="display:none;">
                         <span class="info-label">Nome:</span>
                         <span class="info-value" id="info-nome"></span>
                     </div>
-                    <div class="info-row">
+                    <div class="info-row" id="linhaUnidade" style="display:none;">
                         <span class="info-label">Unidade:</span>
                         <span class="info-value" id="info-unidade"></span>
                     </div>
-                    <div class="info-row">
+                    <div class="info-row" id="linhaData" style="display:none;">
                         <span class="info-label">Data da consulta:</span>
                         <span class="info-value" id="info-data"></span>
                     </div>
-                    <div class="info-row">
-                        <span class="info-label">Tipo de remarcação:</span>
+                    <div class="info-row" id="linhaTipo" style="display:none;">
+                        <span class="info-label">Tipo identificado:</span>
                         <span id="info-tipo"></span>
                     </div>
                 </div>
@@ -288,13 +306,21 @@
 
         let dadosPaciente = null;
 
-        // Máscara de CPF
+        // Máscaras de CPF e telefone
         document.getElementById('cpf').addEventListener('input', function(e) {
             let v = e.target.value.replace(/\D/g, '');
             if (v.length > 11) v = v.slice(0, 11);
             if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
             else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
             else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+            e.target.value = v;
+        });
+
+        document.getElementById('telefoneContato').addEventListener('input', function(e) {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+            if (v.length > 10) v = v.replace(/(\d{2})(\d{5})(\d{1,4})/, '($1) $2-$3');
+            else if (v.length > 6) v = v.replace(/(\d{2})(\d{4})(\d{1,4})/, '($1) $2-$3');
+            else if (v.length > 2) v = v.replace(/(\d{2})(\d{1,5})/, '($1) $2');
             e.target.value = v;
         });
 
@@ -326,111 +352,85 @@
         async function buscarAgendamento() {
             esconderErro();
             const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+            const email = document.getElementById('emailContato').value.trim().toLowerCase();
+            const telefone = document.getElementById('telefoneContato').value.replace(/\D/g, '');
             const motivo = document.getElementById('motivo').value.trim();
 
             if (cpf.length !== 11) {
                 mostrarErro('Por favor, informe um CPF válido com 11 dígitos.');
                 return;
             }
-
-            // Verificar reCAPTCHA
-            const recaptchaResponse = grecaptcha.getResponse();
-            if (!recaptchaResponse) {
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                mostrarErro('Por favor, informe um e-mail de contato válido.');
+                return;
+            }
+            if (telefone.length < 10 || telefone.length > 11) {
+                mostrarErro('Por favor, informe um telefone de contato válido com DDD.');
+                return;
+            }
+            if (typeof grecaptcha === 'undefined' || !grecaptcha.getResponse()) {
                 mostrarErro('Por favor, confirme que você não é um robô.');
                 return;
             }
 
             const btn = document.getElementById('btnBuscar');
             btn.disabled = true;
-            btn.textContent = 'Buscando...';
+            btn.textContent = 'Verificando...';
+
+            // O padrão é permitir a solicitação, mesmo quando o CPF não for localizado.
+            let verificacao = {
+                cadastro_localizado: false,
+                mensagem: 'Não localizamos um cadastro para este CPF. A solicitação poderá seguir para análise manual.'
+            };
 
             try {
-                // Buscar paciente com status agendado ou faltou
-                const { data, error } = await supabaseClient
-                    .from('pacientes')
-                    .select('id, nome_completo, unidade_preferencia, data_agendamento, status, celular, remarcacoes')
-                    .eq('cpf', cpf)
-                    .in('status', ['agendado', 'faltou'])
-                    .order('data_agendamento', { ascending: false })
-                    .limit(1);
-
-                if (error) throw error;
-
-                if (!data || data.length === 0) {
-                    mostrarErro('Nenhum agendamento ou falta encontrado para este CPF. Verifique se digitou corretamente.');
-                    btn.disabled = false;
-                    btn.textContent = 'Buscar meu agendamento';
-                    return;
-                }
-
-                const paciente = data[0];
-
-                // Verificar se já tem solicitação pendente
-                const { data: solExistente } = await supabaseClient
-                    .from('solicitacoes_remarcacao')
-                    .select('id')
-                    .eq('cpf', cpf)
-                    .eq('status_solicitacao', 'pendente')
-                    .limit(1);
-
-                if (solExistente && solExistente.length > 0) {
-                    mostrarErro('Já existe uma solicitação de remarcação em andamento para o seu CPF. Aguarde o contato da equipe.');
-                    btn.disabled = false;
-                    btn.textContent = 'Buscar meu agendamento';
-                    return;
-                }
-
-                // Verificar limite de remarcações
-                if ((paciente.remarcacoes || 0) >= 2) {
-                    mostrarErro('Você já utilizou o máximo de 2 remarcações permitidas.');
-                    btn.disabled = false;
-                    btn.textContent = 'Buscar meu agendamento';
-                    return;
-                }
-
-                // Verificar prazo de 7 dias para falta
-                if (paciente.status === 'faltou' && paciente.data_agendamento) {
-                    const dataConsulta = new Date(paciente.data_agendamento + 'T00:00:00');
-                    const hoje = new Date();
-                    hoje.setHours(0, 0, 0, 0);
-                    const diffDias = Math.floor((hoje - dataConsulta) / (1000 * 60 * 60 * 24));
-                    if (diffDias > 7) {
-                        mostrarErro('O prazo de 7 dias para solicitar remarcação após a falta já expirou. Não é possível processar esta solicitação.');
-                        btn.disabled = false;
-                        btn.textContent = 'Buscar meu agendamento';
-                        return;
-                    }
-                }
-
-                // Salvar dados e mostrar etapa 2
-                dadosPaciente = { ...paciente, cpf, motivo };
-
-                document.getElementById('info-nome').textContent = paciente.nome_completo;
-                document.getElementById('info-unidade').textContent = paciente.unidade_preferencia;
-                document.getElementById('info-data').textContent = formatarData(paciente.data_agendamento);
-
-                const tipoEl = document.getElementById('info-tipo');
-                const alertaEl = document.getElementById('alerta-tipo');
-
-                if (paciente.status === 'agendado') {
-                    tipoEl.innerHTML = '<span class="badge badge-preventiva">Preventiva</span>';
-                    alertaEl.className = 'alerta alerta-info';
-                    alertaEl.innerHTML = '<strong>Remarcação preventiva:</strong> Sua solicitação será processada e entraremos em contato em até 3 dias úteis com a nova data da consulta.';
-                } else {
-                    tipoEl.innerHTML = '<span class="badge badge-falta">Por falta</span>';
-                    alertaEl.className = 'alerta alerta-aviso';
-                    alertaEl.innerHTML = '<strong>Remarcação por falta:</strong> Você faltou à consulta e está solicitando uma nova oportunidade. Entraremos em contato em até 3 dias úteis.';
-                }
-
-                irParaEtapa(2);
-
+                const { data, error } = await supabaseClient.rpc('verificar_cpf_remarcacao', { p_cpf: cpf });
+                if (!error && data && data.sucesso) verificacao = data;
+                if (error) console.warn('Verificação de CPF indisponível:', error.message);
             } catch (err) {
-                mostrarErro('Ocorreu um erro ao buscar seus dados. Tente novamente em alguns instantes.');
-                console.error(err);
+                console.warn('Verificação de CPF indisponível:', err);
             }
 
+            dadosPaciente = { cpf, email, telefone, motivo, verificacao };
+
+            const localizado = verificacao.cadastro_localizado === true;
+            const tipoEl = document.getElementById('info-tipo');
+            const alertaEl = document.getElementById('alerta-tipo');
+
+            document.getElementById('info-situacao').textContent = localizado ? 'Cadastro localizado' : 'Cadastro não localizado';
+            document.getElementById('linhaNome').style.display = localizado && verificacao.nome ? 'flex' : 'none';
+            document.getElementById('linhaUnidade').style.display = localizado && verificacao.unidade ? 'flex' : 'none';
+            document.getElementById('linhaData').style.display = localizado && verificacao.data_agendamento ? 'flex' : 'none';
+            document.getElementById('linhaTipo').style.display = localizado && verificacao.tipo_remarcacao ? 'flex' : 'none';
+            document.getElementById('info-nome').textContent = verificacao.nome || '';
+            document.getElementById('info-unidade').textContent = verificacao.unidade || '';
+            document.getElementById('info-data').textContent = formatarData(verificacao.data_agendamento);
+
+            if (!localizado) {
+                tipoEl.innerHTML = '';
+                alertaEl.className = 'alerta alerta-aviso';
+                alertaEl.innerHTML = '<strong>Cadastro não localizado:</strong> sua solicitação será registrada para análise manual. A equipe entrará em contato pelo telefone ou e-mail informado.';
+            } else if (verificacao.tipo_remarcacao === 'preventiva') {
+                tipoEl.innerHTML = '<span class="badge badge-preventiva">Preventiva</span>';
+                alertaEl.className = verificacao.situacao_prazo === 'menos_de_24_horas' ? 'alerta alerta-aviso' : 'alerta alerta-info';
+                alertaEl.innerHTML = verificacao.situacao_prazo === 'menos_de_24_horas'
+                    ? '<strong>Consulta próxima:</strong> a solicitação será registrada e a equipe analisará o caso. Mesmo sem resposta antes da data da consulta, o pedido ficará registrado.'
+                    : '<strong>Cadastro localizado:</strong> sua solicitação será registrada e a equipe entrará em contato em até 3 dias úteis.';
+            } else if (verificacao.tipo_remarcacao === 'por_falta') {
+                tipoEl.innerHTML = '<span class="badge badge-falta">Por falta</span>';
+                alertaEl.className = verificacao.situacao_prazo === 'fora_do_prazo' ? 'alerta alerta-aviso' : 'alerta alerta-info';
+                alertaEl.innerHTML = verificacao.situacao_prazo === 'fora_do_prazo'
+                    ? '<strong>Prazo informado:</strong> a falta ocorreu há mais de 7 dias. A solicitação será salva para análise manual da equipe.'
+                    : '<strong>Falta identificada:</strong> sua solicitação será registrada e a equipe entrará em contato em até 3 dias úteis.';
+            } else {
+                tipoEl.innerHTML = '<span class="badge badge-preventiva">Análise manual</span>';
+                alertaEl.className = 'alerta alerta-info';
+                alertaEl.innerHTML = '<strong>Cadastro localizado:</strong> não foi identificado um agendamento ativo. A solicitação será salva para análise da equipe.';
+            }
+
+            irParaEtapa(2);
             btn.disabled = false;
-            btn.textContent = 'Buscar meu agendamento';
+            btn.textContent = 'Verificar e continuar';
         }
 
         function confirmarRemarcacao() {
@@ -449,6 +449,8 @@
             try {
                 const { data, error } = await supabaseClient.rpc('solicitar_remarcacao', {
                     p_cpf: dadosPaciente.cpf,
+                    p_email_contato: dadosPaciente.email,
+                    p_telefone_contato: dadosPaciente.telefone,
                     p_motivo: dadosPaciente.motivo || null
                 });
 
@@ -456,6 +458,10 @@
 
                 if (data && data.sucesso) {
                     fecharModal();
+                    document.getElementById('msg-sucesso').innerHTML = data.cadastro_localizado
+                        ? 'Sua solicitação foi registrada com sucesso. Nossa equipe entrará em contato em até <strong>3 dias úteis</strong> pelo telefone ou e-mail informado.'
+                        : 'Sua solicitação foi registrada para análise manual. Nossa equipe entrará em contato em até <strong>3 dias úteis</strong> pelo telefone ou e-mail informado.';
+                    if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
                     irParaEtapa(3);
                 } else {
                     fecharModal();

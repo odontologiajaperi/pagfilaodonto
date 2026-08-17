@@ -325,16 +325,34 @@
             }
         }
 
+        function escaparHtml(valor) {
+            return String(valor ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         function renderCard(s) {
-            const tipoClass = s.tipo_remarcacao === 'preventiva' ? 'preventiva' : 'por_falta';
+            const tipoClass = s.tipo_remarcacao === 'preventiva' ? 'preventiva' : (s.tipo_remarcacao === 'por_falta' ? 'por_falta' : 'nao-localizado');
             const statusBadge = {
                 'pendente': '<span class="badge-status badge-pendente">Pendente</span>',
                 'aprovada': '<span class="badge-status badge-aprovada">Aprovada</span>',
                 'recusada': '<span class="badge-status badge-recusada">Recusada</span>',
                 'contatado': '<span class="badge-status badge-contatado">Contatado</span>'
             };
-
-            const cpfOculto = s.cpf ? '***.' + s.cpf.slice(3, 6) + '.' + s.cpf.slice(6, 9) + '-' + s.cpf.slice(9) : '';
+            const tipoNome = {
+                'preventiva': '🔵 Preventiva',
+                'por_falta': '🟡 Por falta',
+                'cadastro_sem_agendamento': '🔎 Cadastro sem agendamento ativo',
+                'cpf_nao_localizado': '⚪ CPF não localizado'
+            };
+            const cpfOculto = s.cpf ? '***.' + s.cpf.slice(3, 6) + '.' + s.cpf.slice(6, 9) + '-' + s.cpf.slice(9) : 'Não informado';
+            const nome = s.nome_completo ? escaparHtml(s.nome_completo) : 'Solicitação sem cadastro localizado';
+            const contatoTelefone = escaparHtml(s.telefone_contato || s.celular || 'Não informado');
+            const contatoEmail = escaparHtml(s.email_contato || 'Não informado');
+            const localizado = s.cadastro_localizado === true;
 
             let acoes = '';
             if (s.status_solicitacao === 'pendente') {
@@ -348,20 +366,22 @@
             return `
                 <div class="sol-card ${tipoClass}">
                     <div class="sol-card-header">
-                        <h3>${s.nome_completo}</h3>
+                        <h3>${nome}</h3>
                         ${statusBadge[s.status_solicitacao] || ''}
                     </div>
                     <div class="sol-card-info">
                         <div class="sol-info-item"><span class="label">CPF:</span> <span class="valor">${cpfOculto}</span></div>
-                        <div class="sol-info-item"><span class="label">Celular:</span> <span class="valor">${s.celular || 'Não informado'}</span></div>
-                        <div class="sol-info-item"><span class="label">Unidade:</span> <span class="valor">${s.unidade}</span></div>
-                        <div class="sol-info-item"><span class="label">Tipo:</span> <span class="valor">${s.tipo_remarcacao === 'preventiva' ? '🔵 Preventiva' : '🟡 Por falta'}</span></div>
+                        <div class="sol-info-item"><span class="label">Cadastro:</span> <span class="valor">${localizado ? 'Localizado' : 'Não localizado — análise manual'}</span></div>
+                        <div class="sol-info-item"><span class="label">Telefone de contato:</span> <span class="valor">${contatoTelefone}</span></div>
+                        <div class="sol-info-item"><span class="label">E-mail de contato:</span> <span class="valor">${contatoEmail}</span></div>
+                        <div class="sol-info-item"><span class="label">Unidade:</span> <span class="valor">${escaparHtml(s.unidade || 'Não informada')}</span></div>
+                        <div class="sol-info-item"><span class="label">Tipo:</span> <span class="valor">${tipoNome[s.tipo_remarcacao] || 'Análise manual'}</span></div>
                         <div class="sol-info-item"><span class="label">Data original:</span> <span class="valor">${formatarData(s.data_agendamento_original)}</span></div>
-                        <div class="sol-info-item"><span class="label">Solicitado há:</span> <span class="valor">${s.dias_desde_solicitacao} dia(s)</span></div>
+                        <div class="sol-info-item"><span class="label">Solicitado há:</span> <span class="valor">${s.dias_desde_solicitacao ?? 0} dia(s)</span></div>
                         ${s.data_nova ? `<div class="sol-info-item"><span class="label">Nova data:</span> <span class="valor" style="color:#28a745;">${formatarData(s.data_nova)}</span></div>` : ''}
                     </div>
-                    ${s.motivo ? `<div class="sol-card-motivo">"${s.motivo}"</div>` : ''}
-                    ${s.observacao_admin ? `<div class="sol-card-motivo" style="border-left:3px solid #667eea;"><strong>Admin:</strong> ${s.observacao_admin}</div>` : ''}
+                    ${s.motivo ? `<div class="sol-card-motivo">"${escaparHtml(s.motivo)}"</div>` : ''}
+                    ${s.observacao_admin ? `<div class="sol-card-motivo" style="border-left:3px solid #667eea;"><strong>Admin:</strong> ${escaparHtml(s.observacao_admin)}</div>` : ''}
                     ${acoes ? `<div class="sol-card-acoes">${acoes}</div>` : ''}
                 </div>
             `;
