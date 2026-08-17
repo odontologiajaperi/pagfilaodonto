@@ -79,8 +79,9 @@ CREATE TABLE IF NOT EXISTS public.admin_config (
 
 -- Senha inicial do painel: japeri2026
 -- Se ela já existir, este comando NÃO troca a senha atual.
+-- Usa SHA-256, método já compatível com este banco.
 INSERT INTO public.admin_config (chave, valor)
-VALUES ('senha_admin_remarcacoes', crypt('japeri2026', gen_salt('bf')))
+VALUES ('senha_admin_remarcacoes', encode(sha256('japeri2026'::bytea), 'hex'))
 ON CONFLICT (chave) DO NOTHING;
 
 -- ============================================================
@@ -299,13 +300,8 @@ BEGIN
         RETURN false;
     END IF;
 
-    -- Compatibilidade temporária com o hash SHA-256 da primeira versão;
-    -- novos hashes usam bcrypt (crypt/pgcrypto).
-    IF v_hash_salvo LIKE '$2%' THEN
-        RETURN crypt(p_senha, v_hash_salvo) = v_hash_salvo;
-    END IF;
-
-    RETURN encode(digest(p_senha, 'sha256'), 'hex') = v_hash_salvo;
+    -- O banco usa SHA-256 para a senha do painel.
+    RETURN encode(sha256(p_senha::bytea), 'hex') = v_hash_salvo;
 END;
 $$;
 
@@ -449,6 +445,6 @@ GRANT EXECUTE ON FUNCTION public.processar_remarcacao(TEXT, UUID, TEXT, DATE, TE
 --
 -- Alterar a senha do painel para uma senha forte:
 -- UPDATE public.admin_config
--- SET valor = crypt('SUA_NOVA_SENHA_FORTE', gen_salt('bf'))
+-- SET valor = encode(sha256('SUA_NOVA_SENHA_FORTE'::bytea), 'hex')
 -- WHERE chave = 'senha_admin_remarcacoes';
 -- ============================================================

@@ -1,12 +1,10 @@
 -- ============================================================
--- REDEFINIR ACESSO DO PAINEL DE REMARCAÇÕES
+-- RECUPERAR ACESSO AO PAINEL DE REMARCAÇÕES (COMPATÍVEL)
 -- ============================================================
--- Este script NÃO altera nem apaga solicitações de remarcação.
--- Ele apenas define novamente a senha do painel como: japeri2026
--- Execute uma única vez no SQL Editor do Supabase.
+-- Execute este arquivo inteiro no SQL Editor do Supabase.
+-- Não altera nem apaga solicitações de remarcação.
+-- Redefine a senha do painel para: japeri2026
 -- ============================================================
-
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS public.admin_config (
     id SERIAL PRIMARY KEY,
@@ -14,13 +12,16 @@ CREATE TABLE IF NOT EXISTS public.admin_config (
     valor TEXT NOT NULL
 );
 
--- Redefine a senha, substituindo qualquer hash antigo incompatível.
+-- Salva o hash SHA-256 da senha, sem usar crypt/bcrypt.
 INSERT INTO public.admin_config (chave, valor)
-VALUES ('senha_admin_remarcacoes', crypt('japeri2026', gen_salt('bf')))
+VALUES (
+    'senha_admin_remarcacoes',
+    encode(sha256('japeri2026'::bytea), 'hex')
+)
 ON CONFLICT (chave)
 DO UPDATE SET valor = EXCLUDED.valor;
 
--- Mantém compatibilidade com hashes antigos e valida hashes novos em bcrypt.
+-- Recria a função RPC que o painel chama para validar a senha.
 CREATE OR REPLACE FUNCTION public.verificar_senha_admin(p_senha TEXT)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
@@ -34,19 +35,14 @@ BEGIN
     FROM public.admin_config
     WHERE chave = 'senha_admin_remarcacoes';
 
-    IF v_hash_salvo IS NULL THEN
-        RETURN false;
-    END IF;
-
-    IF v_hash_salvo LIKE '$2%' THEN
-        RETURN crypt(p_senha, v_hash_salvo) = v_hash_salvo;
-    END IF;
-
-    RETURN encode(digest(p_senha, 'sha256'), 'hex') = v_hash_salvo;
+    RETURN COALESCE(
+        v_hash_salvo = encode(sha256(p_senha::bytea), 'hex'),
+        false
+    );
 END;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.verificar_senha_admin(TEXT) TO anon, authenticated;
 
--- Confirmação: o resultado precisa ser true.
+-- Verificação: precisa retornar true.
 SELECT public.verificar_senha_admin('japeri2026') AS senha_aceita;
