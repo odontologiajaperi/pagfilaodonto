@@ -348,7 +348,7 @@
                 'cadastro_sem_agendamento': '🔎 Cadastro sem agendamento ativo',
                 'cpf_nao_localizado': '⚪ CPF não localizado'
             };
-            const cpfOculto = s.cpf ? '***.' + s.cpf.slice(3, 6) + '.' + s.cpf.slice(6, 9) + '-' + s.cpf.slice(9) : 'Não informado';
+            const cpfCompleto = s.cpf ? s.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 'Não informado';
             const nome = s.nome_completo ? escaparHtml(s.nome_completo) : 'Solicitação sem cadastro localizado';
             const contatoTelefone = escaparHtml(s.telefone_contato || s.celular || 'Não informado');
             const contatoEmail = escaparHtml(s.email_contato || 'Não informado');
@@ -370,7 +370,7 @@
                         ${statusBadge[s.status_solicitacao] || ''}
                     </div>
                     <div class="sol-card-info">
-                        <div class="sol-info-item"><span class="label">CPF:</span> <span class="valor">${cpfOculto}</span></div>
+                        <div class="sol-info-item"><span class="label">CPF:</span> <span class="valor">${cpfCompleto}</span></div>
                         <div class="sol-info-item"><span class="label">Cadastro:</span> <span class="valor">${localizado ? 'Localizado' : 'Não localizado — análise manual'}</span></div>
                         <div class="sol-info-item"><span class="label">Telefone de contato:</span> <span class="valor">${contatoTelefone}</span></div>
                         <div class="sol-info-item"><span class="label">E-mail de contato:</span> <span class="valor">${contatoEmail}</span></div>
