@@ -172,6 +172,55 @@
         .modal-btns { display: flex; gap: 10px; }
         .modal-btns .btn { flex: 1; }
 
+        /* Aviso e aceite inicial da remarcação */
+        body.termos-pendentes { overflow: hidden; }
+        .termos-remarcacao-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(18, 35, 64, 0.72);
+            backdrop-filter: blur(3px);
+        }
+        .termos-remarcacao-overlay.oculto { display: none; }
+        .termos-remarcacao-card {
+            width: min(100%, 650px);
+            max-height: calc(100dvh - 36px);
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+            border-top: 6px solid #667eea;
+        }
+        .termos-remarcacao-topo {
+            padding: 24px 28px 14px;
+            color: #2f3c77;
+        }
+        .termos-remarcacao-topo h2 { font-size: 1.35em; margin-bottom: 8px; }
+        .termos-remarcacao-topo p { color: #5d6472; line-height: 1.55; font-size: 0.94em; }
+        .termos-remarcacao-corpo { padding: 4px 28px 26px; }
+        .termos-remarcacao-corpo p { color: #424750; line-height: 1.58; margin: 0 0 13px; font-size: 0.94em; }
+        .termos-remarcacao-destaque {
+            margin: 18px 0;
+            padding: 15px 16px;
+            border: 1px solid #efb846;
+            border-radius: 12px;
+            background: #fff6dd;
+            color: #6d5000;
+            font-size: 0.93em;
+            line-height: 1.5;
+        }
+        .termos-remarcacao-destaque a { color: #5f449b; font-weight: 700; word-break: break-word; }
+        .termos-remarcacao-aceite {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #e8e8e8;
+        }
+        .termos-remarcacao-aceite .btn { margin-top: 12px; }
+
         /* Regras */
         .regras-box {
             background: #f0f4ff;
@@ -190,10 +239,38 @@
             .content { padding: 20px; }
             .info-row { flex-direction: column; gap: 2px; }
             .modal-btns { flex-direction: column; }
+            .termos-remarcacao-topo { padding: 20px 20px 10px; }
+            .termos-remarcacao-corpo { padding: 4px 20px 22px; }
+            .termos-remarcacao-topo h2 { font-size: 1.18em; }
         }
     </style>
 </head>
-<body>
+<body class="termos-pendentes">
+    <!-- Aviso obrigatório: não possui botão X para garantir a leitura antes do formulário. -->
+    <div id="termosRemarcacao" class="termos-remarcacao-overlay" role="dialog" aria-modal="true" aria-labelledby="tituloTermosRemarcacao">
+        <div class="termos-remarcacao-card">
+            <div class="termos-remarcacao-topo">
+                <h2 id="tituloTermosRemarcacao">Solicitação de Remarcação de Consulta</h2>
+                <p>Leia atentamente as condições de utilização deste canal antes de continuar.</p>
+            </div>
+            <div class="termos-remarcacao-corpo">
+                <p>Este canal é destinado exclusivamente a pacientes que já possuem cadastro ativo na fila de atendimento odontológico do Município de Japeri.</p>
+                <p>A solicitação poderá ser utilizada quando o paciente já estiver agendado e, por motivo justificado, não puder comparecer na data marcada. Nessa situação, o pedido deve ser encaminhado com <strong>antecedência mínima de 24 horas</strong>, conforme as orientações desta página.</p>
+                <p>Também poderá ser utilizada após uma ausência, desde que a solicitação seja realizada dentro do prazo informado nos avisos de remarcação e acompanhada de documento que justifique a falta. Solicitações sem justificativa documental poderão ser negadas.</p>
+                <p>Poderão ainda ser avaliadas solicitações de atendimento em outra unidade, quando houver disponibilidade de vaga ou fila em posto diferente daquele inicialmente escolhido pelo paciente.</p>
+                <p>O envio da solicitação não representa confirmação imediata de nova data. Após a análise, o retorno da solicitação será encaminhado ao e-mail informado no formulário.</p>
+                <p>Quando a justificativa for aceita e houver possibilidade de remarcação, a equipe poderá encaminhar a nova data diretamente pelo WhatsApp informado.</p>
+                <div class="termos-remarcacao-destaque">
+                    <strong>Atenção:</strong> este formulário deve ser utilizado somente para remarcações por impossibilidade de comparecimento, ausência justificada ou pedido de mudança para outra unidade com disponibilidade. Para dúvidas, informações gerais, reclamações, sugestões, atualização cadastral ou qualquer outro assunto, envie e-mail para <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a>.
+                </div>
+                <div class="termos-remarcacao-aceite">
+                    <p><strong>Ao selecionar “Li e estou ciente”, declaro que li e compreendi as condições para solicitação de remarcação.</strong></p>
+                    <button type="button" class="btn btn-primary" onclick="aceitarTermosRemarcacao()">Li e estou ciente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>📋 Solicitar Remarcação</h1>
@@ -328,6 +405,12 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let dadosPaciente = null;
+
+        function aceitarTermosRemarcacao() {
+            document.getElementById('termosRemarcacao').classList.add('oculto');
+            document.body.classList.remove('termos-pendentes');
+            document.getElementById('cpf').focus();
+        }
 
         // Máscaras de CPF e telefone
         document.getElementById('cpf').addEventListener('input', function(e) {
