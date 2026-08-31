@@ -197,7 +197,31 @@ ORDER BY p.nome;
 -- descarregar todos os pacientes para calcular a disponibilidade.
 GRANT SELECT ON public.situacao_postos TO anon, authenticated;
 
--- 6. Reabertura administrativa.
+-- 6. Reabrir postos que estão fechados mas têm vagas_disponiveis > 0
+--    na coluna manual. Isto actualiza a coluna para reflectir a contagem
+--    real e reabre o posto se ainda houver vagas.
+UPDATE public.postos AS p
+   SET vagas_disponiveis = GREATEST(0, COALESCE(p.vagas_limite, 0) - (
+       SELECT COUNT(*)
+         FROM public.pacientes AS pac
+        WHERE btrim(pac.unidade_preferencia) = btrim(p.nome)
+          AND pac.status = 'aguardando'
+   )),
+       ativo = CASE
+           WHEN p.vagas_limite IS NULL THEN true
+           WHEN GREATEST(0, COALESCE(p.vagas_limite, 0) - (
+               SELECT COUNT(*)
+                 FROM public.pacientes AS pac
+                WHERE btrim(pac.unidade_preferencia) = btrim(p.nome)
+                  AND pac.status = 'aguardando'
+           )) > 0 THEN true
+           ELSE false
+       END
+ WHERE p.ativo = false
+   AND p.vagas_limite IS NOT NULL
+   AND p.vagas_limite > 0;
+
+-- 7. Reabertura administrativa.
 --    Esta função reabre o posto e pode substituir o limite. Ela NÃO
 --    apaga a fila antiga nem inicia uma rodada sozinha. Para iniciar uma
 --    nova rodada, os pacientes antigos devem ser arquivados/encerrados
