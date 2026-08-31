@@ -832,11 +832,10 @@
             if(!select) return;
             select.innerHTML = '<option value="">Carregando unidades...</option>';
             try {
-                // Ler a mesma contagem agregada usada pelo banco para aceitar inscrições.
-                // Isso evita baixar uma lista limitada de pacientes para o navegador.
+                // Ler directamente o contador mantido pelo banco.
                 const { data: situacao, error: erroSituacao } = await supabaseClient
-                    .from('situacao_postos')
-                    .select('id, nome, ativo, vagas_limite, inscritos_aguardando, vagas_restantes, vagas_disponiveis')
+                    .from('postos')
+                    .select('id, nome, ativo, vagas_disponiveis')
                     .eq('ativo', true)
                     .order('nome');
                 if (erroSituacao) throw erroSituacao;
@@ -845,8 +844,8 @@
 
                 if (situacao && situacao.length > 0) {
                     situacao.forEach(p => {
-                        const temLimite = p.vagas_limite !== null && p.vagas_limite !== undefined;
-                        const vagasRestantes = temLimite ? Math.max(0, Number(p.vagas_restantes || 0)) : null;
+                        const temLimite = p.vagas_disponiveis !== null && p.vagas_disponiveis !== undefined;
+                        const vagasRestantes = temLimite ? Math.max(0, Number(p.vagas_disponiveis || 0)) : null;
 
                         // Ocultar posto se não tem mais vagas
                         if (temLimite && vagasRestantes <= 0) return;
