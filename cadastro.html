@@ -1278,7 +1278,7 @@
                 if (!isGestante && unidadeEscolhida) {
                     const { data: postoData } = await supabaseClient
                         .from('postos')
-                        .select('vagas_limite, ativo')
+                        .select('vagas_disponiveis, ativo')
                         .eq('nome', unidadeEscolhida)
                         .single();
 
@@ -1294,24 +1294,16 @@
                         return;
                     }
 
-                    if (postoData.vagas_limite !== null) {
-                        const { count: inscritosAtual } = await supabaseClient
-                            .from('pacientes')
-                            .select('id', { count: 'exact', head: true })
-                            .eq('unidade_preferencia', unidadeEscolhida)
-                            .eq('status', 'aguardando');
-
-                        if (inscritosAtual >= postoData.vagas_limite) {
-                            showModal(
-                                'Vagas Esgotadas',
-                                `As vagas para a unidade "${unidadeEscolhida}" foram preenchidas enquanto você preenchia o formulário. Por favor, escolha outra unidade.`,
-                                'error'
-                            );
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Enviar Cadastro';
-                            await carregarUnidadesAtivas();
-                            return;
-                        }
+                    if (Number(postoData.vagas_disponiveis || 0) <= 0) {
+                        showModal(
+                            'Vagas Esgotadas',
+                            `As vagas para a unidade "${unidadeEscolhida}" foram preenchidas enquanto você preenchia o formulário. Por favor, escolha outra unidade.`,
+                            'error'
+                        );
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Enviar Cadastro';
+                        await carregarUnidadesAtivas();
+                        return;
                     }
 
                     // Verificar cota sem ACS no momento do envio (race condition)
