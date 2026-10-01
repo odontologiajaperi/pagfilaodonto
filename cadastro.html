@@ -280,6 +280,15 @@
             background: #218838;
         }
 
+        .modal-btn.info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .modal-btn.info:hover {
+            background: #138496;
+        }
+
         .modal-btn.error {
             background: #dc3545;
             color: white;
@@ -1075,6 +1084,74 @@
         mesSelect.addEventListener('change', atualizarDataNascimento);
         anoSelect.addEventListener('change', atualizarDataNascimento);
 
+        function calcularIdade(dataNascimento) {
+            const partes = String(dataNascimento || '').split('-').map(Number);
+            if (partes.length !== 3 || partes.some(Number.isNaN)) return null;
+
+            const [ano, mes, dia] = partes;
+            const nascimento = new Date(ano, mes - 1, dia);
+            if (
+                nascimento.getFullYear() !== ano ||
+                nascimento.getMonth() !== mes - 1 ||
+                nascimento.getDate() !== dia
+            ) return null;
+
+            const hoje = new Date();
+            let idade = hoje.getFullYear() - ano;
+            const aniversarioAindaNaoChegou =
+                hoje.getMonth() < mes - 1 ||
+                (hoje.getMonth() === mes - 1 && hoje.getDate() < dia);
+
+            if (aniversarioAindaNaoChegou) idade--;
+            return idade;
+        }
+
+        function solicitarConfirmacaoFaixaEtaria(idade) {
+            const eCrianca = idade <= 10;
+            const eIdoso = idade >= 60;
+            if (!eCrianca && !eIdoso) return Promise.resolve(true);
+
+            return new Promise(resolve => {
+                const modalAnterior = document.getElementById('modal-faixa-etaria');
+                if (modalAnterior) modalAnterior.remove();
+
+                const titulo = eCrianca
+                    ? 'Atenção: fila de Odontopediatria'
+                    : 'Atenção: atendimento para 60 anos ou mais';
+                const mensagem = eCrianca
+                    ? 'Crianças de até 10 anos também podem ser cadastradas diretamente na unidade. Existe uma aba específica de Odontopediatria, aberta na segunda semana de cada mês, exceto em julho e dezembro, e seu uso é recomendado. O tempo de espera não muda entre o cadastro pelo site e o atendimento direto na unidade. Deseja continuar pela fila normal?'
+                    : 'Pessoas com 60 anos ou mais também podem fazer o cadastro diretamente na unidade. Se você continuar pelo site, o tempo de espera pode sofrer maior variação. Deseja continuar mesmo assim?';
+
+                const modal = document.createElement('div');
+                modal.id = 'modal-faixa-etaria';
+                modal.className = 'modal-overlay show';
+                modal.innerHTML = `
+                    <div class="modal info">
+                        <div class="modal-icon">ℹ️</div>
+                        <h2>${titulo}</h2>
+                        <p style="white-space: pre-line; text-align: left;">${mensagem}</p>
+                        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+                            ${eCrianca ? '<a href="cadastro-pediatria.html" class="modal-btn" style="background:#f472b6;color:white;text-decoration:none;">Ir para Odontopediatria</a>' : ''}
+                            <button type="button" class="modal-btn" data-acao="cancelar" style="background:#6c757d;color:white;">Voltar</button>
+                            <button type="button" class="modal-btn info" data-acao="continuar">Continuar pelo site</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                const concluir = continuar => {
+                    modal.remove();
+                    resolve(continuar);
+                };
+
+                modal.querySelector('[data-acao="cancelar"]').addEventListener('click', () => concluir(false));
+                modal.querySelector('[data-acao="continuar"]').addEventListener('click', () => concluir(true));
+                modal.addEventListener('click', event => {
+                    if (event.target === modal) concluir(false);
+                });
+            });
+        }
+
         // Função para mostrar modal
         function formatarCpfMensagem(cpf) {
             const digitos = String(cpf || '').replace(/\D/g, '');
@@ -1251,6 +1328,14 @@
             let data = {}; // Declarar fora do try para usar no catch
             
             try {
+                // Orientar faixas etárias com fluxo específico antes de finalizar o cadastro
+                const idadeCadastro = calcularIdade(document.getElementById('data_nascimento_hidden')?.value);
+                const cadastroGestante = document.getElementById('checkbox_gestante')?.checked;
+                if (!cadastroGestante && idadeCadastro !== null) {
+                    const continuarCadastro = await solicitarConfirmacaoFaixaEtaria(idadeCadastro);
+                    if (!continuarCadastro) return;
+                }
+
                 // Verificar se a fila está aberta no momento do envio
                 const { data: configData, error: configError } = await supabaseClient
                     .from('configuracoes')
