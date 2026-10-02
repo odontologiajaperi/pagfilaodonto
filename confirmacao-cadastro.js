@@ -228,6 +228,25 @@
             .confirmacao-btn-imprimir { background: #0f172a; color: #ffffff; }
             .confirmacao-btn-extra { background: #db2777; color: #ffffff; }
             .confirmacao-btn-voltar { background: #16a34a; color: #ffffff; }
+            .confirmacao-btn-voltar:disabled {
+                background: #94a3b8;
+                color: #f8fafc;
+                cursor: not-allowed;
+                opacity: 0.9;
+                transform: none;
+                box-shadow: none;
+            }
+            .confirmacao-btn-voltar:disabled:hover {
+                transform: none;
+                box-shadow: none;
+            }
+            .confirmacao-timer {
+                margin-top: 10px;
+                color: #475569;
+                font-size: 0.9rem;
+                font-weight: 800;
+                text-align: center;
+            }
 
             @keyframes confirmacaoSlideUp {
                 from { opacity: 0; transform: translateY(24px) scale(0.98); }
@@ -316,6 +335,44 @@
         }
     }
 
+    let timerConfirmacao = null;
+
+    function iniciarTimerConfirmacao(overlay) {
+        if (timerConfirmacao) clearInterval(timerConfirmacao);
+
+        const botaoConfirmar = overlay.querySelector('#btnConfirmarProtocolo');
+        const mensagemTimer = overlay.querySelector('#confirmacao-timer');
+        if (!botaoConfirmar) return;
+
+        let segundosRestantes = 5;
+
+        const atualizar = () => {
+            if (segundosRestantes > 0) {
+                botaoConfirmar.disabled = true;
+                botaoConfirmar.setAttribute('aria-disabled', 'true');
+                botaoConfirmar.textContent = `Aguarde ${segundosRestantes}s...`;
+                if (mensagemTimer) {
+                    mensagemTimer.textContent = `A confirmação será liberada em ${segundosRestantes} segundo${segundosRestantes === 1 ? '' : 's'}.`;
+                }
+                segundosRestantes--;
+                return;
+            }
+
+            clearInterval(timerConfirmacao);
+            timerConfirmacao = null;
+            botaoConfirmar.disabled = false;
+            botaoConfirmar.removeAttribute('aria-disabled');
+            botaoConfirmar.textContent = 'Já anotei o protocolo — Concluir';
+            botaoConfirmar.title = 'Confirma que você anotou, copiou ou salvou o protocolo.';
+            if (mensagemTimer) {
+                mensagemTimer.textContent = 'Pronto. Confirme somente depois de guardar o protocolo.';
+            }
+        };
+
+        atualizar();
+        timerConfirmacao = setInterval(atualizar, 1000);
+    }
+
     function mostrarConfirmacao(opcoes) {
         inserirEstilos();
 
@@ -349,8 +406,9 @@
                     <p>${escaparHtml(opcoes.subtitulo || 'Seu cadastro foi recebido pelo sistema.')}</p>
                 </div>
                 <div class="confirmacao-corpo">
-                    <div class="confirmacao-alerta-print">
-                        Atenção: tire uma foto ou print desta tela agora e anote o número de protocolo. Ele será sua confirmação para conferência posterior.
+                    <div class="confirmacao-alerta-print" role="alert">
+                        <strong>IMPORTANTE: anote seu protocolo antes de sair!</strong><br>
+                        Tire uma foto ou print desta tela, ou use o botão <strong>Copiar protocolo</strong>. Esse número é a sua confirmação para consultas e conferências posteriores.
                     </div>
                     <div class="confirmacao-protocolo-box">
                         <span class="confirmacao-protocolo-label">Número de protocolo</span>
@@ -366,8 +424,9 @@
                         <button type="button" class="confirmacao-btn-copiar" id="btnCopiarProtocolo">Copiar protocolo</button>
                         <button type="button" class="confirmacao-btn-imprimir" onclick="window.print()">Imprimir ou salvar</button>
                         ${extras}
-                        <button type="button" class="confirmacao-btn-voltar" onclick="window.location.href='index.html'">Concluir e voltar ao início</button>
+                        <button type="button" class="confirmacao-btn-voltar" id="btnConfirmarProtocolo" disabled aria-disabled="true">Aguarde 5s...</button>
                     </div>
+                    <div class="confirmacao-timer" id="confirmacao-timer" aria-live="polite">A confirmação será liberada em 5 segundos.</div>
                 </div>
             </section>
         `;
@@ -376,6 +435,16 @@
         if (btnCopiar) {
             btnCopiar.addEventListener('click', () => copiarTexto(protocolo, btnCopiar));
         }
+
+        const btnConfirmar = overlay.querySelector('#btnConfirmarProtocolo');
+        if (btnConfirmar) {
+            btnConfirmar.addEventListener('click', () => {
+                document.body.style.overflow = '';
+                window.location.href = 'index.html';
+            });
+        }
+
+        iniciarTimerConfirmacao(overlay);
 
         document.body.style.overflow = 'hidden';
     }
