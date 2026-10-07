@@ -1,5 +1,8 @@
 # 🔒 Guia Completo - Configurar RLS em Todas as Tabelas
 
+> **GUIA HISTÓRICO — NÃO EXECUTAR os SQLs indicados diretamente em produção.** A organização atual está em [`sql/README.md`](sql/README.md) e as mudanças aplicadas em [`migrations/README.md`](migrations/README.md). Confirme primeiro o estado do Supabase e teste em ambiente separado.
+
+
 ## 📋 O que é RLS (Row Level Security)?
 
 **Row Level Security (RLS)** é um sistema de segurança do PostgreSQL (usado pelo Supabase) que controla quem pode acessar, inserir, atualizar ou deletar dados em cada tabela.
@@ -30,7 +33,7 @@ Configurar políticas de segurança para que:
 
 ### **Passo 2: Executar o Script SQL**
 
-1. Abra o arquivo `sql_configurar_rls_completo.sql` que foi gerado
+1. Abra o arquivo `sql/historico/seguranca-configuracao/sql_configurar_rls_completo.sql` que foi gerado
 2. **Copie TODO o conteúdo** do arquivo
 3. **Cole** no SQL Editor do Supabase
 4. Clique no botão **Run** (Executar) no canto inferior direito
@@ -194,7 +197,7 @@ DROP POLICY IF EXISTS "Permitir update apenas para admins em administradores" ON
 DROP POLICY IF EXISTS "Permitir delete apenas para admins em administradores" ON public.administradores;
 ```
 
-2. Depois, execute novamente o script `sql_configurar_rls_completo.sql`
+2. Depois, execute novamente o script `sql/historico/seguranca-configuracao/sql_configurar_rls_completo.sql`
 
 ### **Problema 2: "Formulário não consegue mais cadastrar pacientes"**
 

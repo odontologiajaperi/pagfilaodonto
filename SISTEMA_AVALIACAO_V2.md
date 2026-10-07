@@ -1,5 +1,8 @@
 # ⭐ Sistema de Avaliação de Atendimento V2.0
 
+> **GUIA HISTÓRICO — NÃO EXECUTAR os SQLs indicados diretamente em produção.** A organização atual está em [`sql/README.md`](sql/README.md) e as mudanças aplicadas em [`migrations/README.md`](migrations/README.md). Confirme primeiro o estado do Supabase e teste em ambiente separado.
+
+
 ## 📋 Visão Geral
 
 Sistema simplificado e inteligente de avaliação de atendimento para a Saúde Bucal de Japeri, com página dedicada, pop-up automático estilo HQ e formulário otimizado.
@@ -113,7 +116,7 @@ SELECT * FROM calcular_media_geral_avaliacoes();
 
 1. Acesse: https://supabase.com/dashboard/project/uakhmgoxgyklggsvtwdf
 2. Vá em **SQL Editor** → **New Query**
-3. Abra o arquivo `sql_nova_tabela_avaliacoes.sql`
+3. Abra o arquivo `sql/historico/avaliacoes/sql_nova_tabela_avaliacoes.sql`
 4. Copie **TODO** o conteúdo
 5. Cole no SQL Editor
 6. Clique em **Run**
@@ -301,7 +304,7 @@ LIMIT 10;
 
 | Arquivo | Descrição |
 |---------|-----------|
-| `sql_nova_tabela_avaliacoes.sql` | Script SQL completo (drop + create + RLS + funções) |
+| `sql/historico/avaliacoes/sql_nova_tabela_avaliacoes.sql` | Script SQL completo (drop + create + RLS + funções) |
 | `avaliacao.html` | Página dedicada de avaliação |
 | `avaliacao-popup.html` | Componente de pop-up reutilizável |
 | `SISTEMA_AVALIACAO_V2.md` | Esta documentação |
@@ -408,7 +411,7 @@ SELECT * FROM avaliacoes_backup;
 
 ## ✅ Checklist de Implementação
 
-- [ ] Executar `sql_nova_tabela_avaliacoes.sql` no Supabase
+- [ ] Executar `sql/historico/avaliacoes/sql_nova_tabela_avaliacoes.sql` no Supabase
 - [ ] Verificar se a tabela foi criada corretamente
 - [ ] Verificar se as políticas RLS foram aplicadas
 - [ ] Fazer push dos arquivos para o GitHub

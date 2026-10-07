@@ -1,5 +1,8 @@
 # 📋 Instruções de Implementação - Tabela Gestantes
 
+> **GUIA HISTÓRICO — NÃO EXECUTAR os SQLs indicados diretamente em produção.** A organização atual está em [`sql/README.md`](sql/README.md) e as mudanças aplicadas em [`migrations/README.md`](migrations/README.md). Confirme primeiro o estado do Supabase e teste em ambiente separado.
+
+
 ## 🎯 Objetivo
 
 Criar uma tabela separada `gestantes` no Supabase para armazenar informações de pacientes gestantes, que **não entram na fila regular** e recebem **atendimento prioritário**.
@@ -36,7 +39,7 @@ A tabela `gestantes` contém:
 1. Acesse seu projeto no Supabase: https://supabase.com/dashboard/project/uakhmgoxgyklggsvtwdf
 2. Vá em **SQL Editor** (no menu lateral)
 3. Clique em **New Query**
-4. Copie e cole o conteúdo do arquivo `sql_tabela_gestantes.sql`
+4. Copie e cole o conteúdo do arquivo `sql/historico/gestantes/sql_tabela_gestantes.sql`
 5. Clique em **Run** para executar o SQL
 6. Verifique se a tabela foi criada em **Table Editor** > `gestantes`
 

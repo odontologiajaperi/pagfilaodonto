@@ -1,5 +1,8 @@
 # Logs de Erros do Site
 
+> **GUIA HISTÓRICO — NÃO EXECUTAR os SQLs indicados diretamente em produção.** A organização atual está em [`sql/README.md`](../sql/README.md) e as mudanças aplicadas em [`migrations/README.md`](../migrations/README.md). Confirme primeiro o estado do Supabase e teste em ambiente separado.
+
+
 Os erros que ocorrem no site são registrados automaticamente na tabela `logs_erros` do Supabase, sem expor detalhes técnicos aos pacientes.
 
 ## Como consultar os erros
@@ -65,4 +68,4 @@ O paciente agora vê:
 
 ## Setup inicial
 
-Execute o script `logs_erros.sql` no SQL Editor do Supabase para criar a tabela e as views.
+Execute o script `sql/historico/logs-acessos/logs_erros.sql` no SQL Editor do Supabase para criar a tabela e as views.

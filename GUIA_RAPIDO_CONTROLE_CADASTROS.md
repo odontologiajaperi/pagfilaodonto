@@ -1,5 +1,8 @@
 # 🎛️ Guia Rápido: Controle de Cadastros
 
+> **GUIA HISTÓRICO — NÃO EXECUTAR os SQLs indicados diretamente em produção.** A organização atual está em [`sql/README.md`](sql/README.md) e as mudanças aplicadas em [`migrations/README.md`](migrations/README.md). Confirme primeiro o estado do Supabase e teste em ambiente separado.
+
+
 ## 📋 O que é?
 
 Um sistema simples para você **abrir** ou **fechar** os cadastros da fila de espera diretamente pelo Supabase.
@@ -13,7 +16,7 @@ Um sistema simples para você **abrir** ou **fechar** os cadastros da fila de es
 1. Acesse o SQL Editor do Supabase:
    🔗 https://supabase.com/dashboard/project/uakhmgoxgyklggsvtwdf/sql/new
 
-2. Copie todo o conteúdo do arquivo **`criar_tabela_configuracoes.sql`**
+2. Copie todo o conteúdo do arquivo **`sql/historico/seguranca-configuracao/criar_tabela_configuracoes.sql`**
 
 3. Cole no editor SQL do Supabase
 
