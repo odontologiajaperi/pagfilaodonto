@@ -23,6 +23,7 @@ O arquivo [`diagnostico_fila.sql`](diagnostico_fila.sql) contém exclusivamente 
 
 - Cadastro normal usa `public.postos.ativo` e `public.postos.vagas_disponiveis`; o trigger ativo `trg_atualizar_vagas_disponiveis` consome uma vaga em `INSERT` aguardando e devolve na saída de `aguardando`. **Não usa `situacao_postos`** para o contador exibido.
 - `trg_atribuir_posicao` e `trg_atribuir_posicao_pediatria` usam as funções de atribuição presentes no banco; a migração de concorrência em `../migrations/` adiciona lock transacional para novos cadastros.
+- O INSERT normal respeita `configuracoes.cadastros_abertos`, e o INSERT pediátrico agora também respeita `configuracoes.cadastros_pediatria_abertos`, inclusive se alguém tentar ignorar o HTML. Os dois interruptores estão `false` neste diagnóstico; **não abrir cadastro por conta própria**.
 - `trg_processar_agendamento` e `trg_processar_agendamento_pediatria` continuam responsáveis por deslocar a fila ao agendar. **Não foram reescritos**: transferências, reordenação manual e posição explicitamente ajustada em `UPDATE` exigem análise separada.
 - `trg_limpeza_geral`, `trg_limpeza_pediatria` e o job diário destrutivo estão **desativados**; não religar antes de definir retenção/arquivamento.
 - `verificar_cota_sem_acs` ainda usa `vagas_limite` e conta aguardando histórico; nos postos com `vagas_limite` nulo libera sem cota. **A regra de ACS não foi migrada para o modelo de rodada de `vagas_disponiveis`**. Definir a política da rodada antes de alterar a função e o formulário.
