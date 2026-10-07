@@ -258,7 +258,7 @@
                 <p>A solicitação poderá ser utilizada quando o paciente já estiver agendado e, por motivo justificado, não puder comparecer na data marcada. Nessa situação, o pedido deve ser encaminhado com <strong>antecedência mínima de 24 horas</strong>, conforme as orientações desta página.</p>
                 <p>Também poderá ser utilizada após uma ausência, desde que a solicitação seja realizada dentro do prazo informado nos avisos de remarcação e acompanhada de documento que justifique a falta. Solicitações sem justificativa documental poderão ser negadas.</p>
                 <p>Poderão ainda ser avaliadas solicitações de atendimento em outra unidade, quando houver disponibilidade de vaga ou fila em posto diferente daquele inicialmente escolhido pelo paciente.</p>
-                <p>O envio da solicitação não representa confirmação imediata de nova data. Após a análise, o retorno da solicitação será encaminhado ao e-mail informado no formulário.</p>
+                <p>O envio da solicitação não representa confirmação imediata de nova data. Guarde o protocolo; após a análise, a equipe poderá entrar em contato pelos dados informados no formulário.</p>
                 <p>Quando a justificativa for aceita e houver possibilidade de remarcação, a equipe poderá encaminhar a nova data diretamente pelo WhatsApp informado.</p>
                 <div class="termos-remarcacao-destaque">
                     <strong>Atenção:</strong> este formulário deve ser utilizado somente para remarcações por impossibilidade de comparecimento, ausência justificada ou pedido de mudança para outra unidade com disponibilidade. Para dúvidas, informações gerais, reclamações, sugestões, atualização cadastral ou qualquer outro assunto, envie e-mail para <a href="mailto:odontologiajaperi@gmail.com">odontologiajaperi@gmail.com</a>.
@@ -307,6 +307,17 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="dataConsultaInformada">Data da consulta agendada <span style="color:red">*</span></label>
+                    <input type="date" id="dataConsultaInformada" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="unidadeInformada">Unidade onde a consulta está agendada <span style="color:red">*</span></label>
+                    <input type="text" id="unidadeInformada" placeholder="Informe o nome da unidade do agendamento" maxlength="160" autocomplete="off" required>
+                    <small style="display:block;margin-top:7px;color:#666;line-height:1.4;">Informe a unidade da consulta que deseja remarcar, mesmo que ela não esteja recebendo novos cadastros.</small>
+                </div>
+
+                <div class="form-group">
                     <label for="motivo">Motivo da remarcação <span style="color:red">*</span></label>
                     <textarea id="motivo" placeholder="Explique brevemente o motivo da solicitação..." maxlength="200" required></textarea>
                 </div>
@@ -322,7 +333,7 @@
                 </div>
 
                 <div class="alerta alerta-info">
-                    <strong>Importante:</strong> Vamos verificar se o CPF está cadastrado no sistema. Mesmo que não seja localizado, sua solicitação será registrada para análise manual e a equipe entrará em contato pelos dados informados.
+                    <strong>Importante:</strong> Confira a data e a unidade da sua consulta. A equipe verificará os dados após o envio, sem revelar outros cadastros nesta página.
                 </div>
 
                 <div id="recaptcha-container" class="form-group" style="display:flex;justify-content:center;">
@@ -331,27 +342,35 @@
 
                 <div id="mensagem-erro" class="alerta alerta-erro" style="display:none;"></div>
 
-                <button id="btnBuscar" class="btn btn-primary" onclick="buscarAgendamento()">Verificar e continuar</button>
+                <button id="btnBuscar" class="btn btn-primary" onclick="buscarAgendamento()">Conferir dados e continuar</button>
             </div>
 
             <!-- ETAPA 2: Confirmação -->
             <div id="etapa2" class="etapa">
                 <div class="info-card">
-                    <h3>Verificação da solicitação</h3>
+                    <h3>Confira os dados informados</h3>
                     <div class="info-row">
-                        <span class="info-label">Situação do CPF:</span>
+                        <span class="info-label">Situação:</span>
                         <span class="info-value" id="info-situacao"></span>
                     </div>
                     <div class="info-row" id="linhaNome" style="display:none;">
                         <span class="info-label">Nome:</span>
                         <span class="info-value" id="info-nome"></span>
                     </div>
+                    <div class="info-row">
+                        <span class="info-label">Unidade informada por você:</span>
+                        <span class="info-value" id="info-unidade-informada"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Data informada por você:</span>
+                        <span class="info-value" id="info-data-informada"></span>
+                    </div>
                     <div class="info-row" id="linhaUnidade" style="display:none;">
-                        <span class="info-label">Unidade:</span>
+                        <span class="info-label">Unidade localizada no cadastro:</span>
                         <span class="info-value" id="info-unidade"></span>
                     </div>
                     <div class="info-row" id="linhaData" style="display:none;">
-                        <span class="info-label">Data da consulta:</span>
+                        <span class="info-label">Data localizada no cadastro:</span>
                         <span class="info-value" id="info-data"></span>
                     </div>
                     <div class="info-row" id="linhaTipo" style="display:none;">
@@ -361,6 +380,7 @@
                 </div>
 
                 <div id="alerta-tipo" class="alerta alerta-info"></div>
+                <div id="alerta-divergencia" class="alerta alerta-aviso" style="display:none;"></div>
 
                 <button class="btn btn-primary" onclick="confirmarRemarcacao()">Confirmar Solicitação de Remarcação</button>
                 <button class="btn btn-secondary" onclick="voltarEtapa1()">← Voltar</button>
@@ -372,8 +392,14 @@
                     <div style="font-size:4em; margin-bottom:15px;">✅</div>
                     <h2 style="color:#28a745; margin-bottom:12px;">Solicitação Registrada!</h2>
                     <p style="color:#555; line-height:1.6; margin-bottom:20px;" id="msg-sucesso">
-                        Sua solicitação de remarcação foi registrada com sucesso. Nossa equipe entrará em contato em até <strong>3 dias úteis</strong> pelo telefone cadastrado para informar a nova data.
+                        Sua solicitação foi recebida para análise. Guarde o protocolo; a equipe poderá entrar em contato pelo telefone ou e-mail informado.
                     </p>
+                    <div class="info-card" style="text-align:center;">
+                        <h3>Guarde seu protocolo de remarcação</h3>
+                        <strong id="protocoloRemarcacao" style="display:block;overflow-wrap:anywhere;font-size:1.35em;margin-bottom:12px;"></strong>
+                        <button type="button" class="btn btn-secondary" onclick="copiarProtocoloRemarcacao()">Copiar protocolo</button>
+                        <small id="retornoCopiaProtocolo" role="status" style="display:block;margin-top:8px;"></small>
+                    </div>
                 </div>
 
                 <div class="alerta alerta-info">
@@ -446,13 +472,26 @@
         }
 
         function voltarEtapa1() {
+            dadosPaciente = null;
             irParaEtapa(1);
         }
 
         function formatarData(dataStr) {
             if (!dataStr) return 'Não definida';
-            const partes = dataStr.split('-');
+            const partes = String(dataStr).slice(0, 10).split('-');
+            if (partes.length !== 3) return String(dataStr);
             return partes[2] + '/' + partes[1] + '/' + partes[0];
+        }
+
+        function dataConsultaValida(valor) {
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) return false;
+            const data = new Date(`${valor}T12:00:00Z`);
+            return !Number.isNaN(data.getTime()) && data.toISOString().slice(0, 10) === valor;
+        }
+
+        function unidadeComparavel(valor) {
+            return String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
         }
 
         async function buscarAgendamento() {
@@ -460,9 +499,19 @@
             const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
             const email = document.getElementById('emailContato').value.trim().toLowerCase();
             const telefone = document.getElementById('telefoneContato').value.replace(/\D/g, '');
+            const dataConsultaInformada = document.getElementById('dataConsultaInformada').value;
+            const unidadeInformada = document.getElementById('unidadeInformada').value.trim();
             const motivo = document.getElementById('motivo').value.trim();
             const documento = document.getElementById('documentoJustificativa').files[0] || null;
 
+            if (!dataConsultaValida(dataConsultaInformada)) {
+                mostrarErro('Informe uma data válida para a consulta que deseja remarcar.');
+                return;
+            }
+            if (!unidadeInformada || unidadeInformada.length > 160) {
+                mostrarErro('Informe o nome da unidade onde a consulta está agendada.');
+                return;
+            }
             if (!motivo) {
                 mostrarErro('Por favor, informe o motivo da remarcação.');
                 return;
@@ -497,71 +546,26 @@
                 return;
             }
 
-            const btn = document.getElementById('btnBuscar');
-            btn.disabled = true;
-            btn.textContent = 'Verificando...';
-
-            // O padrão é permitir a solicitação, mesmo quando o CPF não for localizado.
-            let verificacao = {
-                cadastro_localizado: false,
-                mensagem: 'Não localizamos um cadastro para este CPF. A solicitação poderá seguir para análise manual.'
-            };
-
-            try {
-                const { data, error } = await supabaseClient.rpc('verificar_cpf_remarcacao', { p_cpf: cpf });
-                if (!error && data && data.sucesso) verificacao = data;
-                if (error) console.warn('Verificação de CPF indisponível:', error.message);
-            } catch (err) {
-                console.warn('Verificação de CPF indisponível:', err);
-            }
-
-            dadosPaciente = { cpf, email, telefone, motivo, documento, verificacao };
-
-            const localizado = verificacao.cadastro_localizado === true;
-            const tipoEl = document.getElementById('info-tipo');
-            const alertaEl = document.getElementById('alerta-tipo');
-
-            document.getElementById('info-situacao').textContent = localizado ? 'Cadastro localizado' : 'Cadastro não localizado';
-            document.getElementById('linhaNome').style.display = localizado && verificacao.nome ? 'flex' : 'none';
-            document.getElementById('linhaUnidade').style.display = localizado && verificacao.unidade ? 'flex' : 'none';
-            document.getElementById('linhaData').style.display = localizado && verificacao.data_agendamento ? 'flex' : 'none';
-            document.getElementById('linhaTipo').style.display = localizado && verificacao.tipo_remarcacao ? 'flex' : 'none';
-            document.getElementById('info-nome').textContent = verificacao.nome || '';
-            document.getElementById('info-unidade').textContent = verificacao.unidade || '';
-            document.getElementById('info-data').textContent = formatarData(verificacao.data_agendamento);
-
-            if (!localizado) {
-                tipoEl.innerHTML = '';
-                alertaEl.className = 'alerta alerta-aviso';
-                alertaEl.innerHTML = '<strong>Cadastro não localizado:</strong> sua solicitação será registrada para análise manual. A equipe entrará em contato pelo telefone ou e-mail informado.';
-            } else if (verificacao.tipo_remarcacao === 'preventiva') {
-                tipoEl.innerHTML = '<span class="badge badge-preventiva">Preventiva</span>';
-                alertaEl.className = verificacao.situacao_prazo === 'menos_de_24_horas' ? 'alerta alerta-aviso' : 'alerta alerta-info';
-                alertaEl.innerHTML = verificacao.situacao_prazo === 'menos_de_24_horas'
-                    ? '<strong>Consulta próxima:</strong> a solicitação será registrada e a equipe analisará o caso. Mesmo sem resposta antes da data da consulta, o pedido ficará registrado.'
-                    : '<strong>Cadastro localizado:</strong> sua solicitação será registrada e a equipe entrará em contato em até 3 dias úteis.';
-            } else if (verificacao.tipo_remarcacao === 'por_falta') {
-                tipoEl.innerHTML = '<span class="badge badge-falta">Por falta</span>';
-                alertaEl.className = verificacao.situacao_prazo === 'fora_do_prazo' ? 'alerta alerta-aviso' : 'alerta alerta-info';
-                alertaEl.innerHTML = verificacao.situacao_prazo === 'fora_do_prazo'
-                    ? '<strong>Prazo informado:</strong> a falta ocorreu há mais de 7 dias. A solicitação será salva para análise manual da equipe.'
-                    : '<strong>Falta identificada:</strong> sua solicitação será registrada e a equipe entrará em contato em até 3 dias úteis.';
-            } else {
-                tipoEl.innerHTML = '<span class="badge badge-preventiva">Análise manual</span>';
-                alertaEl.className = 'alerta alerta-info';
-                alertaEl.innerHTML = '<strong>Cadastro localizado:</strong> não foi identificado um agendamento ativo. A solicitação será salva para análise da equipe.';
-            }
-
+            // A checagem de CPF, data e unidade ocorre no servidor ao registrar o pedido.
+            // Não consulte nem apresente nome/agendamento de terceiros por CPF no navegador.
+            dadosPaciente = { cpf, email, telefone, motivo, documento, dataConsultaInformada, unidadeInformada };
+            document.getElementById('info-situacao').textContent = 'Pedido ainda não enviado';
+            document.getElementById('linhaNome').style.display = 'none';
+            document.getElementById('linhaUnidade').style.display = 'none';
+            document.getElementById('linhaData').style.display = 'none';
+            document.getElementById('linhaTipo').style.display = 'none';
+            document.getElementById('alerta-divergencia').style.display = 'none';
+            document.getElementById('info-unidade-informada').textContent = unidadeInformada;
+            document.getElementById('info-data-informada').textContent = formatarData(dataConsultaInformada);
+            document.getElementById('alerta-tipo').className = 'alerta alerta-info';
+            document.getElementById('alerta-tipo').textContent = 'A equipe conferirá seu cadastro e os dados da consulta após o envio. Este pedido não confirma uma nova data.';
             irParaEtapa(2);
-            btn.disabled = false;
-            btn.textContent = 'Verificar e continuar';
         }
 
         function confirmarRemarcacao() {
-            const tipo = dadosPaciente && dadosPaciente.verificacao ? dadosPaciente.verificacao.tipo_remarcacao : null;
-            if (tipo === 'por_falta' && !dadosPaciente.documento) {
-                mostrarErro('Para solicitar remarcação após falta, anexe o documento de justificativa antes de continuar.');
+            if (!dadosPaciente) {
                 voltarEtapa1();
+                mostrarErro('Confira os dados da consulta antes de enviar a solicitação.');
                 return;
             }
             document.getElementById('modalConfirmacao').classList.add('ativo');
@@ -601,6 +605,18 @@
             document.getElementById('modalConfirmacao').classList.remove('ativo');
         }
 
+        async function copiarProtocoloRemarcacao() {
+            const protocolo = document.getElementById('protocoloRemarcacao').textContent;
+            const retorno = document.getElementById('retornoCopiaProtocolo');
+            if (!protocolo) return;
+            try {
+                await navigator.clipboard.writeText(protocolo);
+                retorno.textContent = 'Protocolo copiado. Guarde-o em local seguro.';
+            } catch (_) {
+                retorno.textContent = 'Não foi possível copiar automaticamente. Selecione o protocolo acima e copie manualmente.';
+            }
+        }
+
         async function enviarSolicitacao() {
             const btnModal = document.getElementById('btnConfirmarModal');
             btnModal.disabled = true;
@@ -611,7 +627,9 @@
                     p_cpf: dadosPaciente.cpf,
                     p_email_contato: dadosPaciente.email,
                     p_telefone_contato: dadosPaciente.telefone,
-                    p_motivo: dadosPaciente.motivo || null
+                    p_motivo: dadosPaciente.motivo || null,
+                    p_data_consulta_informada: dadosPaciente.dataConsultaInformada,
+                    p_unidade_informada: dadosPaciente.unidadeInformada
                 });
 
                 if (error) throw error;
@@ -629,9 +647,9 @@
                         }
                     }
                     fecharModal();
-                    document.getElementById('msg-sucesso').innerHTML = (data.cadastro_localizado
-                        ? 'Sua solicitação foi registrada com sucesso. Nossa equipe entrará em contato em até <strong>3 dias úteis</strong> pelo telefone ou e-mail informado.'
-                        : 'Sua solicitação foi registrada para análise manual. Nossa equipe entrará em contato em até <strong>3 dias úteis</strong> pelo telefone ou e-mail informado.') + mensagemDocumento;
+                    document.getElementById('msg-sucesso').innerHTML =
+                        'Sua solicitação foi recebida para análise e ainda não foi aprovada. Guarde o protocolo; a equipe poderá entrar em contato pelo telefone ou e-mail informado.' + mensagemDocumento;
+                    document.getElementById('protocoloRemarcacao').textContent = data.protocolo || data.solicitacao_id || '';
                     if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
                     irParaEtapa(3);
                 } else {
