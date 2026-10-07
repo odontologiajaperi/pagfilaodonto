@@ -17,6 +17,8 @@
 
 Os **25 arquivos antes soltos na raiz** foram movidos, sem alteração de conteúdo, para as seis subpastas de `historico/`. Guias que apontavam para eles tiveram apenas os caminhos corrigidos. Essa organização **não executou SQL, não redefiniu vagas nem alterou pacientes**.
 
+O arquivo [`diagnostico_fila.sql`](diagnostico_fila.sql) contém exclusivamente consultas agregadas de leitura para verificar postos, posições, triggers, jobs e permissões, sem listar nomes ou CPFs.
+
 ## Fonte de verdade da fila (verificada em 07/10/2026)
 
 - Cadastro normal usa `public.postos.ativo` e `public.postos.vagas_disponiveis`; o trigger ativo `trg_atualizar_vagas_disponiveis` consome uma vaga em `INSERT` aguardando e devolve na saída de `aguardando`. **Não usa `situacao_postos`** para o contador exibido.

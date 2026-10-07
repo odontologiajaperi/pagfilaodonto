@@ -9,6 +9,7 @@ Estes arquivos registram mudanças **já aplicadas** no projeto Supabase `uakhmg
 | `20261007_fechar_rpcs_antigas_remarcacao.sql` | Aplicado após publicar a página nova | Revogou `EXECUTE` público da busca por CPF e da antiga solicitação que não exigia data/unidade. A nova RPC continua acessível. |
 | `20261007_restringir_reabertura_posto.sql` | Aplicado e verificado | Retirou `EXECUTE` de `anon`/`authenticated` da função privilegiada `reabrir_posto`; `service_role` preservado. Nenhum contador ou posto foi atualizado. |
 | `20261007_posicao_fila_concorrencia.sql` | Aplicado e verificado | Serializa novos cadastros aguardando por unidade e na pediatria; atribui posição no banco mesmo se cliente enviar número. Não atualiza linhas anteriores nem redefine vagas. |
+| `20261007_integridade_contador_postos.sql` | Aplicado e verificado | Torna `vagas_disponiveis` obrigatório e não negativo, sem alterar os valores: 17 postos e soma de 419 vagas permaneceram iguais após a migração. |
 
 Testes: arquivo criptografado prioritário das tabelas `pacientes` (1.611), `pacientes_backup_hoje` (3.639), `pacientes_pediatria` (323), `gestantes` (44), `postos` (17) validado por hash e armazenado **somente no repositório privado de backup**. Clone local com metadados operacionais comprovou que suspender as limpezas não altera posições; os 83 pedidos antigos foram pseudonimizados para ensaio da migration aditiva. Impressões digitais de ID/status/posição antes e depois das mudanças foram idênticas. A chave de descriptografia fica fora do GitHub.
 
