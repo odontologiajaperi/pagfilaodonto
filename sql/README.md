@@ -19,14 +19,14 @@ Os **25 arquivos antes soltos na raiz** foram movidos, sem alteração de conte�
 
 O arquivo [`diagnostico_fila.sql`](diagnostico_fila.sql) contém exclusivamente consultas agregadas de leitura para verificar postos, posições, triggers, jobs e permissões, sem listar nomes ou CPFs.
 
-## Fonte de verdade da fila (verificada em 07/10/2026)
+## Fonte de verdade da fila (verificada em 08/10/2026)
 
-- Cadastro normal usa `public.postos.ativo` e `public.postos.vagas_disponiveis`; o trigger ativo `trg_atualizar_vagas_disponiveis` consome uma vaga em `INSERT` aguardando e devolve na saída de `aguardando`. **Não usa `situacao_postos`** para o contador exibido.
-- `trg_atribuir_posicao` e `trg_atribuir_posicao_pediatria` usam as funções de atribuição presentes no banco; a migração de concorrência em `../migrations/` adiciona lock transacional para novos cadastros.
+- Cadastro normal usa `public.postos.ativo` e `public.postos.vagas_disponiveis`; o trigger canônico `trg_gerenciar_fila_rodada` coordena entrada, saída, reentrada, transferência, posição e saldo. **Não usa `situacao_postos` nem `vagas_limite`** para o contador exibido.
+- A rodada canônica registra `postos.rodada_id`/`rodada_capacidade` e marca apenas novos cadastros consumindo vagas com `pacientes.rodada_vaga_id`. Os pacientes anteriores permanecem sem marcador e não são renumerados nem usados para recalcular o saldo.
 - O INSERT normal respeita `configuracoes.cadastros_abertos`, e o INSERT pediátrico agora também respeita `configuracoes.cadastros_pediatria_abertos`, inclusive se alguém tentar ignorar o HTML. Os dois interruptores estão `false` neste diagnóstico; **não abrir cadastro por conta própria**.
-- `trg_processar_agendamento` e `trg_processar_agendamento_pediatria` continuam responsáveis por deslocar a fila ao agendar. **Não foram reescritos**: transferências, reordenação manual e posição explicitamente ajustada em `UPDATE` exigem análise separada.
+- A pediatria mantém uma fila global; `processar_agendamento_pediatria` usa o mesmo lock global para saída/reentrada. Os 323 aguardando continuam com posições únicas.
 - `trg_limpeza_geral`, `trg_limpeza_pediatria` e o job diário destrutivo estão **desativados**; não religar antes de definir retenção/arquivamento.
-- `verificar_cota_sem_acs` ainda usa `vagas_limite` e conta aguardando histórico; nos postos com `vagas_limite` nulo libera sem cota. **A regra de ACS não foi migrada para o modelo de rodada de `vagas_disponiveis`**. Definir a política da rodada antes de alterar a função e o formulário.
+- `verificar_cota_sem_acs` usa o máximo da rodada registrada (`20%` ou `25%` de `rodada_capacidade`) e conta apenas cadastros novos marcados nessa rodada. A resposta continua compatível com o cadastro (`disponivel`, `max_sem_acs`, `vagas_restantes_sem_acs`).
 - `historico/fila-vagas/vagas_por_posto.sql` calcula pela fila antiga e por `vagas_limite`; **é incompatível com o contador atual. NÃO EXECUTAR**. `INSERT_POSTOS.sql` também contém `DELETE`: não executar como tentativa de ajuste.
 
 Para qualquer correção futura: capturar estado real, definir comportamento desejado de rodada/cota, testar num clone isolado, registrar migração aditiva e conferir posições por unidade antes/depois. Nunca resetar `vagas_disponiveis` a partir de quantidade de pessoas antigas sem decisão de negócio.
